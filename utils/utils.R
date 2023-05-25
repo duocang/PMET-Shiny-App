@@ -1,5 +1,66 @@
-isValidEmail <- function(x) {
+valid.email.func <- function(x) {
   grepl("\\<[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\>", as.character(x), ignore.case = TRUE)
+}
+
+# check files uploaded and email before running PMET
+valid.files.email.func <- function(input) {
+  motif_db   <- input$motif_db
+  fasta      <- input$uploaded_fasta$datapath
+  annotation <- input$uploaded_annotation$datapath
+  genes      <- input$gene_for_pmet$datapath
+
+  if (motif_db == "uploaded_motif") {
+    all_files_uploaded <- ifelse(length(c(motif_db, fasta, annotation, genes)) == 4, TRUE, FALSE)
+  } else {
+    all_files_uploaded <- !is.null(genes)
+  }
+  return(valid.email.func(input$userEmail) & all_files_uploaded)
+}
+
+
+
+# prepare all paths/directories needed by PMET
+paths.for.pmet.func <- function(input) {
+
+  genes_path <- input$gene_for_pmet$datapath
+  project_path <- getwd() # %>% str_replace("/01_shiny", "")
+
+  if (input$motif_db != "uploaded_motif") {
+    species <- str_split(input$motif_db, "-")[[1]][1]
+
+    pmetIndex_path <- file.path(project_path, "data/PMETindex", species, input$motif_db)
+    folder_name <- str_split(input$userEmail, "@")[[1]] %>%
+      paste0(collapse = "_") %>%
+      paste0("_", species, "_", input$motif_db) %>%
+      paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+    user_folder <- file.path(project_path, "result", folder_name)
+  } else {
+
+    motif_db <- input$uploaded_motif_db$name %>% str_replace(".meme", "")
+    print(motif_db)
+
+    pmetIndex_path <- file.path(project_path, "data/PMETindex", input$motif_db, motif_db)
+    folder_name <- str_split(input$userEmail, "@")[[1]] %>%
+      paste0(collapse = "_") %>%
+      paste0("_", input$motif_db) %>%
+      paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+    user_folder <- file.path(project_path, "result", folder_name)
+  }
+
+
+
+
+
+
+
+
+
+
+  return(list(genes_path = genes_path,
+              project_path = project_path,
+              pmetIndex_path = pmetIndex_path,
+              folder_name = folder_name,
+              user_folder = user_folder))
 }
 
 colors.plotly.func <- function() {
@@ -42,7 +103,7 @@ colors.plotly.func <- function() {
 # process PMET result
 # 1. filter
 # 2. remove duplicated combinations
-pmet_result_proces_func <- function(pmet_result = NULL,
+pmet.result.proces.func <- function(pmet_result = NULL,
                                     p_adj_limt = 0.05,
                                     gene_portion = 0.05,
                                     topn = 40,
@@ -257,10 +318,10 @@ plot_data_func <- function(df, top_motifs, present.opt = "p_adj") {
 
 
 
-data_reshape_func11 <- function(pmet_split, motifs_list, counts = "p_adj") {
+data.reshape.func11 <- function(pmet_split, motifs_list, counts = "p_adj") {
   suppressMessages({
     # pmet data for each cluster has been shaped in ggplot2 (long) format, but no gene info
-    a <- plot_motif_pair_func(pmet_split, motifs_list, counts = counts, return.data = TRUE)
+    a <- plot.motif.pair.func(pmet_split, motifs_list, counts = counts, return.data = TRUE)
 
     # join with original pmet result to gain gene info
     lapply(names(pmet_split), function(clu) {
@@ -307,7 +368,7 @@ data_reshape_func11 <- function(pmet_split, motifs_list, counts = "p_adj") {
 
 # plot heatmap of top motifs
 # 1. remove shared motifs from each clusters
-plot_motif_pair_func <- function(pmet_split,
+plot.motif.pair.func <- function(pmet_split,
                                  motifs_list,
                                  counts = "value",
                                  exclusive_motifs = TRUE,
@@ -503,7 +564,7 @@ plot_motif_pair_func <- function(pmet_split,
 
 
 
-plot_moti_pair_overlap_func <- function(pmet_split, motifs_list, counts = "p_adj", by_cluster = FALSE) {
+plot.moti.pair.overlap.func <- function(pmet_split, motifs_list, counts = "p_adj", by_cluster = FALSE) {
   # remove shared motifs
   motifs_list <- names(motifs_list) %>%
     lapply(function(clu) {
@@ -521,7 +582,7 @@ plot_moti_pair_overlap_func <- function(pmet_split, motifs_list, counts = "p_adj
     unname()
 
   # order motifs
-  plot_motif_pairs <- plot_motif_pair_func(pmet_split, motifs_list, counts = counts, return.data = T, by_cluster = by_cluster)
+  plot_motif_pairs <- plot.motif.pair.func(pmet_split, motifs_list, counts = counts, return.data = T, by_cluster = by_cluster)
 
   # merge data into one df
   plot_data <- plot_motif_pairs[[1]]

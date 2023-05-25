@@ -1,18 +1,14 @@
-/* .div_size {
-    width: 399px;
-} */
+body {
+    /* max-width: 1650px; */
+    min-width: 950px;
+    margin: 0 auto;
+}
 
-
-/* set a fixed width setting pannel */
 .well {
-    max-width: 400px;
+    left: -100px;
+    max-width: 420px;
     min-width: 400px;
 }
-/* .well {
-    left: -100px;
-    max-width: 450px;
-} */
-
 
 .navbar {
     margin-bottom: 10px;
@@ -23,15 +19,12 @@
 } */
 
 
-
-
-
 .big_font {
     font-size: 16px;
     font-weight: bold;
 }
 
-/* 是selectInpput的文字和选择框在同一行 */
+/* 设置selectInpput的文字和选择框在同一行 */
 .parameters_id label{ 
     display: table-cell; 
     text-align: center; 
@@ -43,11 +36,32 @@
 }
 
 /*两端对齐*/
+/* align to the right side */
 .parameters_id .control-label {
     text-align: left;
     padding: 15px;
-    /* width: 350px; */
+    width: 400px;
 }
+#promoter_length_div > div > div {
+    float: right;
+    margin-left: 190px;
+}
+#promoter_length_div > div > div {
+    float: right;
+    margin-left: 200px;
+}
+#max_motif_matches_div  > div > div {
+    float: right;
+    margin-left: 170px;
+}
+#promoter_number_div > div > div {
+    float: right;
+    margin-left: 50px;
+}
+
+
+
+
 /* 设置下拉框的宽度 */
 .parameters_id .selectize-input {
     width: 67px;
@@ -92,9 +106,10 @@
 #utr5 {
     width: 399px;
 }
-    
+
+/* make radio align to the right side */
 #utr5 .shiny-options-group {
-    margin-left: 250px;
+    margin-left: 280px;
 }
 
 #promoters_overlap .control-label {
@@ -104,9 +119,9 @@
     float: left;
     width: 390px;
 }
-    
+/* make radio align to the right side */
 #promoters_overlap .shiny-options-group {
-    margin-left: 250px;
+    margin-left: 280px;
     /* margin-bottom: 50px; */
 }
 
@@ -152,11 +167,80 @@
     line-height: 15px;
 }
 
+#gene_for_pmet_div {
+    margin-top: 10px;
+}
 /* Gene clusters and genes: text inside the box*/
 #gene_for_pmet_div > div > div.input-group > input {
     font-size: 14px;
     margin-left: 10px;
 }
+/* radius for box */
+#gene_for_pmet_div > div > div.input-group {
+    border-radius: 4px;
+}
+
+/* motif uploaded: text inside the box*/
+#uploaded_motif_db_div > div > div.input-group > input {
+    font-size: 14px;
+    margin-left: 10px;
+}
+#uploaded_motif_db-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+#uploaded_motif_db_div > div > div.input-group {
+    border-radius: 4px;
+}
+
+#uploaded_fasta_div {
+    margin-top: 10px;
+}
+#uploaded_fasta_div > div > div.input-group > input {
+    font-size: 14px;
+    margin-left: 10px;
+}
+#uploaded_fasta-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+#uploaded_fasta_div > div > div.input-group {
+    border-radius: 4px;
+}
+
+#uploaded_annotation_div {
+    margin-top: 10px;
+}
+#uploaded_annotation_div > div > div.input-group > input {
+    font-size: 14px;
+    margin-left: 10px;
+}
+#uploaded_annotation-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+#uploaded_annotation_div > div > div.input-group {
+    border-radius: 4px;
+}
+
+
+/* gap before example file */
+#uploaded_annotation_progress {
+    margin-bottom: -10px;
+}
+#gene_for_pmet_progress {
+    margin-bottom: -10px;
+}
+#uploaded_fasta_progress {
+    margin-bottom: -10px;
+}
+#uploaded_motif_db_progress {
+    margin-bottom: -10px;
+}
+/* gap before example file */
 
 #skipped_genes_link {
     float: right;
@@ -164,6 +248,7 @@
     font-weight: bold;
     font-size: 14px;
 }
+
 
 /* email */
 #userEmail-label {
@@ -175,8 +260,6 @@
 .run_pmet_div {
     margin-left: 0px;
 }
-
-
 
 
 /* tab heatmap */
@@ -203,12 +286,14 @@
     margin-left: 10px;
 }
 
+#pmet_result_div > div > div.input-group {
+    border-radius: 4px;
+}
 
 #skipped_genes_down_btn {
     background-color: #fb8b05;
     
 }
-
 
 #jump_pmet_bnt {
     background-color: #67C8FF;
@@ -229,15 +314,6 @@ body > div.introjs-tooltipReferenceLayer > div > div.introjs-tooltipbuttons > a.
 
 
 #userEmail {
-    border-radius: 4px;
-}
-
-#gene_for_pmet_div > div > div.input-group {
-    border-radius: 4px;
-}
-
-
-#pmet_result_div > div > div.input-group {
     border-radius: 4px;
 }
 
