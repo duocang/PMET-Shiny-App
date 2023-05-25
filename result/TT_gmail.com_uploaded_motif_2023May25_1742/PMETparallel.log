@@ -1,0 +1,92 @@
+          Input parameters          
+------------------------------------
+Input Directory:			/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/data/PMETindex/uploaded_motif/example_motif/
+Gene list file:				/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/genes_used_PMET.txt
+IC threshold:				24
+Threads used 				4
+Promoter lengths:			promoter_lengths.txt
+Binomial threshold values:		binomial_thresholds.txt
+Motif IC values:			IC.txt
+Fimo files:				/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/data/PMETindex/uploaded_motif/example_motif/fimohits/
+Output directory:			/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/
+------------------------------------
+
+Reading input files...
+Universe size is 27655
+Found 453 gene IDs in 2 clusters
+Validating inputs...OK
+Reading 40 FIMO files...
+Motif ARR11 has 24878 occurrences in 5000  genes
+Motif ARR11_2 has 21337 occurrences in 5000  genes
+Motif ARR11_3ARY has 22053 occurrences in 5000  genes
+Motif ARR14 has 24865 occurrences in 5000  genes
+Motif ARR14_2 has 21925 occurrences in 5000  genes
+Motif ARR14_3ARY has 23701 occurrences in 5000  genes
+Motif AT1G77200 has 24834 occurrences in 5000  genes
+Motif AT5G28300 has 24273 occurrences in 5000  genes
+Motif ATERF1 has 24128 occurrences in 5000  genes
+Motif ATERF1_2 has 22491 occurrences in 5000  genes
+Motif CCA1 has 24923 occurrences in 5000  genes
+Motif CCA1_2 has 24751 occurrences in 5000  genes
+Motif DDF1 has 24355 occurrences in 5000  genes
+Motif DREB2C has 22872 occurrences in 5000  genes
+Motif DREB2C_2 has 24887 occurrences in 5000  genes
+Motif GLK1 has 22762 occurrences in 5000  genes
+Motif GLK1_2 has 24818 occurrences in 5000  genes
+Motif KAN1 has 24508 occurrences in 5000  genes
+Motif KAN4 has 20165 occurrences in 5000  genes
+Motif KAN4_2 has 24555 occurrences in 5000  genes
+Motif MYB111 has 24617 occurrences in 5000  genes
+Motif MYB111_2 has 24841 occurrences in 5000  genes
+Motif MYB46 has 24802 occurrences in 5000  genes
+Motif MYB46_2 has 24932 occurrences in 5000  genes
+Motif MYB52 has 24440 occurrences in 5000  genes
+Motif MYB52_2 has 24866 occurrences in 5000  genes
+Motif MYB55 has 24861 occurrences in 5000  genes
+Motif MYB55_2 has 24926 occurrences in 5000  genes
+Motif MYB59 has 24796 occurrences in 5000  genes
+Motif RAP2.3 has 24173 occurrences in 5000  genes
+Motif RAP2.3_2 has 24505 occurrences in 5000  genes
+Motif RAP2.3_3ARY has 24665 occurrences in 5000  genes
+Motif RAP2.6 has 24456 occurrences in 5000  genes
+Motif RAP2.6_2 has 24564 occurrences in 5000  genes
+Motif RAP2.6_3ARY has 24623 occurrences in 5000  genes
+Motif RRTF1 has 24314 occurrences in 5000  genes
+Motif RRTF1_2 has 24683 occurrences in 5000  genes
+Motif RRTF1_3ARY has 24643 occurrences in 5000  genes
+Motif RVE1 has 24924 occurrences in 5000  genes
+Motif RVE1_2 has 24921 occurrences in 5000  genes
+Done
+Perfomed 0 of 780 pair-wise comparisons
+ 10%
+Reserve storage for results of Thread: 1
+      Storage needed by cluster G1 is 195
+      Storage needed by cluster S is 195
+Reserve storage for results of Thread: 2
+      Storage needed by cluster G1 is 195
+      Storage needed by cluster S is 195
+Reserve storage for results of Thread: 3
+      Storage needed by cluster G1 is 195
+      Storage needed by cluster S is 195
+Reserve storage for results of Thread: 4
+      Storage needed by cluster G1 is 195
+      Storage needed by cluster S is 195
+----------------------------   Thread 1 is running  ----------------------------
+----------------------------   Thread 2 is running  ----------------------------
+----------------------------   Thread 3 is running  ----------------------------
+----------------------------   Thread 4 is running  ----------------------------
+
+Applying correction factors
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_G1_0.txt预计的大小：195
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_G1_1.txt预计的大小：195
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_G1_2.txt预计的大小：195
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_G1_3.txt预计的大小：195
+
+
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_S_0.txt预计的大小：195
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_S_1.txt预计的大小：195
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_S_2.txt预计的大小：195
+/mnt/c/Users/wangx/Downloads/pmet_shiny_nginx/result/wangxuesong29_gmail.com_uploaded_motif_2023May25_1742/temp_result_S_3.txt预计的大小：195
+
+
+Done.
