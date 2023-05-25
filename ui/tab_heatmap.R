@@ -4,11 +4,11 @@ tabPanel(
   id = "heatmap_tabpanel",
   # fluidPage(theme = shinytheme("paper")),
   tags$head(tags$style(HTML(".shiny-output-error-validation{color: red;}"))),
-  pageWithSidebar(
-    dashboardHeader(disable = TRUE),
+  sidebarLayout(
+    # dashboardHeader(disable = TRUE),
     # headerPanel('Apply filters'),
     sidebarPanel(
-      width = 3,
+      width = 4,
       # get window size and access via input$dimension[1] and input$dimension[2] in server side
       # tags$head(tags$script('
       #      var dimension = [0, 0];
@@ -27,8 +27,7 @@ tabPanel(
       tags$script(src = "//d3js.org/d3.v4.min.js"),
       # 添加 Font Awesome 图标样式表
       tags$head(
-        tags$link(rel = "stylesheet",
-                  href = "https://use.fontawesome.com/releases/v5.15.1/css/all.css", 
+        tags$link(rel = "stylesheet", href = "https://use.fontawesome.com/releases/v5.15.1/css/all.css", 
                   integrity = "sha384-dXfOhKITPzaGEL0MvAuMRR6y7Bw3qNfqbV6SrCgjET7WmIzGgF+w3TE1a3kpLvQ/", 
                   crossorigin = "anonymous")
       ),
@@ -68,21 +67,34 @@ tabPanel(
       downloadButton("download.button", "Download", class = "btn-success")
     ),
     mainPanel(
-      tabsetPanel(
-        type = "tabs",
-        id = "heat_map_tabs",
-        tabPanel(
-          title = "Heat map",
-          value = "heatmap",
-          id    = "heatmap",
-          div(id = "placeholder", uiOutput("d3"))),
-        tabPanel(
-          title = "Motifs",
-          value = "motifs",
-          id    = "motifs",
-          verbatimTextOutput("dimension_display")),
-        tabPanel("Data viewer", uiOutput(("datatable_tabs")))
+      bsCollapse(id = "heat_map_tabs", 
+                 open = "Heat map",
+                 bsCollapsePanel(
+                   "Heat map",
+                   div(id = "placeholder", uiOutput("d3"))),
+                 bsCollapsePanel(
+                   "Motifs",
+                   verbatimTextOutput("dimension_display")),
+                 bsCollapsePanel( "Data viewer", uiOutput(("datatable_tabs")) )
       )
+      # tabsetPanel(
+      #   type = "tabs",
+      #   id = "heat_map_tabs",
+      #   tabPanel(
+      #     title = "Heat map",
+      #     value = "heatmap",
+      #     id    = "heatmap",
+      #     div(id = "placeholder", uiOutput("d3"))
+      #     ),
+      #   tabPanel(
+      #     title = "Motifs",
+      #     value = "motifs",
+      #     id    = "motifs",
+      #     verbatimTextOutput("dimension_display")
+      #     ),
+      #   tabPanel("Data viewer", uiOutput(("datatable_tabs"))
+      #            )
+      # )
 
 
       # verbatimTextOutput("dimension_display"),
