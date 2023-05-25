@@ -1,0 +1,247 @@
+/* .div_size {
+    width: 399px;
+} */
+
+
+/* set a fixed width setting pannel */
+.well {
+    max-width: 400px;
+    min-width: 400px;
+}
+/* .well {
+    left: -100px;
+    max-width: 450px;
+} */
+
+
+.navbar {
+    margin-bottom: 10px;
+}
+
+/* .container-fluid {
+    padding-left: 70px;
+} */
+
+
+
+
+
+.big_font {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* 是selectInpput的文字和选择框在同一行 */
+.parameters_id label{ 
+    display: table-cell; 
+    text-align: center; 
+    vertical-align: middle; 
+}
+
+.parameters_id .form-group {
+    display: table-row;
+}
+
+/*两端对齐*/
+.parameters_id .control-label {
+    text-align: left;
+    padding: 15px;
+    /* width: 350px; */
+}
+/* 设置下拉框的宽度 */
+.parameters_id .selectize-input {
+    width: 67px;
+    min-height: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    /* padding: 2px 0px 2px 2; */
+}
+.parameters_id .selectize-control {
+    margin-bottom: 0px;
+}
+
+
+.form-group {
+    margin-bottom: 5px;
+}
+/* 设置文字的宽度 */
+#promoter_length-label {
+    width: 120px;
+    font-size: 15;
+    margin: 1px;
+    padding: 2px 0px 2px 16px;
+}
+
+#max_motif_matches-label {
+    width: 150px;
+    font-size: 15;
+    margin: 1px;
+    padding: 2px 0px 2px 16px;
+}
+
+#promoter_number-label {
+    width: 270px;
+    font-size: 15;
+    margin: 1px;
+    padding: 2px 0px 2px 16px;
+}
+
+#utr5 .control-label {
+    float:left;
+}
+#utr5 {
+    width: 399px;
+}
+    
+#utr5 .shiny-options-group {
+    margin-left: 250px;
+}
+
+#promoters_overlap .control-label {
+    float:left;
+}
+#promoters_overlap {
+    float: left;
+    width: 390px;
+}
+    
+#promoters_overlap .shiny-options-group {
+    margin-left: 250px;
+    /* margin-bottom: 50px; */
+}
+
+/* #userEmail_div {
+    width: 390px;
+} */
+
+/* .run_pmet_div .action-button {
+    float: left;
+    margin-top: 5px;
+    margin-left: 200px;
+} */
+
+#parameters_div {
+    height: 220px;
+}
+
+/* species  */
+#species-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+/* motif database  */
+#motif_db-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+/* gene clusters and genes */
+#gene_for_pmet-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+#gene_for_pmet_progress {
+    margin-bottom: 0px;
+    height: 15px;
+}
+
+#gene_for_pmet_progress > div {
+    font-size: 12px;
+    line-height: 15px;
+}
+
+/* Gene clusters and genes: text inside the box*/
+#gene_for_pmet_div > div > div.input-group > input {
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+#skipped_genes_link {
+    float: right;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* email */
+#userEmail-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+
+.run_pmet_div {
+    margin-left: 0px;
+}
+
+
+
+
+/* tab heatmap */
+
+/* gene clusters and genes */
+#pmet_result-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+#pmet_result_progress {
+    margin-bottom: 0px;
+    height: 15px;
+}
+
+#pmet_result_progress > div {
+    font-size: 12px;
+    line-height: 15px;
+}
+
+/* Gene clusters and genes: text inside the box*/
+#pmet_result_div > div > div.input-group > input {
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+
+#skipped_genes_down_btn {
+    background-color: #fb8b05;
+    
+}
+
+
+#jump_pmet_bnt {
+    background-color: #67C8FF;
+    text-transform: none;
+}
+
+#jump_heat_bnt {
+    background-color: #3CB371;
+    text-transform: none;
+}
+
+
+body > div.introjs-tooltipReferenceLayer > div > div.introjs-tooltipbuttons > a.introjs-button.introjs-nextbutton {
+    background-color: #41ae3c;
+    color: white;
+    text-shadow: none
+}
+
+
+#userEmail {
+    border-radius: 4px;
+}
+
+#gene_for_pmet_div > div > div.input-group {
+    border-radius: 4px;
+}
+
+
+#pmet_result_div > div > div.input-group {
+    border-radius: 4px;
+}
+
+
+#DataTables_Table_0_wrapper {
+    margin-top: 20px;
+}

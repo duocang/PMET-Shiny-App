@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="http://d3js.org/d3.v4.js"></script>
+<!-- Create a div where the graph will take place -->
+<h1> PMET Heatmap </h1>
+<h2> Results for your PMET computation </h2>
+<h4 id="geneset"> Select the geneset to view: <h4>
+<div><select id="genesetMenu"></select></div>
+<!-- Drop down menu to choose multiple testing correction method-->
+<!-- <div id="mtcMenuDiv"> -->
+<h4> Select the multiple testing correction
+  method: <h4>
+    <select id="mtcMenu"
+      onchange="drawHeatmap()">
+      <option value="BH">Benjamini-Hochberg</option>
+      <option value="Bonf">Bonferroni</option>
+      <option value="GBonf">Global Bonferroni</option>
+    </select>
+    <!-- </div> -->
+
+    <!-- User input threshold -->
+    <!-- <div id="thresholdField"> -->
+    <h4> Insert the threshold for false
+      colouring P values: </h4>
+    <input type="text" name="threshold"
+      id="threshold" value=""
+      onchange="drawHeatmap()">
+    <!-- </div> -->
+
+    <a class="downloadButton" rel="nofollow
+      noopener" onclick="downloadSVG()">Download
+      SVG</a>
+
+    <!-- <a id="download" href="#">Download SVG</button> -->
+    <h2 id="message"></h2>
+
+    <div id="tooltip" class="hidden">
+      <p><span id="value"></p>
+      </div>
+      <div id="chart"></div>
+      <div id="running" style="display:none">
+        <div style="margin-right:50px">
+          <h2>Loading data...</h2>
+        </div>
+        <div><img src="running.gif"></div>
+      </div>
+
+          <!-- CSS style -->
+<style>
+  h1 {
+    font-size: 30px;
+    color: DimGray;
+    padding-left: 100px;
+  }
+
+  h2 {
+    font-size: 22px;
+    color: Gray;
+    padding-left: 100px;
+  }
+
+  h4 {
+    width: 150px;
+    height: 20px;
+    padding-left: 15px;
+    font-size: 14px;
+    color: Gray;
+    font-family: "Monospace";
+    float: left;
+  }
+
+  .downloadButton {
+    margin-top: 13px;
+    margin-left: 150px;
+    color: #494949 !important;
+    background: #ffffff;
+    padding: 5px;
+    border: 2px solid #494949 !important;
+    border-radius: 6px;
+    display: inline-block;
+    -webkit-user-select: none;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .downloadButton:hover {
+    color: #ffffff !important;
+    background: #293584;
+    border-color: #293584 !important;
+    transition: all 0.4s ease 0s;
+    cursor: pointer;
+  }
+
+  rect.cell-hover {
+    stroke: #ffa56d;
+    stroke-width: 0.3px;
+  }
+
+  #geneset {
+    padding-left: 100px;
+  }
+
+  body {
+    background: #EEEEEE;
+    float: left;
+  }
+
+  #threshold {
+    margin-left: 50px;
+    margin-top: 20px;
+    float: left;
+  }
+
+  #tooltip {
+    position: absolute;
+    width: 200px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    word-wrap: break-word;
+  }
+
+  #tooltip.hidden {
+    display: none;
+  }
+
+  #tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  #running {
+    position: absolute;
+    width: 300px;
+    height: 80px;
+    background: white;
+    align-items: center;
+    align-content: stretch;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    flex-direction: row;
+    border: 1px solid black;
+    padding: 20px;
+  }
+
+  #running h2 {
+    padding-left: 0px;
+  }
+
+  text.active {
+    fill: red;
+  }
+
+  text.text-hover {
+    fill: blue;
+  }
+
+  #message {
+    padding-left: 100px;
+    padding-top: 24px;
+  }
+</style>
+<script>
+  /* Set the dimensions and margins of the graph */
+  var margin = { top: 80, right: 60, bottom: 140, left: 120 },
+    width = 1500 - margin.left - margin.right,
+    height = 1300 - margin.top - margin.bottom;
+
+  var genesets;
+
+  /* Append the svg object to the body of the page */
+  var svg = d3.select("#chart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform",
+      "translate(" + margin.left + "," + margin.top + ")");
+
+  /* Create a tooltip */
+  var tooltip = d3.select("#chart")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+
+  d3.select("#running")
+    .style("display", "flex")
+    .style("left", (margin.left + width / 2 - 50) + "px")
+    .style("top", (margin.top + height / 2) + "px");
+
+  /* Read the data */
+  d3.tsv("motif_output.txt", function (data) {
+    // console.log("Current threshold is: " + threshold);
+
+    /* Group data by geneset PEB - Module has become Cluster*/
+    //detais an array with each element being an onject to represent one row in table
+    let genesetNames = d3.map(data, function (d) { return d.Cluster }).keys();
+
+    /* Create a drop down menu to select geneset */
+    var genesetMenu = d3.select("#genesetMenu");
+    genesetMenu
+      .on("change", function (d) {
+        drawHeatmap();
+      })
+      .selectAll("option")
+      .data(genesetNames)
+      .enter()
+      .append("option")
+      .attr("value", function (d) { return d; })
+      .text(function (d) { return d; });
+
+    genesets = d3.nest().key(function (d) { return d.Cluster }).entries(data);
+
+    //array with each element an objecty with fields key and values;
+    drawHeatmap();
+
+    d3.select("#running")
+      .style("display", "none");
+  });
+
+
+  function drawHeatmap() {
+
+    //remove old Heatmap
+    svg.selectAll(".rect1").remove();
+    svg.selectAll(".rect2").remove();
+    svg.selectAll("#xAxis").remove();
+    svg.selectAll("#yAxis").remove();
+
+
+    /* The threshold for the false colour set by user with a default value available*/
+    var threshold = document.getElementById("threshold").value;
+    var sel = document.getElementById("mtcMenu");
+    var mtc = sel.options[sel.selectedIndex].value;
+    var selectedGeneset = genesets.filter(function (d) { return d.key == d3.select("#genesetMenu").property("value"); })[0];
+    var totalMotifs;
+
+    if (threshold == "") {
+
+      //startup to need to find appropriate value giving around 30-50 rows/cols
+      threshold = 0.1;
+
+      filteredDataset = getFilteredData(selectedGeneset.values, threshold, mtc);
+      let numRows = filteredDataset.motifs.length;
+      totalMotifs = numRows;
+
+      while (numRows > 50) {
+
+        threshold /= 10;
+        filteredDataset = getFilteredData(filteredDataset.data, threshold, mtc);
+        numRows = filteredDataset.motifs.length;
+      }
+
+      document.getElementById("threshold").value = (threshold).toPrecision(2);
+    } else {
+      threshold = Number(threshold);
+      filteredDataset = getFilteredData(selectedGeneset.values, threshold, mtc);
+      totalMotifs = filteredDataset.totalMotifs;
+    }
+
+    //data is an array, with each element being an object representing one row in table.
+    //filter out before plotting
+
+    //Filter global dataset variable to remove any line with selected p val greather than threshold
+    //This will need to be repeated if threshold or p val changes
+
+    //If this results in all entries for any particular motif in either pos 1 or 2 being filtered out, then
+    //this will result in one less row and col in heatmap.
+
+    /* Build X scales and axis: */
+    var x = d3.scaleBand()
+      .range([0, width])
+      // .domain(motif2.sort(function(a, b) { return d3.ascending(a, b)}))
+      .domain(filteredDataset.motifs)
+      .padding(0.05);
+
+    d3.select("#message").html("Filtered subset of " + filteredDataset.motifs.length + " out of " + totalMotifs + " motifs being displayed");
+
+    svg.append("g")
+      .attr("id", "xAxis")
+      .style("font-size", d3.min([18, x.bandwidth()]))
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).tickSize(0))
+      .style("text-anchor", "end")
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".5em")
+      .attr("transform", "rotate(-60)");
+
+    /* Build Y scales and axis: */
+    var y = d3.scaleBand()
+      .range([height, 0])
+      // .domain(motif1.sort(function(a, b) { return d3.ascending(a, b)}))
+      .domain(filteredDataset.motifs)
+      .padding(0.05);
+
+    svg.append("g")
+      .attr("id", "yAxis")
+      .style("font-size", d3.min([18, y.bandwidth()]))
+      .call(d3.axisLeft(y).tickSize(0))
+
+
+    /* Build colour scale */
+    var colourScale = buildColourScale(filteredDataset.data, mtc);
+
+    /* Add the squares */
+    svg.selectAll()
+      /* .data(data, function(d) {return d.motif1+':'+d.motif2;}) */
+      .data(filteredDataset.data)
+      .enter()
+      // .append("a")
+      // .attr("target", "_blank")
+      //  .attr("xlink:href", function(d) { return "fimohits.html?motif1=" + d.Motif1 + "&motif2=" + d.Motif2 + "&geneset=" + genesets[currentGenesetIndex] })
+      .append("rect")
+      .attr("class", "rect1")
+      .attr("x", function (d) { return x(d["Motif 1"]) })
+      .attr("y", function (d) { return y(d["Motif 2"]) })
+      .attr("rx", 0)
+      .attr("ry", 0)
+      .attr("width", x.bandwidth())
+      .attr("height", y.bandwidth())
+      .style("fill", function (d) {
+        var value;
+        switch (mtc) {
+          case "BH":
+            value = d["Adjusted p-value (BH)"];
+            break;
+          case "Bonf":
+            value = d["Adjusted p-value (Bonf)"];
+            break;
+          case "GBonf":
+            value = d["Adjusted p-value (Global Bonf)"];
+            break;
+        };
+
+        if (value > threshold) { return "rgb(255,0,0)" }
+        else { return colourScale(Number(Math.log10(value))) }
+        ;
+      })
+      .style("stroke-width", 4)
+      .style("opacity", 0.8)
+      .on("mouseover", function (d) { mouseover(this, d, mtc); })
+      .on("mouseleave", mouseleave)
+
+    /* Add the squares on the opposite triangle*/
+    svg.selectAll()
+      /* .data(data, function(d) {return d.motif1+':'+d.motif2;}) */
+      .data(filteredDataset.data)
+      .enter()
+      //   .append("a")
+      //       .attr("target", "_blank")
+      //      .attr("xlink:href", function(d) { return "fimohits.html?motif1=" + d.Motif1 + "&motif2=" + d.Motif2 + "&geneset=" + genesets[currentGenesetIndex] })
+      .append("rect")
+      .attr("class", "rect2")
+      .attr("x", function (d) { return x(d["Motif 2"]) })
+      .attr("y", function (d) { return y(d["Motif 1"]) })
+      .attr("rx", 0)
+      .attr("ry", 0)
+      .attr("width", x.bandwidth())
+      .attr("height", y.bandwidth())
+      .style("fill", function (d) {
+        var value;
+        switch (mtc) {
+          case "BH":
+            value = d["Adjusted p-value (BH)"];
+            break;
+          case "Bonf":
+            value = d["Adjusted p-value (Bonf)"];
+            break;
+          case "GBonf":
+            value = d["Adjusted p-value (Global Bonf)"];
+            break;
+        };
+
+        if (value > threshold) { return "rgb(255,0,0)" }
+        else { return colourScale(Number(Math.log10(value))) }
+        ;
+      })
+      .style("stroke-width", 4)
+      .style("opacity", 0.8)
+      .on("mouseover", function (d) { mouseover(this, d, mtc); })
+      .on("mouseleave", mouseleave);
+  }
+
+  function getFilteredData(dataset, threshold, mtc) {
+
+    //get size of unfiltered list
+    var motif1 = d3.map(dataset, function (d) { return d["Motif 1"]; }).keys();
+    var motif2 = d3.map(dataset, function (d) { return d["Motif 2"]; }).keys();
+    var all_motifs = motif1.concat(motif2);
+    all_motifs = all_motifs.filter(onlyUnique).sort(function (a, b) { return d3.ascending(a, b) });
+
+
+    filteredDataset = dataset.filter(function (d) {
+
+      var value;
+      switch (mtc) {
+        case "BH":
+          value = d["Adjusted p-value (BH)"];
+          break;
+        case "Bonf":
+          value = d["Adjusted p-value (Bonf)"];
+          break;
+        case "GBonf":
+          value = d["Adjusted p-value (Global Bonf)"];
+          break;
+      };
+
+      return (value <= threshold);
+
+    });
+
+    //got filtered table rows. Now find all unique motifs appearing in these rows
+
+    /* Labels of rows and columns = motifs 1 and 2 */
+    motif1 = d3.map(filteredDataset, function (d) { return d["Motif 1"]; }).keys();
+    motif2 = d3.map(filteredDataset, function (d) { return d["Motif 2"]; }).keys();
+    let filtered_motifs = motif1.concat(motif2);
+    filtered_motifs = filtered_motifs.filter(onlyUnique).sort(function (a, b) { return d3.ascending(a, b) });
+
+    //also get total count of unfiltered list
+    return { data: filteredDataset, motifs: filtered_motifs, totalMotifs: all_motifs.length };
+  }
+
+  function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
+  function getSelectedPVals(data, mtc) {
+    //return all values as array from array of objects
+    let values = [];
+    switch (mtc) {
+      case "BH":
+        values = data.map(d => Number(Math.log10(d["Adjusted p-value (BH)"])));
+        break;
+      case "Bonf":
+        values = data.map(d => Number(Math.log10(d["Adjusted p-value (Bonf)"])));
+        break;
+      case "GBonf":
+        values = data.map(d => Number(Math.log10(d["Adjusted p-value (Global Bonf)"])));
+        break;
+    };
+    return values;
+  }
+
+  function buildColourScale(data, mtc) {
+
+    let vals = getSelectedPVals(data, mtc);
+    let minVal = d3.min(vals);
+    let maxVal = d3.max(vals);
+
+    let dom = [minVal, maxVal];
+
+    let colourScale = d3.scaleLinear()
+      .range(["#1F2D86", "#CDF4EC", "#FFFFDD"])
+      .domain(dom);
+    //Colour choices
+    //Light blue - dark blue
+
+    return colourScale;
+  }
+
+  /* Three function that change the tooltip when user hover / move / leave a cell */
+  function mouseover(box, d, mtc) {
+    //Highlight
+    d3.select(box).classed("cell-hover", true);
+    var value;
+    switch (mtc) {
+      case "BH":
+        value = Number(Math.log10(d["Adjusted p-value (BH)"]));
+        break;
+      case "Bonf":
+        value = Number(Math.log10(d["Adjusted p-value (Bonf)"]));
+        break;
+      case "GBonf":
+        value = Number(Math.log10(d["Adjusted p-value (Global Bonf)"]));
+        break;
+    }
+
+    // console.log("the mtc for tooltip is : " + mtc);
+    //Update the tooltip position and value
+    d3.select("#tooltip")
+      .style("left", (d3.event.pageX + 10) + "px")
+      .style("top", (d3.event.pageY - 10) + "px")
+      .select("#value")
+      .text("Motifs: " + d["Motif 1"] + ", " + d["Motif 2"] + ", Log10 of adjusted p-value: " + Math.round(100 * value) / 100 + " and the matched genes are as follows: " + d.Genes);
+    //Show the tooltip
+    d3.select("#tooltip").classed("hidden", false);
+  }
+
+  var mouseleave = function (d) {
+    //Remove highlight
+    d3.select(this).classed("cell-hover", false);
+    d3.select("#tooltip").classed("hidden", true);
+  }
+
+  function downloadSVG() {
+    var doctype = '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+
+    window.URL = (window.URL || window.webkitURL);
+
+    var body = document.body;
+
+    var prefix = {
+      xmlns: "http://www.w3.org/2000/xmlns/",
+      xlink: "http://www.w3.org/1999/xlink",
+      svg: "http://www.w3.org/2000/svg"
+    }
+
+    initialize();
+
+    function initialize() {
+      var documents = [window.document],
+        SVGSources = [];
+      iframes = document.querySelectorAll("iframe"),
+        objects = document.querySelectorAll("object");
+
+      [].forEach.call(iframes, function (el) {
+        try {
+          if (el.contentDocument) {
+            documents.push(el.contentDocument);
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      });
+
+      [].forEach.call(objects, function (el) {
+        try {
+          if (el.contentDocument) {
+            documents.push(el.contentDocument);
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      });
+
+      documents.forEach(function (doc) {
+        var styles = getStyles(doc);
+        var newSources = getSources(doc, styles);
+        // because of prototype on NYT pages
+        for (var i = 0; i < newSources.length; i++) {
+          SVGSources.push(newSources[i]);
+        };
+      })
+      if (SVGSources.length > 1) {
+        createPopover(SVGSources);
+      } else if (SVGSources.length > 0) {
+        download(SVGSources[0]);
+      } else {
+        alert("The Crowbar couldnâ€™t find any SVG nodes.");
+      }
+    }
+
+    function createPopover(sources) {
+      cleanup();
+
+      sources.forEach(function (s1) {
+        sources.forEach(function (s2) {
+          if (s1 !== s2) {
+            if ((Math.abs(s1.top - s2.top) < 38) && (Math.abs(s1.left - s2.left) < 38)) {
+              s2.top += 38;
+              s2.left += 38;
+            }
+          }
+        })
+      });
+
+      var buttonsContainer = document.createElement("div");
+      body.appendChild(buttonsContainer);
+
+      buttonsContainer.setAttribute("class", "svg-crowbar");
+      buttonsContainer.style["z-index"] = 1e7;
+      buttonsContainer.style["position"] = "absolute";
+      buttonsContainer.style["top"] = 0;
+      buttonsContainer.style["left"] = 0;
+
+      var background = document.createElement("div");
+      body.appendChild(background);
+
+      background.setAttribute("class", "svg-crowbar");
+      background.style["background"] = "rgba(255, 255, 255, 0.7)";
+      background.style["position"] = "fixed";
+      background.style["left"] = 0;
+      background.style["top"] = 0;
+      background.style["width"] = "100%";
+      background.style["height"] = "100%";
+
+      sources.forEach(function (d, i) {
+        var buttonWrapper = document.createElement("div");
+        buttonsContainer.appendChild(buttonWrapper);
+        buttonWrapper.setAttribute("class", "svg-crowbar");
+        buttonWrapper.style["position"] = "absolute";
+        buttonWrapper.style["top"] = (d.top + document.body.scrollTop) + "px";
+        buttonWrapper.style["left"] = (document.body.scrollLeft + d.left) + "px";
+        buttonWrapper.style["padding"] = "4px";
+        buttonWrapper.style["border-radius"] = "3px";
+        buttonWrapper.style["color"] = "white";
+        buttonWrapper.style["text-align"] = "center";
+        buttonWrapper.style["font-family"] = "'Helvetica Neue'";
+        buttonWrapper.style["background"] = "rgba(0, 0, 0, 0.8)";
+        buttonWrapper.style["box-shadow"] = "0px 4px 18px rgba(0, 0, 0, 0.4)";
+        buttonWrapper.style["cursor"] = "move";
+        buttonWrapper.textContent = "SVG #" + i + ": " + (d.id ? "#" + d.id : "") + (d.class ? "." + d.class : "");
+
+        var button = document.createElement("button");
+        buttonWrapper.appendChild(button);
+        button.setAttribute("data-source-id", i)
+        button.style["width"] = "150px";
+        button.style["font-size"] = "12px";
+        button.style["line-height"] = "1.4em";
+        button.style["margin"] = "5px 0 0 0";
+        button.textContent = "Download";
+
+        button.onclick = function (el) {
+          // console.log(el, d, i, sources)
+          download(d);
+        };
+
+      });
+    }
+
+    function cleanup() {
+      var crowbarElements = document.querySelectorAll(".svg-crowbar");
+
+      [].forEach.call(crowbarElements, function (el) {
+        el.parentNode.removeChild(el);
+      });
+    }
+
+    function getSources(doc, styles) {
+      var svgInfo = [],
+        svgs = doc.querySelectorAll("svg");
+
+      styles = (styles === undefined) ? "" : styles;
+
+      [].forEach.call(svgs, function (svg) {
+
+        svg.setAttribute("version", "1.1");
+
+        var defsEl = document.createElement("defs");
+        svg.insertBefore(defsEl, svg.firstChild); //TODO   .insert("defs", ":first-child")
+        // defsEl.setAttribute("class", "svg-crowbar");
+
+        var styleEl = document.createElement("style")
+        defsEl.appendChild(styleEl);
+        styleEl.setAttribute("type", "text/css");
+
+
+        // removing attributes so they aren't doubled up
+        svg.removeAttribute("xmlns");
+        svg.removeAttribute("xlink");
+
+        // These are needed for the svg
+        if (!svg.hasAttributeNS(prefix.xmlns, "xmlns")) {
+          svg.setAttributeNS(prefix.xmlns, "xmlns", prefix.svg);
+        }
+
+        if (!svg.hasAttributeNS(prefix.xmlns, "xmlns:xlink")) {
+          svg.setAttributeNS(prefix.xmlns, "xmlns:xlink", prefix.xlink);
+        }
+
+        var source = (new XMLSerializer()).serializeToString(svg).replace('</style>', '<![CDATA[' + styles + ']]></style>');
+        var rect = svg.getBoundingClientRect();
+        svgInfo.push({
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+          class: svg.getAttribute("class"),
+          id: svg.getAttribute("id"),
+          childElementCount: svg.childElementCount,
+          source: [doctype + source]
+        });
+      });
+      return svgInfo;
+    }
+
+    function download(source) {
+      var filename = "PMET-result";
+
+      if (source.id) {
+        filename = source.id;
+      } else if (source.class) {
+        filename = source.class;
+      } else if (window.document.title) {
+        filename = window.document.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      }
+
+      var url = window.URL.createObjectURL(new Blob(source.source, { "type": "text\/xml" }));
+
+      var a = document.createElement("a");
+      body.appendChild(a);
+      a.setAttribute("class", "svg-crowbar");
+      a.setAttribute("download", filename + ".svg");
+      a.setAttribute("href", url);
+      a.style["display"] = "none";
+      a.click();
+
+      setTimeout(function () {
+        window.URL.revokeObjectURL(url);
+      }, 10);
+    }
+
+    function getStyles(doc) {
+      var styles = "",
+        styleSheets = doc.styleSheets;
+
+      if (styleSheets) {
+        for (var i = 0; i < styleSheets.length; i++) {
+          processStyleSheet(styleSheets[i]);
+        }
+      }
+
+      function processStyleSheet(ss) {
+        if (ss.cssRules) {
+          for (var i = 0; i < ss.cssRules.length; i++) {
+            var rule = ss.cssRules[i];
+            if (rule.type === 3) {
+              // Import Rule
+              processStyleSheet(rule.styleSheet);
+            } else {
+              // hack for illustrator crashing on descendent selectors
+              if (rule.selectorText) {
+                if (rule.selectorText.indexOf(">") === -1) {
+                  styles += "\n" + rule.cssText;
+                }
+              }
+            }
+          }
+        }
+      }
+      return styles;
+    }
+  }
+</script>
