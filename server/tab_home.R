@@ -9,10 +9,12 @@
 
 observeEvent(input$jump_pmet_bnt, {
   updateTabsetPanel(session, "navbar",
-                    selected = "run_tabpanel")
+    selected = "run_tabpanel"
+  )
 })
 
 observeEvent(input$jump_heat_bnt, {
   updateTabsetPanel(session, "navbar",
-                    selected = "heatmap_tabpanel")
+    selected = "heatmap_tabpanel"
+  )
 })

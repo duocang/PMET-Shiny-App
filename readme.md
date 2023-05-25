@@ -16,6 +16,52 @@ This is a Shiny app developed for PMET.
 └── readme.md
 ```
 
+### Install FIMO (meme)
+
+```bash
+# cd a folder you want to put the software
+wget https://meme-suite.org/meme/meme-software/5.5.2/meme-5.5.2.tar.gz
+
+tar zxf meme-5.5.2.tar.gz
+cd meme-5.5.2
+./configure --prefix=$HOME/meme --enable-build-libxml2 --enable-build-libxslt
+make
+make test
+make install
+```
+
+Add following into bash profile file.
+```bash
+# assuming you put meme folder under your home folder
+export PATH=$HOME/meme/bin:$HOME/meme/libexec/meme-5.5.2:$PATH
+```
+### Install samtools
+
+```bash
+wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
+
+cd samtools-1.17    # and similarly for bcftools and htslib
+./configure --prefix=$HOME/samtools
+make
+make install
+```
+Add following into bash profile file.
+```bash
+# assuming you put samtools-1.17 folder under your home folder
+export PATH=$HOME/samtools/bin:$PATH 
+```
+
+
+### Python libraries
+
+```bash
+pip install numpy
+pip install pandas
+
+mamba install samtools
+```
+
+
 ### Setup Shiny server and nginx
 
 Please follow [Shiny Server Deployment](https://cran.r-project.org/web/packages/ReviewR/vignettes/deploy_server.html) for more details.
@@ -75,66 +121,156 @@ To avoid any inconvenience, I will provide you with the required R packages here
 ```R
 install.packages("devtools")
 install.packages("remotes")
-devtools::install_github("SymbolixAU/jsonify")
-remotes::install_github("daattali/shinyjs")
-devtools::install_github("carlganz/rintrojs")
-remotes::install_github("RinteRface/fullPage")
-remotes::install_github("dreamRs/shinyWidgets")
-install.packages("shiny")mailR
-install.packages("bslib")
- devtools::install_github("collectivemedia/tictoc")
-install.packages("shinydashboard")
-remotes::install_github("merlinoa/shinyFeedback", build_vignettes = TRUE)
-devtools::install_github("jhrcook/ggasym")
-devtools::install_github("haozhu233/kableExtra")
-remotes::install_github("rstudio/shinyvalidate")
-remotes::install_github("daattali/shinycssloaders")
-install.packages('DT')
-install.packages("tidyverse")
-install.packages("zip")
-install.packages("mailR")
-devtools::install_github("kassambara/ggpubr")
+
+library(remotes)
+
+packages <- c(
+  "SymbolixAU/jsonify",             # Convert R objects to JSON format
+  "daattali/shinyjs",               # Improve interactivity in Shiny applications
+  "carlganz/rintrojs",              # Create step-by-step introductions for Shiny apps
+  "RinteRface/fullPage",            # Create full page scrollable web pages with Shiny and R Markdown
+  "dreamRs/shinyWidgets",           # Extend the functionality of Shiny with custom UI widgets
+  "collectivemedia/tictoc",         # Measure time in R code easily and accurately
+  "merlinoa/shinyFeedback",         # Collect user feedback in Shiny applications
+  "jhrcook/ggasym",                 # Asymmetric density plots in ggplot2
+  "haozhu233/kableExtra",           # Create complex tables in an easy-to-read format
+  "rstudio/shinyvalidate",          # Perform client-side form validation in Shiny applications
+  "daattali/shinycssloaders",       # Add CSS loader animations to Shiny outputs
+  "kassambara/ggpubr"               # Create publication-ready plots with ggplot2
+)
+
+installed_packages <- c()
+failed_packages <- c()
+
+for (package in packages) {
+  if (package %in% rownames(installed.packages())) {
+    message(paste("Package", package, "is already installed. Skipping installation."))
+    installed_packages <- c(installed_packages, package)
+  } else {
+    tryCatch({
+      remotes::install_github(package, build_vignettes = TRUE, upgrade = "never", ask = FALSE)
+      installed_packages <- c(installed_packages, package)
+    }, error = function(e) {
+      failed_packages <- c(failed_packages, package)
+      message(paste("Installation of", package, "failed."))
+    })
+  }
+}
+
+# Print installed packages
+cat("Installed packages:\n")
+print(installed_packages)
+
+# Print failed packages
+if (length(failed_packages) > 0) {
+  cat("\nPackages that could not be installed:\n")
+  print(failed_packages)
+} else {
+  cat("\nAll packages were successfully installed.\n")
+}
+在修正后的代码中，
+
+
+
+
+
+# Print failed packages
+if (length(failed_packages) > 0) {
+  cat("\nThe following packages could not be installed:\n")
+  print(failed_packages)
+} else {
+  cat("\nAll packages were successfully installed.\n")
+}
 ```
 
 
 
 ```R
 # Used packages
-pacotes <- c(
-    "tibble",
-    "jsonify",
-    "shinyjs",
-    "openxlsx",
-    "rintrojs",
-    "fullPage",
-    "shinyWidgets",
-    "bslib",
-    "tictoc",
-    "shiny",
-    "shinyBS",
-    "shinydashboard",
-    "shinythemes",
-    "shinyvalidate",
-    "shinycssloaders",
-    "DT",
-    "data.table",
-    "tidyverse",
-    "scales",
-    "kableExtra",
-    "dplyr",
-    "reshape2",
-    "ggpubr",
-    "ggasym",
-    "zip",
-    "shinyFeedback",
-    "promises",
-    "future")
-package.check <- lapply(pacotes, FUN = function(x) {
-    if (!require(x, character.only = TRUE)) {
-        install.packages(x, dependencies = TRUE)
-    }
-})
+packages <- c(
+  "bslib",                # Bootstrap themes and styles
+  "data.table",           # efficient handling of large datasets
+  "DT",                   # interactive data tables
+  "dplyr",                # Provides powerful data manipulation and operations
+  "future",               # support for parallel and asynchronous programming
+  "ggasym",               # symmetric scatter plots and bubble charts
+  "ggplot2",              # creation of beautiful graphics
+  "ggpubr",               # graph publication-ready formatting and annotations
+  "glue",                 # string interpolation and formatting
+  "jsonify",              # JSON data processing and transformation
+  "kableExtra",           # creation of nice tables and adding formatting
+  "openxlsx",             # reading and writing Excel files
+  "promises",             # deferred evaluation and asynchronous programming
+  "reshape2",             # data reshaping and transformation
+  "rintrojs",             # interactive tour integration
+  "shiny",                # creation of interactive web applications
+  "shinyBS",              # Bootstrap styling
+  "shinydashboard",       # creation of dashboard-style Shiny apps
+  "shinyFeedback",        # user feedback integration
+  "shinycssloaders",      # loading animation integration
+  "shinyjs",              # JavaScript operations
+  "shinythemes",          # theme customization
+  "shinyvalidate",        # form validation
+  "shinyWidgets",         # creation of interactive widgets
+  "scales",               # data scaling and transformation
+  "tibble",               # extended data frames
+  "tidyverse",            # a collection of R packages for data manipulation and visualization
+  "tictoc",               # simple and accurate timers
+  "zip",                  # creation and extraction of ZIP files
+  "fa"
+)
+
+
+installed_packages <- character()
+failed_packages    <- character()
+
+for (package in packages) {
+  if (require(package, character.only = TRUE)) {
+    installed_packages <- c(installed_packages, package)
+  } else {
+    tryCatch(
+      {
+        suppressMessages(install.packages(package, repos = "https://cran.r-project.org", dependencies = TRUE, type = "source"))
+        if (require(package, character.only = TRUE)) {
+          installed_packages <- c(installed_packages, package)
+        } else {
+          failed_packages <- c(failed_packages, package)
+          message(paste("Installation of", package, "failed."))
+        }
+      },
+      error = function(e) {
+        failed_packages <- c(failed_packages, package)
+        message(paste("Installation of", package, "failed."))
+      }
+    )
+  }
+}
+
+
+# Print installed packages
+cat("The installed packages are as follows:\n")
+print(installed_packages)
+
+# Print failed packages
+if (length(failed_packages) > 0) {
+  cat("\nThe following packages could not be installed:\n")
+  print(failed_packages)
+} else {
+  cat("\nAll packages were successfully installed.\n")
+}
 ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### PMET
 
@@ -144,3 +280,8 @@ If necessary, it is possible to compile pmet. The source code can be found in `u
 g++  -g -Wall -std=c++11 main.cpp Output.cpp motif.cpp motifComparison.cpp -o pmetParallel -pthread
 ```
 
+### PMET index
+
+```bash
+g++  -g -Wall -std=c++11 main.cpp Output.cpp motif.cpp motifComparison.cpp -o pmetParallel -pthread
+```

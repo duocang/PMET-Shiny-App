@@ -7,6 +7,7 @@ suppressMessages({
   library(fullPage)
   library(shinyWidgets)
   library(bslib)
+  library(purrr)
 
   # Used packages
   pacotes <- c(
@@ -29,7 +30,8 @@ suppressMessages({
     "zip",
     "shinyFeedback",
     "promises",
-    "future"
+    "future",
+    "glue"
   )
 
   source("utils/utils.R")
@@ -38,7 +40,7 @@ suppressMessages({
   source("module/tab_table.R")
   source("utils/command_call_pmet.R")
   source("utils/create_forked_task.R")
-  source("utils/send_mail.R")
+  source("module/send_mail.R")
   # Run the following command to verify that the required packages are installed. If some package
   # is missing, it will be installed automatically
   package.check <- lapply(pacotes, FUN = function(x) {

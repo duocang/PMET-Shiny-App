@@ -205,13 +205,15 @@ results <- reactive({
   } else {
     hideFeedback("p_adj")
   }
-  validate(need(min(pmet_result()$p_adj) < input$p_adj,
-                "You may need to make less p.adj restriction."))
+  validate(need(
+    min(pmet_result()$p_adj) < input$p_adj,
+    "You may need to make less p.adj restriction."
+  ))
 
   # filtering data
   withProgress(message = "Filtering data", value = 0.3, {
     # filter data
-    pmet_result_processed <- pmet_result_proces_func(
+    pmet_result_processed <- pmet.result.proces.func(
       pmet_result = pmet_result(),
       p_adj_limt = input$p_adj,
       gene_portion = 0.05,
@@ -248,7 +250,7 @@ observe({
 
   withProgress(message = "Creating data for heatmap", value = 20, {
     # update data for plot
-    result_reshaped(data_reshape_func11(results$pmet_result, results$motifs, counts = "p_adj"))
+    result_reshaped(data.reshape.func11(results$pmet_result, results$motifs, counts = "p_adj"))
   }) # withProgress
 })
 
@@ -383,7 +385,7 @@ output$download.button <- downloadHandler(
     clusters <- names(results$pmet_result) %>% sort()
 
     if (input$method == "Overlap") {
-      p <- plot_moti_pair_overlap_func(results$pmet_result, results$motifs)
+      p <- plot.moti.pair.overlap.func(results$pmet_result, results$motifs)
     } else {
       if (input$method == "All") {
         respective_plot <- FALSE
@@ -391,7 +393,7 @@ output$download.button <- downloadHandler(
         respective_plot <- TRUE
       }
 
-      p <- plot_motif_pair_func(results$pmet_result,
+      p <- plot.motif.pair.func(results$pmet_result,
         results$motifs,
         counts = "p_adj",
         exclusive_motifs = TRUE,

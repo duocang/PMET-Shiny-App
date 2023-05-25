@@ -4,7 +4,6 @@ cat("Click the Link\n\n\n")
 cat("Click the Link\n\n\n")
 cat("Click the Link\n\n\n")
 
-options(servr.port = 9999)
 ui <- fluidPage(
   useShinyjs(),
   navbarPage(
@@ -25,7 +24,7 @@ ui <- fluidPage(
     # )
   ),
   style = "padding: 0px;", # no gap in navbar
-  actionButton("show_tutorial", "Tutorial",
+  actionButton("show_tutorial", "Tips",
     style = "position: absolute; top: 15px; right: 5px; z-index:10000;"
   )
 )

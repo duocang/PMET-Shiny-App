@@ -23,7 +23,6 @@ run_pmet_steps <- reactive({
 
 # update motif database when motif db changed --------------------------------
 observeEvent(input$motif_db, {
-
   print(input$motif_db)
 
   if (input$motif_db != "uploaded_motif") {
@@ -39,7 +38,6 @@ observeEvent(input$motif_db, {
     shinyjs::disable("utr5_div")
 
     # shinyjs::show("motif_db_div")
-
   } else {
     # show self upload option of motif DB
     shinyjs::show("uploaded_motif_db_div")
@@ -68,6 +66,7 @@ observeEvent(input$uploaded_motif_db, {
     showFeedbackDanger(inputId = "uploaded_motif_db", text = "No motif")
   }
 })
+
 # self uploaded genome fasta  --------------------------------------------------
 showFeedbackDanger(inputId = "uploaded_fasta", text = "No mtofi meme file")
 observeEvent(input$uploaded_fasta, {
@@ -102,7 +101,6 @@ genes_skipped <- NULL # store skipped genes for download handler
 genes_uploaded_falg <- TRUE # flag, set to FALSE when no valid genes were uploaded
 
 observeEvent(input$gene_for_pmet, {
-
   genes_skipped <<- NULL
   genes_uploaded_falg <<- TRUE
 
@@ -133,8 +131,10 @@ observeEvent(input$gene_for_pmet, {
   if (is.null(genes_uploaded)) {
     genes_uploaded_falg <<- FALSE
     hideFeedback("gene_for_pmet")
-    showFeedbackDanger(inputId = "gene_for_pmet",
-                        text = "Wrong format of uploaded file")
+    showFeedbackDanger(
+      inputId = "gene_for_pmet",
+      text = "Wrong format of uploaded file"
+    )
   } else if (nrow(genes_uploaded) == 0) {
     genes_uploaded_falg <<- FALSE
     hideFeedback("gene_for_pmet")
@@ -143,16 +143,19 @@ observeEvent(input$gene_for_pmet, {
     genes_uploaded_falg <<- FALSE
 
     hideFeedback("gene_for_pmet")
-    showFeedbackDanger(inputId = "gene_for_pmet",
-                        text = "Only cluster and gene columns are allowed")
+    showFeedbackDanger(
+      inputId = "gene_for_pmet",
+      text = "Only cluster and gene columns are allowed"
+    )
   } else if (input$motif_db != "uploaded_motif") {
     # if motifs selected, check the uploaded genes
     # with the gene list in our folder, named universe.txt
 
     # species <- str_split(input$motif_db, "-")[[1]][1]
     species <- ifelse(input$motif_db != "uploaded_motif",
-                      str_split(input$motif_db, "-")[[1]][1],
-                      "uploaded_motif")
+      str_split(input$motif_db, "-")[[1]][1],
+      "uploaded_motif"
+    )
 
     project_path <- getwd() # %>% str_replace("01_shiny", "")
     input_directory <- file.path(project_path, "data/PMETindex", species, input$motif_db)
@@ -166,12 +169,10 @@ observeEvent(input$gene_for_pmet, {
 
     # no genes available in the uploaded file
     if (nrow(genes_skipped) == nrow(genes_uploaded)) {
-
       genes_uploaded_falg <<- FALSE
       hideFeedback("gene_for_pmet")
       showFeedbackDanger(inputId = "gene_for_pmet", text = "No valid genes available in the uploaded file")
     } else if (nrow(genes_uploaded) != nrow(genes_present)) {
-
       hideFeedback("gene_for_pmet")
       showFeedbackWarning(
         inputId = "gene_for_pmet",
@@ -273,7 +274,6 @@ observe({
   }
 })
 
-
 # Run PMET ---------------------------------------------------------------------
 folder_name <- "" # a global variable to track current job (folder/path)
 notifi_pmet_id <- NULL # id to remove notification when stop pmet job
@@ -299,14 +299,16 @@ observeEvent(input$run_pmet_button, {
 
     notifi_pmet_id <<- showNotification("PMET is running...", type = "message", duration = 0)
 
-    paths_pmet  <- paths.for.pmet.func(input)
+    paths_pmet <- paths.for.pmet.func(input)
     folder_name <<- paths_pmet$folder_name
     user_folder <<- paths_pmet$user_folder
 
     list_of_inputs <- reactiveValuesToList(input)
 
     # PMET job is runnig in the back
-    future({ command_run_pmet(list_of_inputs) }) %...>% (function(result_link) {
+    future({
+      command_run_pmet(list_of_inputs)
+    }) %...>% (function(result_link) {
       cli::cat_rule(sprintf("pmet done!"))
       Sys.sleep(0.5)
       # 1. reset loadingButton (RUN PMET) to its active state after PMET DONE
@@ -373,4 +375,5 @@ observeEvent(input$stop, {
 
 # hide download button every time change gene file
 observeEvent(input$gene_for_pmet, {
-  shinyjs::hide("pmet_result_download_button")})
+  shinyjs::hide("pmet_result_download_button")
+})
