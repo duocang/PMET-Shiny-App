@@ -7,12 +7,12 @@ This is a Shiny app developed for PMET.
 ├── app.R       # start shiny app
 ├── global.R    # packages needed in shiny app
 ├── data        # results of FIMO, processed by PMETindex
-├── module		# modulaity of shiny heatmap (ggplot) and data-table view
-├── result		# PMETresult
-├── server		# server side of shiny
-├── ui			 # UI-side of shiny
-├── utils		 # R functions and PMET/PMET_index (source code)
-├── www			 # JS with D3 for heatmap, used in tab_heatmap.R
+├── module	# modulaity of shiny heatmap (ggplot) and data-table view
+├── result	# PMETresult
+├── server	# server side of shiny
+├── ui		# UI-side of shiny
+├── utils	# R functions and PMET/PMET_index (source code)
+├── www		# JS with D3 for heatmap, used in tab_heatmap.R
 └── readme.md
 ```
 
