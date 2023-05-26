@@ -70,7 +70,7 @@ command_run_pmet <- function(input = NULL) {
     " -b binomial_thresholds.txt",
     " -c IC.txt",
     " -f fimohits",
-    " -t 4",
+    " -t 8",
     " -o ", user_folder, " > ",
     file.path(user_folder, "PMETparallel.log"))
 

@@ -359,7 +359,6 @@ observeEvent(input$plot.button,
       data = plot_data(),
       clusters = sort(names(result_reshaped()))
     )
-
     # json data for D3 -----------------------------------------
     json_pmet <- pretty_json(jsonify::to_json(dat))
 
@@ -427,5 +426,8 @@ output$datatable_tabs <- renderUI({
 })
 
 observeEvent(results(), {
-  server_data("info1", results()$pmet_result)
+  result <- lapply(results()$pmet_result, function(res) {
+    res[, c("cluster", "motif1", "motif2", "gene_num", "p_adj")]
+  })
+  server_data("info1", result)
 })

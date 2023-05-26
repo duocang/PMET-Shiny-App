@@ -36,11 +36,11 @@ suppressMessages({
 
   source("utils/utils.R")
   source("utils/helpers.R")
-  source("module/heatmap.R")
+  # source("module/heatmap.R")
   source("module/tab_table.R")
   source("utils/command_call_pmet.R")
   source("utils/create_forked_task.R")
-  source("module/send_mail.R")
+  source("utils/send_mail.R")
   # Run the following command to verify that the required packages are installed. If some package
   # is missing, it will be installed automatically
   package.check <- lapply(pacotes, FUN = function(x) {

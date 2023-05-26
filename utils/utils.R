@@ -459,7 +459,7 @@ plot.motif.pair.func <- function(pmet_split,
     all <- epmty.df.func(motifs_top)
 
     plot_data_list <- lapply(pmet_split, function(dat) {
-      dat <- dat %>% select(c("motif1", "motif2", counts))
+      dat <- dat %>% select(all_of(c("motif1", "motif2", counts)))
 
       if (counts == "p_adj") dat[, "p_adj"] <- round(-log10(dat[, "p_adj"]), 2)
 
