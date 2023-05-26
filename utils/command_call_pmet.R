@@ -35,6 +35,7 @@ command_run_pmet <- function(input = NULL) {
         input$uploaded_annotation$datapath,
         input$uploaded_motif_db$datapath
       )
+      system("chmod u+x utils/PMETdev/PMETindex_promoters_parallel_delete_fimo.sh")
       system(bash_pmet, intern = TRUE)
   }
 
@@ -89,6 +90,7 @@ command_run_pmet <- function(input = NULL) {
     col.names = FALSE,
     row.names = FALSE, sep = "\t")
   # run commands
+  system(paste0("chmod u+x ", bash_file))
   system(paste0("bash ", bash_file), intern = TRUE)
 
   temp <- str_split(user_folder, "/")[[1]]
@@ -109,7 +111,7 @@ command_run_pmet <- function(input = NULL) {
   # send email to user when pmet is done
   temp        <- str_split(user_folder, "/")[[1]]
   recipient   <- paste0(str_split(user_folder_name, "_")[[1]][c(1, 2)], collapse = "@")
-  result_link <- paste0("http://127.0.0.1:84/result/", paste0(user_folder_name, ".zip"))
+  result_link <- paste0("https://bar.utoronto.ca/pmet_result/", paste0(user_folder_name, ".zip"))
   print(recipient)
   # send_result_mail(recipient = recipient, result_link = result_link)
 

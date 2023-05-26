@@ -7,12 +7,12 @@ This is a Shiny app developed for PMET.
 ├── app.R       # start shiny app
 ├── global.R    # packages needed in shiny app
 ├── data        # results of FIMO, processed by PMETindex
-├── module		# not used for now
+├── module		# modulaity of shiny heatmap (ggplot) and data-table view
 ├── result		# PMETresult
 ├── server		# server side of shiny
-├── ui			# UI-side of hiny
-├── utils		# functions and PMET (with source code)
-├── www			# JS with D3 for heatmap, used in tab_heatmap.R
+├── ui			 # UI-side of shiny
+├── utils		 # R functions and PMET/PMET_index (source code)
+├── www			 # JS with D3 for heatmap, used in tab_heatmap.R
 └── readme.md
 ```
 
@@ -262,26 +262,16 @@ if (length(failed_packages) > 0) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 ### PMET
 
-If necessary, it is possible to compile pmet. The source code can be found in `utils/pmetParallel_src`.
+If necessary, it is possible to compile pmet. The source code can be found in `utils/PMETdev/src/pmetParallel`.
 
 ```bash
-g++  -g -Wall -std=c++11 main.cpp Output.cpp motif.cpp motifComparison.cpp -o pmetParallel -pthread
+g++  -g -Wall -std=c++11 main.cpp Output.cpp motif.cpp motifComparison.cpp -o ../../scripts/pmetParallel_linux -pthread
 ```
 
 ### PMET index
 
 ```bash
-g++  -g -Wall -std=c++11 main.cpp Output.cpp motif.cpp motifComparison.cpp -o pmetParallel -pthread
+g++  -g -Wall -std=c++11 main.cpp cFimoFile.cpp cMotifHit.cpp fastFileReader.cpp -o ../../scripts/pmetindex
 ```
