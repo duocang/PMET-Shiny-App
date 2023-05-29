@@ -14,7 +14,6 @@
 utils/PMETdev/src/indexing/bin/pmetindex
 utils/PMETdev/src/pmet/bin/pmet
 utils/PMETdev/scripts/*
-pmetParallel*
 
 
 .prof
@@ -26,3 +25,4 @@ pmetParallel*
 *.prof
 utils/PMETdev/src/pmet/test/motif_output.txt
 *.log
+utils/PMETdev/src/pmetParallel/bin/pmetParallel
