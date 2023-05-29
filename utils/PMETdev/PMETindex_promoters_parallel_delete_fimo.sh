@@ -133,13 +133,16 @@ start=$SECONDS
 echo -e "0.01\tPreparing sequences..." > $progFile
 echo "Preparing sequences...";
 
+# sort annotaion by coordinates ---------------------------------------------------------------
+$pmetroot/gff3sort/gff3sort.pl $gff3file > ${gff3file}temp
+
 universefile=$outputdir/universe.txt
 bedfile=$outputdir/genelines.bed
 
 if [[ ! -f "$universefile"  ||  ! -f "$bedfile" ]]; then
 	### Make genelines.bed and universe.txt if validation script hasn't
 
-	grep -P '\tgene\t' $gff3file > $outputdir/genelines.gff3
+	grep -P '\tgene\t' ${gff3file}temp > $outputdir/genelines.gff3
 	#parse up the .bed for promoter extraction, 'gene_id'
 	python3 $pmetroot/parse_genelines.py $gff3id $outputdir/genelines.gff3 $bedfile
 	#the python script takes the genelines.gff3 file and makes a genelines.bed out of it
@@ -202,7 +205,7 @@ python3 $pmetroot/assess_integrity.py $outputdir/promoters.bed
 if [ $utr == 'Yes' ]; then
     echo "Adding UTRs...";
     echo -e "0.03\tAdding UTRs..."  > $progFile #updates promoters.bed, takes about 45sec (about 20 sec for 10 000 promoters)
-	python3 $pmetroot/parse_utrs.py $outputdir/promoters.bed $gff3file $universefile
+	python3 $pmetroot/parse_utrs.py $outputdir/promoters.bed ${gff3file}temp $universefile
 fi
 
 duration=$(( SECONDS - start ))
@@ -340,7 +343,7 @@ echo "Delete unnecessary files"
 rm -r $outputdir/memefiles
 rm $outputdir/promoters.bg
 rm $outputdir/promoters.fa
-
+rm ${gff3file}temp
 
 # For final pmet stage, promoter lengths file must have an entry for every gene in gene_input_file. It may not so here is a 
 # convenient place to remove them and also remove from universe file
