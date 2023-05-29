@@ -23,3 +23,6 @@ pmetParallel*
 .jpg
 .jpeg
 
+*.prof
+utils/PMETdev/src/pmet/test/motif_output.txt
+*.log

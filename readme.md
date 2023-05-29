@@ -267,11 +267,11 @@ if (length(failed_packages) > 0) {
 If necessary, it is possible to compile pmet. The source code can be found in `utils/PMETdev/src/pmetParallel`.
 
 ```bash
-g++  -g -Wall -std=c++11 main.cpp Output.cpp motif.cpp motifComparison.cpp -o ../../scripts/pmetParallel_linux -pthread
+g++ -g -Wall -std=c++11 Output.cpp motif.cpp motifComparison.cpp main.cpp -o ../../scripts/pmetParallel_linux -pthread
 ```
 
 ### PMET index
 
 ```bash
-g++  -g -Wall -std=c++11 main.cpp cFimoFile.cpp cMotifHit.cpp fastFileReader.cpp -o ../../scripts/pmetindex
+g++  -g -Wall -std=c++11 cFimoFile.cpp cMotifHit.cpp fastFileReader.cpp main.cpp -o ../../scripts/pmetindex
 ```
