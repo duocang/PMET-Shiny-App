@@ -11,11 +11,14 @@
 
 
 
-
+utils/PMETdev/src/indexing/bin/pmetindex
+utils/PMETdev/src/pmet/bin/pmet
+utils/PMETdev/scripts/*
 pmetParallel*
 
 
-
+.prof
+.log
 .png
 .jpg
 .jpeg
