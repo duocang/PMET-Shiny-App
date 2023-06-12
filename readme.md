@@ -20,9 +20,6 @@ This is a Shiny app developed for PMET.
 ```
 
 
-
-
-
 ### Install FIMO (meme)
 
 ```bash
@@ -58,7 +55,6 @@ Add following into bash profile file.
 export PATH=$HOME/samtools/bin:$PATH 
 ```
 
-
 ### Python libraries
 
 ```bash
@@ -67,7 +63,6 @@ pip install pandas
 
 mamba install samtools
 ```
-
 
 ### Setup Shiny server and nginx
 
@@ -109,16 +104,11 @@ After PMET calculation is completed, Shiny will generate a download button that 
 result_link <- paste0("http://127.0.0.1:84/result/", paste0(user_folder_name, ".zip"))
 ```
 
-
-
 #### CPU
 
 Currently, PMET uses 4 CPU cores by default. If you have abundant computing resources, you can modify the -t parameter in `utils/command_call_pmet.R`. It seems that 4 CPU cores should be sufficient for the performance.
 
 <img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181500980.png" style="zoom: 50%;" />
-
-
-
 
 
 ### R packages
@@ -175,11 +165,6 @@ if (length(failed_packages) > 0) {
 } else {
   cat("\nAll packages were successfully installed.\n")
 }
-在修正后的代码中，
-
-
-
-
 
 # Print failed packages
 if (length(failed_packages) > 0) {
@@ -266,8 +251,6 @@ if (length(failed_packages) > 0) {
   cat("\nAll packages were successfully installed.\n")
 }
 ```
-
-
 
 ### PMET
 
