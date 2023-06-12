@@ -4,17 +4,24 @@ This is a Shiny app developed for PMET.
 
 ```shell
 .
-├── app.R       # start shiny app
-├── global.R    # packages needed in shiny app
-├── data        # results of FIMO, processed by PMETindex
-├── module	# modulaity of shiny heatmap (ggplot) and data-table view
-├── result	# PMETresult
-├── server	# server side of shiny
-├── ui		# UI-side of shiny
-├── utils	# R functions and PMET/PMET_index (source code)
-├── www		# JS with D3 for heatmap, used in tab_heatmap.R
-└── readme.md
+├── PMETdev        # PMET/PMET_index (source code)
+├── R              # r code of Shiny app
+│   ├── app.R      # integrate all UIs and Servers
+│   ├── global.R   # packages needed in shiny app
+│   ├── module     # modulaity of shiny heatmap (ggplot) and data-table view
+│   ├── server     # server side of shiny
+│   ├── ui         # UI-side of shiny
+│   ├── utils      # R functions 
+│   └── www        # JS with D3 for heatmap, used in tab_heatmap.R
+├── app.R          # start shiny app
+├── data           # demo data for PMETindex and PMET
+├── readme.md
+└── result         # result of Shiny app
 ```
+
+
+
+
 
 ### Install FIMO (meme)
 
