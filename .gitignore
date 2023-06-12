@@ -8,7 +8,7 @@
 /result/*
 !/result/.gitkeep
 
-
+**/fimo/
 
 
 utils/PMETdev/src/indexing/bin/pmetindex

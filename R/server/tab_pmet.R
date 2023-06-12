@@ -1,31 +1,19 @@
-# workthrough of Run PMET ------------------------------------------------------
-run_pmet_steps <- reactive({
-  elements <- c(
-    "#promoters_div",
-    "#motif_db_class",
-    "#uploaded_fasta_div",
-    "#uploaded_annotation_div",
-    "#gene_for_pmet_div",
-    "#parameters_div",
-    "#userEmail_div"
-  )
-  intors <- c(
-    "Choose type of input sequences",
-    "Upload your own motif file or choose from the available defaults",
-    "fad",
-    "dfadf",
-    "A tab separated file containing the gene set number and gene.",
-    "Fine tuning of PMET",
-    "Email address to receive notifications"
-  )
-  data.frame(element = elements, intro = intors)
-})
-
 # update motif database when motif db changed --------------------------------
-observeEvent(input$motif_db, {
-  print(input$motif_db)
+observe({
 
-  if (input$motif_db != "uploaded_motif") {
+  if (input$sequence_type == "intervals") {
+
+    shinyjs::show("uploaded_motif_db_div")
+    shinyjs::show("uploaded_fasta_div")
+
+    shinyjs::hide("motif_db")
+    shinyjs::hide("uploaded_annotation_div")
+    shinyjs::hide("utr5_div")
+  } else if (input$motif_db != "uploaded_motif") {
+
+    shinyjs::show("motif_db")
+    shinyjs::show("utr5_div")
+
     # hide self upload option of motif DB
     shinyjs::hide("uploaded_motif_db_div")
     shinyjs::hide("uploaded_fasta_div")
@@ -36,8 +24,6 @@ observeEvent(input$motif_db, {
     shinyjs::disable("promoter_number_div")
     shinyjs::disable("promoters_overlap_div")
     shinyjs::disable("utr5_div")
-
-    # shinyjs::show("motif_db_div")
   } else {
     # show self upload option of motif DB
     shinyjs::show("uploaded_motif_db_div")
@@ -49,14 +35,12 @@ observeEvent(input$motif_db, {
     shinyjs::enable("promoter_number_div")
     shinyjs::enable("utr5_div")
     shinyjs::enable("promoters_overlap_div")
-
-    # shinyjs::hide("motif_db_div")
   }
 }) # end of motif DB options
 
 # self uploaded motif database  ------------------------------------------------
 # feedback for no file uploaded motif meme file
-showFeedbackDanger(inputId = "uploaded_motif_db", text = "No mtofi meme files")
+showFeedbackDanger(inputId = "uploaded_motif_db", text = "No motif meme files")
 observeEvent(input$uploaded_motif_db, {
   # indicators for file uploaded
   if (!is.null(input$uploaded_motif_db$datapath)) {
@@ -68,7 +52,7 @@ observeEvent(input$uploaded_motif_db, {
 })
 
 # self uploaded genome fasta  --------------------------------------------------
-showFeedbackDanger(inputId = "uploaded_fasta", text = "No mtofi meme file")
+showFeedbackDanger(inputId = "uploaded_fasta", text = "No motif meme file")
 observeEvent(input$uploaded_fasta, {
   # indicators for file uploaded
   if (!is.null(input$uploaded_fasta$datapath)) {
@@ -184,20 +168,7 @@ observeEvent(input$gene_for_pmet, {
         )
       )
     } # end of if (nrow(genes_skipped) == nrow(genes_uploaded))
-
-    # modal dialog: if any genes are not present
     shinyjs::show("skipped_genes_link")
-    # Sys.sleep(0.5)
-    # showModal(modalDialog(
-    #   title = "Skipped genes:",
-    #   DT::renderDataTable({
-    #     genes_skipped
-    #   }),
-    #   footer = tagList(
-    #     downloadButton("skipped_genes_down_btn", "Download"),
-    #     modalButton("Cancel")
-    #   )
-    # )) # end of showModal
   } # end of if (is.null(genes_uploaded)) else
 })
 

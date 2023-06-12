@@ -20,8 +20,8 @@ command_run_pmet <- function(input = NULL) {
     # prepare parameters for PMETindex command
     # run pmet index -----------------------------------------------------------
       bash_pmet <- paste(
-        "utils/PMETdev/PMETindex_promoters_parallel_delete_fimo.sh ",
-        "-r ", "utils/PMETdev/scripts ",
+        "PMETdev/PMETindex_promoters_parallel_delete_fimo.sh ",
+        "-r ", "PMETdev/scripts ",
         "-o ", pmetIndex_path,
         "-g progress",
         "-i gene_id=",
@@ -35,7 +35,7 @@ command_run_pmet <- function(input = NULL) {
         input$uploaded_annotation$datapath,
         input$uploaded_motif_db$datapath
       )
-      system("chmod u+x utils/PMETdev/PMETindex_promoters_parallel_delete_fimo.sh")
+      system("chmod u+x PMETdev/PMETindex_promoters_parallel_delete_fimo.sh")
       system(bash_pmet, intern = TRUE)
   }
 
@@ -63,7 +63,7 @@ command_run_pmet <- function(input = NULL) {
 
   # run pmet ---------------------------------------------------------------
   bash_pmet <- paste0(
-    "utils/PMETdev/scripts/pmetParallel_linux ",
+    "PMETdev/scripts/pmetParallel_linux ",
     " -d ", pmetIndex_path,
     " -g ", file.path(user_folder, "genes_used_PMET.txt"),
     " -i 24",

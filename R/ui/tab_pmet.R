@@ -11,7 +11,7 @@ tabPanel(
       div(
         id = "promoters_div",
         div("Type of Sequences:", class = "big_font"),
-        radioButtons("a", NULL,
+        radioButtons("sequence_type", NULL,
           c("Promoters" = "promoters", "Genomic intervals" = "intervals"),
           inline = TRUE
         )

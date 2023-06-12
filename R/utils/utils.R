@@ -36,7 +36,10 @@ paths.for.pmet.func <- function(input) {
     user_folder <- file.path(project_path, "result", folder_name)
   } else {
 
-    motif_db <- input$uploaded_motif_db$name %>% str_replace(".meme", "")
+    motif_db <- input$uploaded_motif_db$name %>% str_replace(".meme", "") %>%
+      paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
+      paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+
     print(motif_db)
 
     pmetIndex_path <- file.path(project_path, "data/PMETindex", input$motif_db, motif_db)
@@ -46,15 +49,6 @@ paths.for.pmet.func <- function(input) {
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
     user_folder <- file.path(project_path, "result", folder_name)
   }
-
-
-
-
-
-
-
-
-
 
   return(list(genes_path = genes_path,
               project_path = project_path,

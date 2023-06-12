@@ -1,18 +1,3 @@
-# workthrough heat map--------------------------------------------------------
-heatmap_steps <- reactive({
-  elements <- c(
-    "#pmet_result_div",
-    "#motif_pair_unique_div",
-    "#method_div",
-    "#topn_pair_div",
-    "#p_adj_div"
-  )
-
-  intors <- c("a", "b", "c", "d", "e")
-  data.frame(element = elements, intro = intors)
-})
-
-
 # Download example PMET result -----------------------------------------------
 output$example_pmet_result_file_download <- downloadHandler(
   filename = function() {
