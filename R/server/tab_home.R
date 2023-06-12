@@ -18,3 +18,12 @@ observeEvent(input$jump_heat_bnt, {
     selected = "heatmap_tabpanel"
   )
 })
+
+output$photo <- renderImage({
+  print(getwd())
+  list(
+    src = file.path("R/www/pmet_workflow.png"),
+    contentType = "image/png",
+    width = 1000
+  )
+}, deleteFile = FALSE)

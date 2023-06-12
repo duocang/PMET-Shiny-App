@@ -26,3 +26,8 @@ utils/PMETdev/scripts/*
 utils/PMETdev/src/pmet/test/motif_output.txt
 *.log
 utils/PMETdev/src/pmetParallel/bin/pmetParallel
+PMETdev/scripts/pmetindex
+PMETdev/scripts/pmetParallel.exe
+PMETdev/scripts/pmetParallel_linux
+PMETdev/scripts/pmetParallel_mac
+PMETdev/src/pmetParallel/bin/pmetParallel
