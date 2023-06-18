@@ -1,5 +1,3 @@
-
-
 This is a Shiny app developed for PMET.
 
 ```shell
@@ -19,6 +17,20 @@ This is a Shiny app developed for PMET.
 └── result         # result of Shiny app
 ```
 
+### Install GNU Parallel
+
+GNU Parallel helps PMET index (FIMO and PMET index) to run in parallel mode.
+
+```bash
+sudo apt-get install parallel
+```
+
+Put GNU Parallel silent:
+
+```bash
+ # Run once
+ parallel --citation
+```
 
 ### Install FIMO (meme)
 
@@ -35,10 +47,12 @@ make install
 ```
 
 Add following into bash profile file.
+
 ```bash
 # assuming you put meme folder under your home folder
 export PATH=$HOME/meme/bin:$HOME/meme/libexec/meme-5.5.2:$PATH
 ```
+
 ### Install samtools
 
 ```bash
@@ -49,7 +63,9 @@ cd samtools-1.17    # and similarly for bcftools and htslib
 make
 make install
 ```
+
 Add following into bash profile file.
+
 ```bash
 # assuming you put samtools-1.17 folder under your home folder
 export PATH=$HOME/samtools/bin:$PATH 
@@ -96,6 +112,7 @@ server {
         }
 }
 ```
+
 **Download function based on nginx**
 
 After PMET calculation is completed, Shiny will generate a download button that is specifically for the PMET result archive. This functionality can be found in `utils/command_call_pmet.R` line 115.
@@ -110,7 +127,6 @@ Currently, PMET uses 4 CPU cores by default. If you have abundant computing reso
 
 <img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181500980.png" style="zoom: 50%;" />
 
-
 ### R packages
 
 To avoid any inconvenience, I will provide you with the required R packages here.
@@ -121,63 +137,8 @@ install.packages("remotes")
 
 library(remotes)
 
-packages <- c(
-  "SymbolixAU/jsonify",             # Convert R objects to JSON format
-  "daattali/shinyjs",               # Improve interactivity in Shiny applications
-  "carlganz/rintrojs",              # Create step-by-step introductions for Shiny apps
-  "RinteRface/fullPage",            # Create full page scrollable web pages with Shiny and R Markdown
-  "dreamRs/shinyWidgets",           # Extend the functionality of Shiny with custom UI widgets
-  "collectivemedia/tictoc",         # Measure time in R code easily and accurately
-  "merlinoa/shinyFeedback",         # Collect user feedback in Shiny applications
-  "jhrcook/ggasym",                 # Asymmetric density plots in ggplot2
-  "haozhu233/kableExtra",           # Create complex tables in an easy-to-read format
-  "rstudio/shinyvalidate",          # Perform client-side form validation in Shiny applications
-  "daattali/shinycssloaders",       # Add CSS loader animations to Shiny outputs
-  "kassambara/ggpubr"               # Create publication-ready plots with ggplot2
-)
-
-installed_packages <- c()
-failed_packages <- c()
-
-for (package in packages) {
-  if (package %in% rownames(installed.packages())) {
-    message(paste("Package", package, "is already installed. Skipping installation."))
-    installed_packages <- c(installed_packages, package)
-  } else {
-    tryCatch({
-      remotes::install_github(package, build_vignettes = TRUE, upgrade = "never", ask = FALSE)
-      installed_packages <- c(installed_packages, package)
-    }, error = function(e) {
-      failed_packages <- c(failed_packages, package)
-      message(paste("Installation of", package, "failed."))
-    })
-  }
-}
-
-# Print installed packages
-cat("Installed packages:\n")
-print(installed_packages)
-
-# Print failed packages
-if (length(failed_packages) > 0) {
-  cat("\nPackages that could not be installed:\n")
-  print(failed_packages)
-} else {
-  cat("\nAll packages were successfully installed.\n")
-}
-
-# Print failed packages
-if (length(failed_packages) > 0) {
-  cat("\nThe following packages could not be installed:\n")
-  print(failed_packages)
-} else {
-  cat("\nAll packages were successfully installed.\n")
-}
-```
-
-
-
-```R
+remotes::install_github("daattali/shinydisconnect")
+remotes::install_github("RinteRface/fullPage")
 # Used packages
 packages <- c(
   "bslib",                # Bootstrap themes and styles
@@ -191,10 +152,12 @@ packages <- c(
   "glue",                 # string interpolation and formatting
   "jsonify",              # JSON data processing and transformation
   "kableExtra",           # creation of nice tables and adding formatting
+  "mailR",
   "openxlsx",             # reading and writing Excel files
   "promises",             # deferred evaluation and asynchronous programming
   "reshape2",             # data reshaping and transformation
   "rintrojs",             # interactive tour integration
+  "RinteRface/fullPage",  # Create full page scrollable web pages with Shiny and R Markdown
   "shiny",                # creation of interactive web applications
   "shinyBS",              # Bootstrap styling
   "shinydashboard",       # creation of dashboard-style Shiny apps
