@@ -38,10 +38,19 @@ observe({
   }
 }) # end of motif DB options
 
+
+temp <- runif(1, 100, 99999999) %/% 1
+
 # self uploaded motif database  ------------------------------------------------
 # feedback for no file uploaded motif meme file
 showFeedbackDanger(inputId = "uploaded_motif_db", text = "No motif meme files")
 observeEvent(input$uploaded_motif_db, {
+  # copy uploaded motif
+  system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
+  file.copy(input$uploaded_motif_db$datapath, file.path("data/PMETindex/uploaded_motif", temp), overwrite = TRUE)
+  file.rename(file.path("data/PMETindex/uploaded_motif", temp, "0.meme"),
+              file.path("data/PMETindex/uploaded_motif", temp, input$uploaded_motif_db$name))
+
   # indicators for file uploaded
   if (!is.null(input$uploaded_motif_db$datapath)) {
     hideFeedback("uploaded_motif_db")
@@ -54,6 +63,15 @@ observeEvent(input$uploaded_motif_db, {
 # self uploaded genome fasta  --------------------------------------------------
 showFeedbackDanger(inputId = "uploaded_fasta", text = "No motif meme file")
 observeEvent(input$uploaded_fasta, {
+  # copy uploaded genome fasta
+  system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
+  file.copy(input$uploaded_fasta$datapath,
+            file.path("data/PMETindex/uploaded_motif", temp),
+            overwrite = TRUE)
+  fasta_temp <- ifelse(endsWith(input$uploaded_fasta$name, "fa"), "0.fa", "0.fasta")
+  file.rename(file.path("data/PMETindex/uploaded_motif", temp, fasta_temp),
+              file.path("data/PMETindex/uploaded_motif", temp, input$uploaded_fasta$name))
+
   # indicators for file uploaded
   if (!is.null(input$uploaded_fasta$datapath)) {
     hideFeedback("uploaded_fasta")
@@ -67,6 +85,13 @@ observeEvent(input$uploaded_fasta, {
 # self uploaded annotation  ----------------------------------------------------
 showFeedbackDanger(inputId = "uploaded_annotation", text = "No annotation file")
 observeEvent(input$uploaded_annotation, {
+  # copy uploaded annotation
+  system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
+  file.copy(input$uploaded_annotation$datapath,
+            file.path("data/PMETindex/uploaded_motif", temp), overwrite = TRUE)
+  file.rename(file.path("data/PMETindex/uploaded_motif", temp, "0.gff3"),
+              file.path("data/PMETindex/uploaded_motif", temp, input$uploaded_annotation$name))
+
   # indicators for file uploaded
   if (!is.null(input$uploaded_annotation$datapath)) {
     hideFeedback("uploaded_annotation")
@@ -85,6 +110,17 @@ genes_skipped <- NULL # store skipped genes for download handler
 genes_uploaded_falg <- TRUE # flag, set to FALSE when no valid genes were uploaded
 
 observeEvent(input$gene_for_pmet, {
+  # copy uploaded genes
+  system(paste("mkdir -p", file.path("result", temp)))
+  file.copy(input$gene_for_pmet$datapath, file.path("result", temp), overwrite = TRUE)
+  file.rename(file.path("result", temp, "0.txt"),
+              file.path("result", temp, input$gene_for_pmet$name))
+  # system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
+  # file.copy(input$gene_for_pmet$datapath, file.path("data/PMETindex/uploaded_motif", temp), overwrite = TRUE)
+  # file.rename(file.path("data/PMETindex/uploaded_motif", temp, "0.txt"),
+  #             file.path("data/PMETindex/uploaded_motif", temp, input$gene_for_pmet$name))
+
+
   genes_skipped <<- NULL
   genes_uploaded_falg <<- TRUE
 
@@ -276,9 +312,15 @@ observeEvent(input$run_pmet_button, {
 
     list_of_inputs <- reactiveValuesToList(input)
 
+    # rename temp folder
+    paths_pmet <- paths.for.pmet.func(list_of_inputs)
+    file.rename(file.path("result", temp), paths_pmet$user_folder)
+    file.rename(file.path("data/PMETindex/uploaded_motif", temp), paths_pmet$pmetIndex_path)
+
+
     # PMET job is runnig in the back
     future({
-      command_run_pmet(list_of_inputs)
+      command_run_pmet(list_of_inputs, paths_pmet)
     }) %...>% (function(result_link) {
       cli::cat_rule(sprintf("pmet done!"))
       Sys.sleep(0.5)
@@ -323,15 +365,20 @@ observeEvent(input$run_pmet_button, {
 })
 
 
-# activities when stop pmet job------------------------------------------------
+# STOP buttion: activities when stop pmet job------------------------------------------------
 observeEvent(input$stop, {
   cli::cat_rule(sprintf("任务被取消了！"))
+  print(folder_name)
 
-  pid <- system("pidof pmetParallel", intern = TRUE)
+
+  pid <- pid.pmet.finder.func(folder_name)
+  print(pid)
+
   # when pmetParaleel is finished, there will be no pid returned.
   if (!identical(pid, character(0))) {
     system(paste0("kill -9 ", pid))
-    system(paste0("rm -rf ", user_folder))
+    # system(paste0("rm -rf ", "result/", user_folder))
+    # system(paste0("rm -rf ", "result/", user_folder, ".zip"))
 
     showNotification("PMET had been stopped!!!", type = "error", duration = 0)
 

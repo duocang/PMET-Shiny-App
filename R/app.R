@@ -1,6 +1,7 @@
 source("R/global.R")
 
 ui <- fluidPage(
+  disconnectMessage2(),
   useShinyjs(),
   navbarPage(
     id = "navbar",
@@ -16,9 +17,7 @@ ui <- fluidPage(
     source("R/ui/tab_author.R", local = TRUE)$value
   ),
   style = "padding: 0px;", # no gap in navbar
-  actionButton("show_tutorial", "Tips",
-    style = "position: absolute; top: 15px; right: 5px; z-index:10000;"
-  )
+  actionButton("show_tutorial", "Tips", style = "position: absolute; top: 15px; right: 5px; z-index:10000;")
 )
 
 server <- function(input, output, session) {
