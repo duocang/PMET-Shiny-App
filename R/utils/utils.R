@@ -20,41 +20,53 @@ valid.files.email.func <- function(input) {
 
 
 # prepare all paths/directories needed by PMET
-paths.for.pmet.func <- function(input) {
-
-  genes_path <- input$gene_for_pmet$datapath
-  project_path <- getwd() # %>% str_replace("/01_shiny", "")
-
+paths_for_pmet_func <- function(input) {
   if (input$motif_db != "uploaded_motif") {
+
     species <- str_split(input$motif_db, "-")[[1]][1]
 
-    pmetIndex_path <- file.path(project_path, "data/PMETindex", species, input$motif_db)
+    pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
     folder_name <- str_split(input$userEmail, "@")[[1]] %>%
       paste0(collapse = "_") %>%
       paste0("_", species, "_", input$motif_db) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-    user_folder <- file.path(project_path, "result", folder_name)
+    # user_folder <- file.path(project_path, "result", folder_name)
+    user_folder <- file.path("result", folder_name)
   } else {
 
     motif_db <- input$uploaded_motif_db$name %>% str_replace(".meme", "") %>%
       paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
 
-    print(motif_db)
-
-    pmetIndex_path <- file.path(project_path, "data/PMETindex", input$motif_db, motif_db)
+    pmetIndex_path <- file.path("data/PMETindex", input$motif_db, motif_db)
     folder_name <- str_split(input$userEmail, "@")[[1]] %>%
       paste0(collapse = "_") %>%
       paste0("_", input$motif_db) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-    user_folder <- file.path(project_path, "result", folder_name)
+    user_folder <- file.path( "result", folder_name)
   }
 
-  return(list(genes_path = genes_path,
-              project_path = project_path,
+  genes_path <- file.path(user_folder, input$gene_for_pmet$name)
+
+  return(list(genes_path     = genes_path,
               pmetIndex_path = pmetIndex_path,
-              folder_name = folder_name,
-              user_folder = user_folder))
+              folder_name    = folder_name,
+              user_folder    = user_folder))
+}
+
+# copy file from shiny temp folder to a folder created for PMETindex
+temp_2_local_func <- function(local_dir, session_id, input_file) {
+
+  temp_file     <- input_file$datapath
+  new_file_name <- input_file$name
+
+  # create folder
+  dir_path <- file.path(local_dir, session_id)
+  dir.create(dir_path, recursive = TRUE)
+
+  # copy file
+  file_path <- file.path(dir_path, new_file_name)
+  file.copy(temp_file, file_path, overwrite = TRUE)
 }
 
 colors.plotly.func <- function() {

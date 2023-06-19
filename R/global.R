@@ -61,6 +61,7 @@ suppressMessages({
   source("R/utils/create_forked_task.R")
   # source("R/utils/send_mail.R")
   source("R/utils/pid_pmet_finder.R")
+  source("R/utils/paths_of_repeative_run.R")
 })
 
 options(shiny.maxRequestSize = 30000 * 1024^2)

@@ -1,19 +1,11 @@
-command_run_pmet <- function(input = NULL, paths = NULL) {
+# command_run_pmet <- function(input = NULL, paths = NULL) {
+command_run_pmet <- function(input,
+                            pmetIndex_path  = NULL,
+                            user_folder     = NULL,
+                            genes_path      = NULL,
+                            indexing_pairing=TRUE,
+                            pairing_only    =FALSE) {
 
-  # paths_pmet <- paths.for.pmet.func(input)
-
-  project_path   <- paths$project_path
-  pmetIndex_path <- paths$pmetIndex_path
-  user_folder    <- paths$user_folder
-  genes_path     <- paths$genes_path
-
-
-  # print(project_path)
-  # print(pmetIndex_path)
-  # print(user_folder)
-  # print(genes_path)
-
-  # print("___________")
 
   # send email to user when pmet is done
   temp <- str_split(user_folder, "/")[[1]]
@@ -22,7 +14,7 @@ command_run_pmet <- function(input = NULL, paths = NULL) {
   result_link <- paste0("https://bar.utoronto.ca/pmet_result/", paste0(user_folder_name, ".zip"))
 
   # if run pmet_index
-  if (!is.null(input$uploaded_motif_db)) {
+  if (indexing_pairing) {
     cli::cat_rule(sprintf("运行PMETindex！"))
 
     bash_pmet <- paste(
@@ -39,23 +31,29 @@ command_run_pmet <- function(input = NULL, paths = NULL) {
       "-t 4 ",
       "-c", "24",
       "-x", user_folder,
-      "-g", file.path(user_folder, input$gene_for_pmet$name),
+      "-g", genes_path,
       "-e", recipient,
       "-l", result_link,
       file.path(pmetIndex_path, input$uploaded_fasta$name),
       file.path(pmetIndex_path, input$uploaded_annotation$name),
-      file.path(pmetIndex_path, input$uploaded_motif_db$name), "&"
+      file.path(pmetIndex_path, input$uploaded_motif_db$name),
+      "&"
 
       # input$uploaded_fasta$datapath,
       # input$uploaded_annotation$datapath,
       # input$uploaded_motif_db$datapath, "&"
     )
+    print(bash_pmet)
+    system("chmod +x PMETdev/scripts/gff3sort/gff3sort.pl")
     system("chmod +x PMETdev/PMETindex_promoters_parallel_delete_fimo.sh")
-  } else {
+    messages <- system(bash_pmet, intern=TRUE)
+    print(messages)
+  }
+  if (pairing_only) {
     bash_pmet <- paste(
       "nohup PMETdev/PMET.sh ",
       " -d ", pmetIndex_path,
-      " -g ", file.path(user_folder, input$gene_for_pmet$name),
+      " -g ", genes_path,
       " -i 24",
       " -t 8",
       " -o ", user_folder,
@@ -63,12 +61,14 @@ command_run_pmet <- function(input = NULL, paths = NULL) {
       "-l", result_link,
       " &")
     system("chmod +x PMETdev/PMET.sh")
-
     print(bash_pmet)
+    messages <- system(bash_pmet, intern=TRUE)
   }
 
-  messages <- system(bash_pmet, intern=TRUE)
-  print(messages)
 
-  return(result_link)
+
+  if (file.exists(paste0(user_folder, ".zip")))
+    return(result_link)
+  else
+    return("NO RESULT")
 }

@@ -38,18 +38,24 @@ observe({
   }
 }) # end of motif DB options
 
+# session_id is the name of folde to keep uploaded files from user
+# because some data needed by PMET is not accessible after the session is closed
+UPLOAD_DIR<- "data/PMETindex/uploaded_motif"
 
-temp <- runif(1, 100, 99999999) %/% 1
+session_id <- runif(1, 100, 999999999) %/% 1
+flag_first_run <- reactiveVal(TRUE)
+
+
+flag_upload_changed <- reactiveVal(c( 0, 0, 0, 0, 1, 1, 1, 1, 1, 1))
 
 # self uploaded motif database  ------------------------------------------------
 # feedback for no file uploaded motif meme file
 showFeedbackDanger(inputId = "uploaded_motif_db", text = "No motif meme files")
 observeEvent(input$uploaded_motif_db, {
-  # copy uploaded motif
-  system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
-  file.copy(input$uploaded_motif_db$datapath, file.path("data/PMETindex/uploaded_motif", temp), overwrite = TRUE)
-  file.rename(file.path("data/PMETindex/uploaded_motif", temp, "0.meme"),
-              file.path("data/PMETindex/uploaded_motif", temp, input$uploaded_motif_db$name))
+  # copy uploaded motif to session folder for PMET to run in the back
+  temp_2_local_func(UPLOAD_DIR, session_id, input$uploaded_motif_db)
+
+  flag_upload_changed(as.numeric(c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
 
   # indicators for file uploaded
   if (!is.null(input$uploaded_motif_db$datapath)) {
@@ -63,14 +69,10 @@ observeEvent(input$uploaded_motif_db, {
 # self uploaded genome fasta  --------------------------------------------------
 showFeedbackDanger(inputId = "uploaded_fasta", text = "No motif meme file")
 observeEvent(input$uploaded_fasta, {
-  # copy uploaded genome fasta
-  system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
-  file.copy(input$uploaded_fasta$datapath,
-            file.path("data/PMETindex/uploaded_motif", temp),
-            overwrite = TRUE)
-  fasta_temp <- ifelse(endsWith(input$uploaded_fasta$name, "fa"), "0.fa", "0.fasta")
-  file.rename(file.path("data/PMETindex/uploaded_motif", temp, fasta_temp),
-              file.path("data/PMETindex/uploaded_motif", temp, input$uploaded_fasta$name))
+  # copy uploaded genome fasta to session folder for PMET to run in the back
+  temp_2_local_func(UPLOAD_DIR, session_id, input$uploaded_fasta)
+
+  flag_upload_changed(as.numeric(c(0, 1, 0, 0, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
 
   # indicators for file uploaded
   if (!is.null(input$uploaded_fasta$datapath)) {
@@ -81,16 +83,13 @@ observeEvent(input$uploaded_fasta, {
   }
 })
 
-
 # self uploaded annotation  ----------------------------------------------------
 showFeedbackDanger(inputId = "uploaded_annotation", text = "No annotation file")
 observeEvent(input$uploaded_annotation, {
-  # copy uploaded annotation
-  system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
-  file.copy(input$uploaded_annotation$datapath,
-            file.path("data/PMETindex/uploaded_motif", temp), overwrite = TRUE)
-  file.rename(file.path("data/PMETindex/uploaded_motif", temp, "0.gff3"),
-              file.path("data/PMETindex/uploaded_motif", temp, input$uploaded_annotation$name))
+  # copy uploaded annotation to session folder for PMET to run in the back
+  temp_2_local_func(UPLOAD_DIR, session_id, input$uploaded_annotation)
+
+  flag_upload_changed(as.numeric(c(0, 0, 1, 0, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
 
   # indicators for file uploaded
   if (!is.null(input$uploaded_annotation$datapath)) {
@@ -105,21 +104,16 @@ observeEvent(input$uploaded_annotation, {
 # genes uploaded ---------------------------------------------------------------
 # feedback for no file uploaded when page first opened
 showFeedbackDanger(inputId = "gene_for_pmet", text = "No genes files")
-
 genes_skipped <- NULL # store skipped genes for download handler
 genes_uploaded_falg <- TRUE # flag, set to FALSE when no valid genes were uploaded
-
 observeEvent(input$gene_for_pmet, {
-  # copy uploaded genes
-  system(paste("mkdir -p", file.path("result", temp)))
-  file.copy(input$gene_for_pmet$datapath, file.path("result", temp), overwrite = TRUE)
-  file.rename(file.path("result", temp, "0.txt"),
-              file.path("result", temp, input$gene_for_pmet$name))
-  # system(paste("mkdir -p", file.path("data/PMETindex/uploaded_motif", temp)))
-  # file.copy(input$gene_for_pmet$datapath, file.path("data/PMETindex/uploaded_motif", temp), overwrite = TRUE)
-  # file.rename(file.path("data/PMETindex/uploaded_motif", temp, "0.txt"),
-  #             file.path("data/PMETindex/uploaded_motif", temp, input$gene_for_pmet$name))
+  # copy uploaded genes to result folder for PMET to run in the back
+  system(paste("mkdir -p", file.path("result", session_id)))
+  file.copy(input$gene_for_pmet$datapath, file.path("result", session_id), overwrite = TRUE)
+  file.rename(file.path("result", session_id, "0.txt"),
+              file.path("result", session_id, input$gene_for_pmet$name))
 
+  flag_upload_changed(as.numeric(c(0, 0, 0, 1, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
 
   genes_skipped <<- NULL
   genes_uploaded_falg <<- TRUE
@@ -151,10 +145,7 @@ observeEvent(input$gene_for_pmet, {
   if (is.null(genes_uploaded)) {
     genes_uploaded_falg <<- FALSE
     hideFeedback("gene_for_pmet")
-    showFeedbackDanger(
-      inputId = "gene_for_pmet",
-      text = "Wrong format of uploaded file"
-    )
+    showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
   } else if (nrow(genes_uploaded) == 0) {
     genes_uploaded_falg <<- FALSE
     hideFeedback("gene_for_pmet")
@@ -163,10 +154,7 @@ observeEvent(input$gene_for_pmet, {
     genes_uploaded_falg <<- FALSE
 
     hideFeedback("gene_for_pmet")
-    showFeedbackDanger(
-      inputId = "gene_for_pmet",
-      text = "Only cluster and gene columns are allowed"
-    )
+    showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and gene columns are allowed")
   } else if (input$motif_db != "uploaded_motif") {
     # if motifs selected, check the uploaded genes
     # with the gene list in our folder, named universe.txt
@@ -177,15 +165,13 @@ observeEvent(input$gene_for_pmet, {
       "uploaded_motif"
     )
 
-    project_path <- getwd() # %>% str_replace("01_shiny", "")
-    input_directory <- file.path(project_path, "data/PMETindex", species, input$motif_db)
+    input_directory <- file.path("data/PMETindex", species, input$motif_db)
     genes_universe <- read.table(file.path(input_directory, "universe.txt")) %>% `colnames<-`(c("gene"))
 
 
     colnames(genes_uploaded) <- c("cluster", "gene")
     genes_present <- dplyr::inner_join(genes_uploaded, genes_universe, by = "gene")
     genes_skipped <<- setdiff(genes_uploaded, genes_present)
-    print(genes_skipped)
 
     # no genes available in the uploaded file
     if (nrow(genes_skipped) == nrow(genes_uploaded)) {
@@ -196,12 +182,7 @@ observeEvent(input$gene_for_pmet, {
       hideFeedback("gene_for_pmet")
       showFeedbackWarning(
         inputId = "gene_for_pmet",
-        text = paste0(
-          nrow(genes_skipped),
-          " out of ",
-          nrow(genes_uploaded),
-          " genes are skipped"
-        )
+        text = paste(nrow(genes_skipped), "out of", nrow(genes_uploaded), "genes are skipped")
       )
     } # end of if (nrow(genes_skipped) == nrow(genes_uploaded))
     shinyjs::show("skipped_genes_link")
@@ -210,9 +191,7 @@ observeEvent(input$gene_for_pmet, {
 
 # modal dialog shown, when link clicked (skipped genes are not nul)
 observeEvent(input$skipped_genes_link, {
-  print("skipped_genes_link")
   if (!is.null(genes_skipped)) {
-    print(genes_skipped)
     Sys.sleep(0.2)
     showModal(modalDialog(
       title = "Skipped genes:",
@@ -282,22 +261,21 @@ observe({
 })
 
 # Run PMET ---------------------------------------------------------------------
-folder_name <- "" # a global variable to track current job (folder/path)
+folder_name    <- "" # a global variable to track current job (folder/path)
+user_folder    <- ""
+pmetIndex_path <- ""
 notifi_pmet_id <- NULL # id to remove notification when stop pmet job
+
 observeEvent(input$run_pmet_button, {
-  folder_name <<- ""
-  notifi_pmet_id <<- NULL
 
   # hide download button
   shinyjs::hide("pmet_result_download_button")
 
   if (valid.files.email.func(input)) {
-    # When butn clicked, wrap the code in a call to `withBusyIndicatorServer()`
+    # When run butn clicked, wrap the code in a call to `withBusyIndicatorServer()`
     withBusyIndicatorServer("sf-loading-button-run_pmet_button", {
       Sys.sleep(0.5)
-      if (FALSE) {
-        stop("choose another option")
-      }
+      if (FALSE) { stop("choose another option") }
     })
 
     shinyjs::disable("run_pmet_button")
@@ -306,21 +284,53 @@ observeEvent(input$run_pmet_button, {
 
     notifi_pmet_id <<- showNotification("PMET is running...", type = "message", duration = 0)
 
-    paths_pmet <- paths.for.pmet.func(input)
-    folder_name <<- paths_pmet$folder_name
-    user_folder <<- paths_pmet$user_folder
+    if (flag_first_run()) {
+      paths_pmet     <-  paths_for_pmet_func(input)
+      folder_name    <<- paths_pmet$folder_name
+      user_folder    <<- paths_pmet$user_folder
+      pmetIndex_path <<- paths_pmet$pmetIndex_path
+      genes_path     <-  paths_pmet$genes_path
 
-    list_of_inputs <- reactiveValuesToList(input)
+      # rename temp folder in first run of PMET
+      file.rename(file.path("result", session_id), paths_pmet$user_folder)
+      if (!is.null(input$uploaded_motif_db)) {
+        file.rename(file.path(UPLOAD_DIR, session_id), paths_pmet$pmetIndex_path)
+      }
 
-    # rename temp folder
-    paths_pmet <- paths.for.pmet.func(list_of_inputs)
-    file.rename(file.path("result", temp), paths_pmet$user_folder)
-    file.rename(file.path("data/PMETindex/uploaded_motif", temp), paths_pmet$pmetIndex_path)
+      indexing_pairing <- !is.null(input$uploaded_motif_db)
+      pairing_only     <- is.null(input$uploaded_motif_db)
+    } else {
+      previous_user_folder    <- user_folder
+      previsou_pmetindex_path <- pmetIndex_path
 
+      paths_pmet     <-  paths_for_pmet_func(input)
+      user_folder    <<- paths_pmet$user_folder
+      pmetIndex_path <<- paths_pmet$pmetIndex_path
+
+      pmet_config <- paths_of_repeative_run_func( input,
+                                                  session_id,
+                                                  user_folder,
+                                                  pmetIndex_path,
+                                                  previous_user_folder,
+                                                  previsou_pmetindex_path,
+                                                  flag_upload_changed(),
+                                                  !is.null(input$uploaded_motif_db))
+
+      user_folder      <<- pmet_config$user_folder
+      pmetIndex_path   <<- pmet_config$pmetIndex_path
+      genes_path       <-  pmet_config$genes_path
+      indexing_pairing <- pmet_config$indexing_pairing_needed
+      pairing_only     <- pmet_config$pairing_need_only
+    }
 
     # PMET job is runnig in the back
     future({
-      command_run_pmet(list_of_inputs, paths_pmet)
+      command_run_pmet( input,
+                        pmetIndex_path,
+                        user_folder,
+                        genes_path,
+                        indexing_pairing=indexing_pairing,
+                        pairing_only = pairing_only)
     }) %...>% (function(result_link) {
       cli::cat_rule(sprintf("pmet done!"))
       Sys.sleep(0.5)
@@ -343,11 +353,14 @@ observeEvent(input$run_pmet_button, {
           style = "width: 135px"
         )
       }) # end of rednderUI
-
       # automatically scroll to the spot of download button
       runjs('document.getElementById("pmet_result_download_ui_div").scrollIntoView();')
+
+      # when PMET done, then it is not the first time of PMET
+      flag_first_run(FALSE) #
+      flag_upload_changed(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
     }) # end of future
-    cli::cat_rule(sprintf("pmet 的任务我已经提交了！"))
+    cli::cat_rule(sprintf("pmet task starts！"))
   } else { # when clikc RUN PMET button withouth valid job
 
     # reset the loadingButton to its active state after 3 seconds
@@ -367,7 +380,8 @@ observeEvent(input$run_pmet_button, {
 
 # STOP buttion: activities when stop pmet job------------------------------------------------
 observeEvent(input$stop, {
-  cli::cat_rule(sprintf("任务被取消了！"))
+
+  cli::cat_rule(sprintf("Task stops！"))
   print(folder_name)
 
 

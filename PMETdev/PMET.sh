@@ -67,14 +67,13 @@ PMETdev/scripts/pmetParallel_linux \
     -c IC.txt \
     -f fimohits \
     -t $threads \
-    -o $outputdir
+    -o $outputdir > $outputdir/PMET_OUTPUT.log
 
 cat $outputdir/temp*.txt > $outputdir/PMET_OUTPUT.txt
 rm -rf  $outputdir/temp*.txt
-
 zip -j ${outputdir}.zip $outputdir/*
 rm -rf $outputdir
-# touch ${outputdir}_FLAG
+touch ${outputdir}_FLAG
 
 Rscript R/utils/send_mail.R $email $resultlink
 

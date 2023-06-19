@@ -101,6 +101,19 @@ while getopts ":r:i:o:n:k:p:f:g:v:u:t:c:x:g:e:l:" options; do
     esac
 done
 
+
+# rm -rf $outputdir/binomial_thresholds.txt
+# rm -rf $outputdir/fimo
+# rm -rf $outputdir/rimohits
+# rm -rf $outputdir/IC.txt
+# rm -rf $outputdir/pmetindex.log
+# rm -rf $outputdir/promoter_length_deleted.txt
+# rm -rf $outputdir/promoter_lengths_all.txt
+# rm -rf $outputdir/promoter_lengths.txt
+# rm -rf $outputdir/promoters_before_filter.bed
+# rm -rf $outputdir/universe.txt
+
+
 shift $((OPTIND - 1))
 genomefile=$1
 gff3file=$2
@@ -351,16 +364,13 @@ PMETdev/scripts/pmetParallel_linux \
     -c IC.txt \
     -f fimohits \
     -t $threads \
-    -o $pmetoutput
+    -o $pmetoutput > $pmetoutput/PMET_OUTPUT.log
 
 cat $pmetoutput/temp*.txt > $pmetoutput/PMET_OUTPUT.txt
 rm -rf  $pmetoutput/temp*.txt
-
 zip -j ${pmetoutput}.zip $pmetoutput/*
-
 rm -rf $pmetoutput
-
-# touch ${pmetoutput}_FLAG
+touch ${pmetoutput}_FLAG
 
 Rscript R/utils/send_mail.R $email $resultlink
 
