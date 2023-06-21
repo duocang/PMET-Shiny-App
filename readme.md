@@ -215,16 +215,31 @@ if (length(failed_packages) > 0) {
 }
 ```
 
-### PMET
+### PMET index and PMET
 
-If necessary, it is possible to compile pmet. The source code can be found in `utils/PMETdev/src/pmetParallel`.
+Both are writen in C++, source code can be found in `PMETdev/src/indexing` and `PMETdev/src/pmetParallel`.
 
+If necessary, it is possible to compile pmet index and pmet in different OS. 
+**PMET index**
 ```bash
+# PMETdev/src/indexing
+./build.sh
+```
+or
+```bash
+# PMETdev/src/indexing
+g++  -g -Wall -std=c++11 cFimoFile.cpp cMotifHit.cpp fastFileReader.cpp main.cpp -o ../../scripts/pmetindex
+```
+
+**PMET**
+```bash
+# PMETdev/src/pmetParallel
+./build.sh
+```
+or
+```bash
+# PMETdev/src/pmetParallel
 g++ -g -Wall -std=c++11 Output.cpp motif.cpp motifComparison.cpp main.cpp -o ../../scripts/pmetParallel_linux -pthread
 ```
 
-### PMET index
 
-```bash
-g++  -g -Wall -std=c++11 cFimoFile.cpp cMotifHit.cpp fastFileReader.cpp main.cpp -o ../../scripts/pmetindex
-```
