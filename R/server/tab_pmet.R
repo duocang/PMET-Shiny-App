@@ -1,21 +1,46 @@
+# session_id is the name of folde to keep uploaded files from user
+# because some data needed by PMET is not accessible after the session is closed
+UPLOAD_DIR          <- "data/PMETindex/uploaded_motif"
+session_id          <- runif(1, 100, 999999999) %/% 1
+flag_first_run      <- reactiveVal(TRUE)
+flag_upload_changed <- reactiveVal(list(sequence_type       = 0,
+                                        motif_db            = 0,
+                                        uploaded_meme       = 0,
+                                        uploaded_fasta      = 0,
+                                        uploaded_annotation = 0,
+                                        gene_for_pmet       = 0,
+                                        promoter_length     = 1,
+                                        max_motif_matches   = 1,
+                                        promoter_number     = 1,
+                                        utr5                = 1,
+                                        promoters_overlap   = 1))
+
 # update motif database when motif db changed --------------------------------
 observe({
-
   if (input$sequence_type == "intervals") {
 
-    shinyjs::show("uploaded_motif_db_div")
+    shinyjs::show("uploaded_meme_div")
     shinyjs::show("uploaded_fasta_div")
 
     shinyjs::hide("motif_db")
     shinyjs::hide("uploaded_annotation_div")
     shinyjs::hide("utr5_div")
+    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation",
+              "gene_for_pmet", "promoter_length", "promoter_number",
+              "utr5", "promoters_overlap"
+              )) {
+      reset(i)
+    }
+    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation", "gene_for_pmet")) {
+      showFeedbackDanger(inputId = i, text = "")
+    }
   } else if (input$motif_db != "uploaded_motif") {
 
     shinyjs::show("motif_db")
     shinyjs::show("utr5_div")
 
     # hide self upload option of motif DB
-    shinyjs::hide("uploaded_motif_db_div")
+    shinyjs::hide("uploaded_meme_div")
     shinyjs::hide("uploaded_fasta_div")
     shinyjs::hide("uploaded_annotation_div")
 
@@ -24,45 +49,85 @@ observe({
     shinyjs::disable("promoter_number_div")
     shinyjs::disable("promoters_overlap_div")
     shinyjs::disable("utr5_div")
+    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation",
+              "gene_for_pmet", "promoter_length", "promoter_number",
+              "utr5", "promoters_overlap"
+              )) {
+      reset(i)
+    }
+    showFeedbackDanger(inputId = "gene_for_pmet", text = "")
   } else {
     # show self upload option of motif DB
-    shinyjs::show("uploaded_motif_db_div")
+    shinyjs::show("uploaded_meme_div")
     shinyjs::show("uploaded_fasta_div")
     shinyjs::show("uploaded_annotation_div")
+    shinyjs::show("motif_db")
 
     shinyjs::enable("promoter_length_div")
     shinyjs::enable("max_motif_matches_div")
     shinyjs::enable("promoter_number_div")
     shinyjs::enable("utr5_div")
     shinyjs::enable("promoters_overlap_div")
+
+    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation",
+              "gene_for_pmet", "promoter_length", "promoter_number",
+              "utr5", "promoters_overlap"
+              )) {
+      reset(i)
+    }
+    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation", "gene_for_pmet")) {
+      showFeedbackDanger(inputId = i, text = "")
+    }
   }
+  Sys.sleep(1)
+  # changes of seq type and motif database will reset first run flag
+  # because it involves different PMETindexing process
+  flag_first_run(TRUE)
+  flag_upload_changed(list( sequence_type       = 0,
+                            motif_db            = 0,
+                            uploaded_meme       = 0,
+                            uploaded_fasta      = 0,
+                            uploaded_annotation = 0,
+                            gene_for_pmet       = 0,
+                            promoter_length     = 0,
+                            max_motif_matches   = 0,
+                            promoter_number     = 0,
+                            utr5                = 0,
+                            promoters_overlap   = 0))
+
 }) # end of motif DB options
 
-# session_id is the name of folde to keep uploaded files from user
-# because some data needed by PMET is not accessible after the session is closed
-UPLOAD_DIR<- "data/PMETindex/uploaded_motif"
 
-session_id <- runif(1, 100, 999999999) %/% 1
-flag_first_run <- reactiveVal(TRUE)
+observeEvent(input$motif_db, {
+  flags <- flag_upload_changed()
+  flags$motif_db <- 1
+  flag_upload_changed(flags)
+})
 
 
-flag_upload_changed <- reactiveVal(c( 0, 0, 0, 0, 1, 1, 1, 1, 1, 1))
+observeEvent(input$sequence_type, {
+  flags <- flag_upload_changed()
+  flags$sequence_type <- 1
+  flag_upload_changed(flags)
+})
 
 # self uploaded motif database  ------------------------------------------------
 # feedback for no file uploaded motif meme file
-showFeedbackDanger(inputId = "uploaded_motif_db", text = "No motif meme files")
-observeEvent(input$uploaded_motif_db, {
+showFeedbackDanger(inputId = "uploaded_meme", text = "No motif meme files")
+observeEvent(input$uploaded_meme, {
   # copy uploaded motif to session folder for PMET to run in the back
-  temp_2_local_func(UPLOAD_DIR, session_id, input$uploaded_motif_db)
+  temp_2_local_func(UPLOAD_DIR, session_id, input$uploaded_meme)
 
-  flag_upload_changed(as.numeric(c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
+  flags <- flag_upload_changed()
+  flags$uploaded_meme <- 1
+  flag_upload_changed(flags)
 
   # indicators for file uploaded
-  if (!is.null(input$uploaded_motif_db$datapath)) {
-    hideFeedback("uploaded_motif_db")
-    showFeedbackSuccess(inputId = "uploaded_motif_db")
+  if (!is.null(input$uploaded_meme$datapath)) {
+    hideFeedback("uploaded_meme")
+    showFeedbackSuccess(inputId = "uploaded_meme")
   } else {
-    showFeedbackDanger(inputId = "uploaded_motif_db", text = "No motif")
+    showFeedbackDanger(inputId = "uploaded_meme", text = "No motif")
   }
 })
 
@@ -72,7 +137,9 @@ observeEvent(input$uploaded_fasta, {
   # copy uploaded genome fasta to session folder for PMET to run in the back
   temp_2_local_func(UPLOAD_DIR, session_id, input$uploaded_fasta)
 
-  flag_upload_changed(as.numeric(c(0, 1, 0, 0, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
+  flags <- flag_upload_changed()
+  flags$uploaded_fasta <- 1
+  flag_upload_changed(flags)
 
   # indicators for file uploaded
   if (!is.null(input$uploaded_fasta$datapath)) {
@@ -89,7 +156,9 @@ observeEvent(input$uploaded_annotation, {
   # copy uploaded annotation to session folder for PMET to run in the back
   temp_2_local_func(UPLOAD_DIR, session_id, input$uploaded_annotation)
 
-  flag_upload_changed(as.numeric(c(0, 0, 1, 0, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
+  flags <- flag_upload_changed()
+  flags$uploaded_annotation <- 1
+  flag_upload_changed(flags)
 
   # indicators for file uploaded
   if (!is.null(input$uploaded_annotation$datapath)) {
@@ -101,19 +170,19 @@ observeEvent(input$uploaded_annotation, {
 })
 
 
-# genes uploaded ---------------------------------------------------------------
+# self genes uploaded -----------------------------------------------------------
 # feedback for no file uploaded when page first opened
 showFeedbackDanger(inputId = "gene_for_pmet", text = "No genes files")
 genes_skipped <- NULL # store skipped genes for download handler
 genes_uploaded_falg <- TRUE # flag, set to FALSE when no valid genes were uploaded
 observeEvent(input$gene_for_pmet, {
   # copy uploaded genes to result folder for PMET to run in the back
-  system(paste("mkdir -p", file.path("result", session_id)))
-  file.copy(input$gene_for_pmet$datapath, file.path("result", session_id), overwrite = TRUE)
-  file.rename(file.path("result", session_id, "0.txt"),
-              file.path("result", session_id, input$gene_for_pmet$name))
 
-  flag_upload_changed(as.numeric(c(0, 0, 0, 1, 0, 0, 0, 0, 0, 0) | flag_upload_changed()))
+  temp_2_local_func("result", session_id, input$gene_for_pmet)
+
+  flags <- flag_upload_changed()
+  flags$gene_for_pmet <- 1
+  flag_upload_changed(flags)
 
   genes_skipped <<- NULL
   genes_uploaded_falg <<- TRUE
@@ -262,7 +331,7 @@ observe({
 
 # Run PMET ---------------------------------------------------------------------
 folder_name    <- "" # a global variable to track current job (folder/path)
-user_folder    <- ""
+pmetPair_path    <- ""
 pmetIndex_path <- ""
 notifi_pmet_id <- NULL # id to remove notification when stop pmet job
 
@@ -284,53 +353,31 @@ observeEvent(input$run_pmet_button, {
 
     notifi_pmet_id <<- showNotification("PMET is running...", type = "message", duration = 0)
 
-    if (flag_first_run()) {
-      paths_pmet     <-  paths_for_pmet_func(input)
-      folder_name    <<- paths_pmet$folder_name
-      user_folder    <<- paths_pmet$user_folder
-      pmetIndex_path <<- paths_pmet$pmetIndex_path
-      genes_path     <-  paths_pmet$genes_path
 
-      # rename temp folder in first run of PMET
-      file.rename(file.path("result", session_id), paths_pmet$user_folder)
-      if (!is.null(input$uploaded_motif_db)) {
-        file.rename(file.path(UPLOAD_DIR, session_id), paths_pmet$pmetIndex_path)
-      }
-
-      indexing_pairing <- !is.null(input$uploaded_motif_db)
-      pairing_only     <- is.null(input$uploaded_motif_db)
-    } else {
-      previous_user_folder    <- user_folder
-      previsou_pmetindex_path <- pmetIndex_path
-
-      paths_pmet     <-  paths_for_pmet_func(input)
-      user_folder    <<- paths_pmet$user_folder
-      pmetIndex_path <<- paths_pmet$pmetIndex_path
-
-      pmet_config <- paths_of_repeative_run_func( input,
+    # previous_paths["pmetPair_path" ] <- pmetPair_path
+    # previous_paths["pmetIndex_path"] <- pmetIndex_path
+    previous_paths <- list(pmetPair_path = pmetPair_path, pmetIndex_path=pmetIndex_path)
+    mode           <- pmet_mode_func(input)
+    pmet_config    <- paths_of_repeative_run_func(input,
                                                   session_id,
-                                                  user_folder,
-                                                  pmetIndex_path,
-                                                  previous_user_folder,
-                                                  previsou_pmetindex_path,
+                                                  previous_paths,
                                                   flag_upload_changed(),
-                                                  !is.null(input$uploaded_motif_db))
+                                                  flag_first_run(),
+                                                  mode)
 
-      user_folder      <<- pmet_config$user_folder
-      pmetIndex_path   <<- pmet_config$pmetIndex_path
-      genes_path       <-  pmet_config$genes_path
-      indexing_pairing <- pmet_config$indexing_pairing_needed
-      pairing_only     <- pmet_config$pairing_need_only
-    }
+    pmetPair_path    <<- pmet_config$pmetPair_path
+    pmetIndex_path   <<- pmet_config$pmetIndex_path
 
+    inputs <- reactiveValuesToList(input)
     # PMET job is runnig in the back
-    future({
-      command_run_pmet( input,
+    future_promise({
+      command_run_pmet( inputs,
                         pmetIndex_path,
-                        user_folder,
-                        genes_path,
-                        indexing_pairing=indexing_pairing,
-                        pairing_only = pairing_only)
+                        pmetPair_path,
+                        pmet_config$genes_path,
+                        pmet_config$indexing_pairing_needed,
+                        pmet_config$pairing_need,
+                        mode)
     }) %...>% (function(result_link) {
       cli::cat_rule(sprintf("pmet done!"))
       Sys.sleep(0.5)
@@ -358,8 +405,19 @@ observeEvent(input$run_pmet_button, {
 
       # when PMET done, then it is not the first time of PMET
       flag_first_run(FALSE) #
-      flag_upload_changed(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+      flag_upload_changed(list( sequence_type       = 0,
+                                motif_db            = 0,
+                                uploaded_meme       = 0,
+                                uploaded_fasta      = 0,
+                                uploaded_annotation = 0,
+                                gene_for_pmet       = 0,
+                                promoter_length     = 0,
+                                max_motif_matches   = 0,
+                                promoter_number     = 0,
+                                utr5                = 0,
+                                promoters_overlap   = 0))
     }) # end of future
+
     cli::cat_rule(sprintf("pmet task starts！"))
   } else { # when clikc RUN PMET button withouth valid job
 
@@ -390,9 +448,10 @@ observeEvent(input$stop, {
 
   # when pmetParaleel is finished, there will be no pid returned.
   if (!identical(pid, character(0))) {
-    system(paste0("kill -9 ", pid))
-    # system(paste0("rm -rf ", "result/", user_folder))
-    # system(paste0("rm -rf ", "result/", user_folder, ".zip"))
+    # system(paste0("kill -9 ", pid))
+
+    # system(paste0("rm -rf ", "result/", pmetPair_path))
+    # system(paste0("rm -rf ", "result/", pmetPair_path, ".zip"))
 
     showNotification("PMET had been stopped!!!", type = "error", duration = 0)
 
@@ -406,6 +465,16 @@ observeEvent(input$stop, {
 
 
 # hide download button every time change gene file
-observeEvent(input$gene_for_pmet, {
+observeEvent(c( input$motif_db, input$uploaded_fasta_div, input$uploaded_annotation_div,
+                input$gene_for_pmet_div, input$promoter_length, input$max_motif_matches,
+                input$promoter_number, input$utr5, input$promoters_overlap,
+                input$userEmail_div), {
   shinyjs::hide("pmet_result_download_button")
+})
+
+
+observeEvent(input$test, {
+
+  print("FDA发腮阿赛发腮")
+
 })

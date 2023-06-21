@@ -286,7 +286,7 @@ python3 $pmetroot/calculateICfrommeme_IC_to_csv.py $outputdir/memefiles/ $output
 
 # shopt -s nullglob # prevent loop produncing '*.txt'
 
-# Run fim and pmetindex on each mitif (parallel version)
+# Run fimo and pmetindex on each mitif (parallel version)
 runFimoIndexing () {
     memefile=$1
     outputdir=$2

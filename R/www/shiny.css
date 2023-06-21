@@ -181,16 +181,16 @@ body {
 }
 
 /* motif uploaded: text inside the box*/
-#uploaded_motif_db_div > div > div.input-group > input {
+#uploaded_meme_div > div > div.input-group > input {
     font-size: 14px;
     margin-left: 10px;
 }
-#uploaded_motif_db-label {
+#uploaded_meme-label {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: -15px;
 }
-#uploaded_motif_db_div > div > div.input-group {
+#uploaded_meme_div > div > div.input-group {
     border-radius: 4px;
 }
 
@@ -237,7 +237,7 @@ body {
 #uploaded_fasta_progress {
     margin-bottom: -10px;
 }
-#uploaded_motif_db_progress {
+#uploaded_meme_progress {
     margin-bottom: -10px;
 }
 /* gap before example file */

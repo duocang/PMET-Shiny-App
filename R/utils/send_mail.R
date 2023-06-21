@@ -18,10 +18,10 @@ send_result_mail <- function(recipient = NULL, result_link = NULL) {
     subject = subject,
     body = body,
     smtp = list(
-      host.name = "",
-      port = 587,
-      user.name = "",
-      passwd = "",
+      host.name = "v095996.kasserver.com", # smtp 服务器主机名
+      port = 587, # 默认端口
+      user.name = "", # 用户名
+      passwd = "", # 密码（授权码）
       ssl = TRUE
     ),
     authenticate = TRUE,

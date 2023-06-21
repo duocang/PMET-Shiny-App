@@ -19,10 +19,65 @@ valid.files.email.func <- function(input) {
 
 
 
-# prepare all paths/directories needed by PMET
-paths_for_pmet_func <- function(input) {
-  if (input$motif_db != "uploaded_motif") {
+# # prepare all paths/directories needed by PMET
+# paths_for_pmet_func <- function(input) {
+#   if (input$motif_db != "uploaded_motif") {
+#     species <- str_split(input$motif_db, "-")[[1]][1]
 
+#     pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
+#     folder_name <- str_split(input$userEmail, "@")[[1]] %>%
+#       paste0(collapse = "_") %>%
+#       paste0("_", species, "_", input$motif_db) %>%
+#       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+#     # pmetPair_path <- file.path(project_path, "result", folder_name)
+#     pmetPair_path <- file.path("result", folder_name)
+#   }
+
+#   if (input$sequence_type == "intervals" | input$motif_db == "uploaded_motif"){
+
+#     motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
+#       paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
+#       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+
+#     pmetIndex_path <- file.path("data/PMETindex", input$motif_db, motif_db)
+#     folder_name <- str_split(input$userEmail, "@")[[1]] %>%
+#       paste0(collapse = "_") %>%
+#       paste0("_", input$motif_db) %>%
+#       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+#     pmetPair_path <- file.path( "result", folder_name)
+#   }
+
+#   genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
+
+#   return(list(genes_path     = genes_path,
+#               pmetIndex_path = pmetIndex_path,
+#               folder_name    = folder_name,
+#               pmetPair_path    = pmetPair_path))
+# }
+# prepare all paths/directories needed by PMET
+
+
+
+pmet_mode_func <- function(input) {
+  if (input$sequence_type == "intervals") {
+    return(3)
+  } else if (input$motif_db == "uploaded_motif") {
+    return(2)
+  } else {
+    return(1)
+  }
+}
+
+
+
+# mode:
+#   1: upload self meme files
+#   2: select precomputed species
+#   3: interval pmet
+
+paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_folder = NULL) {
+
+  if (mode == 1) {
     species <- str_split(input$motif_db, "-")[[1]][1]
 
     pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
@@ -30,11 +85,8 @@ paths_for_pmet_func <- function(input) {
       paste0(collapse = "_") %>%
       paste0("_", species, "_", input$motif_db) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-    # user_folder <- file.path(project_path, "result", folder_name)
-    user_folder <- file.path("result", folder_name)
   } else {
-
-    motif_db <- input$uploaded_motif_db$name %>% str_replace(".meme", "") %>%
+    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
       paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
 
@@ -43,15 +95,23 @@ paths_for_pmet_func <- function(input) {
       paste0(collapse = "_") %>%
       paste0("_", input$motif_db) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-    user_folder <- file.path( "result", folder_name)
   }
 
-  genes_path <- file.path(user_folder, input$gene_for_pmet$name)
+  pmetPair_path <- file.path("result", folder_name)
+  genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
+
+  # if (first_run) {
+  #   # rename temp folder in first run of PMET
+  #   file.rename(file.path("result", temp_folder), pmetPair_path)
+  #   if (mode != 1) {
+  #     file.rename(file.path(UPLOAD_DIR, temp_folder), pmetIndex_path)
+  #   }
+  # }
 
   return(list(genes_path     = genes_path,
               pmetIndex_path = pmetIndex_path,
               folder_name    = folder_name,
-              user_folder    = user_folder))
+              pmetPair_path    = pmetPair_path))
 }
 
 # copy file from shiny temp folder to a folder created for PMETindex
@@ -89,8 +149,21 @@ epmty.df.func <- function(motifs) {
   return(all)
 }
 
-# check elements duplicated
-allDuplicated <- function(vec) {
+
+# Description:
+#   This function marks all elemetns with duplications
+#
+# Parameters:
+#   - vec: A vector containing the elements to be checked for duplication.
+#
+# Returns:
+#   A logical value indicating whether there are any duplicated values in the vector.
+#
+# Example:
+#   vec <- c(1, 2, 3, 2, 4, 2)
+#   is_duplicated <- mark_duplicates(vec)
+#   # is_duplicated =  FALSE  TRUE FALSE  TRUE FALSE  TRUE
+mark_duplicates <- function(vec) {
   front <- duplicated(vec)
   back <- duplicated(vec, fromLast = TRUE)
   all_dup <- front + back > 0
@@ -204,7 +277,7 @@ pmet.result.proces.func <- function(pmet_result = NULL,
     ## 4. Remove shared combinations  of  motif  pair
     # find which motif pairs are not unique
     if (unique_cmbination) {
-      pmet_filtered <- pmet_filtered[which(allDuplicated(motif_pair) != "TRUE"), ]
+      pmet_filtered <- pmet_filtered[which(mark_duplicates(motif_pair) != "TRUE"), ]
     }
 
     # update clusters every time after filtering
@@ -372,6 +445,31 @@ data.reshape.func11 <- function(pmet_split, motifs_list, counts = "p_adj") {
 }
 
 
+
+
+# Function to remove shared motifs between different motif clusters
+# Parameters:
+#   motifs_list: A list containing several motif clusters
+# Returns:
+#   Updated motif list with shared motifs removed between clusters
+remove_shared_motifs <- function(motifs_list) {
+  # Iterate over each cluster in the motifs_list
+  motifs_list <- names(motifs_list) %>%
+    lapply(function(clu) {
+      motifs_clu <- motifs_list[[clu]]
+      # Get motifs from other clusters
+      motifs_rest <- motifs_list[setdiff(names(motifs_list), clu)] %>% unlist() %>% unique()
+      # Remove shared motifs from the current cluster
+      setdiff(motifs_clu, motifs_rest)
+    }) %>%
+    setNames(names(motifs_list))
+
+  # Return the updated motif list
+  return(motifs_list)
+}
+
+
+
 # plot heatmap of top motifs
 # 1. remove shared motifs from each clusters
 plot.motif.pair.func <- function(pmet_split,
@@ -400,31 +498,16 @@ plot.motif.pair.func <- function(pmet_split,
     )[1:length(pmet_split)]
     names(colors) <- names(pmet_split)
 
-    # remove shared motifs
-    if (exclusive_motifs) {
-      motifs_list <- names(motifs_list) %>%
-        lapply(function(clu) {
-          motifs_clu <- motifs_list[[clu]]
-          motifs_rest <- motifs_list[setdiff(names(motifs_list), clu)] %>%
-            unlist() %>%
-            unique()
-          setdiff(motifs_clu, motifs_rest)
-        }) %>%
-        setNames(names(motifs_list))
-    }
+    # remove shared motifs, if exclusive_motifs is TRUE
+    motifs_list <- ifelse(exclusive_motifs, remove_shared_motifs(motifs_list), motifs_list)
 
     # order motifs by clusters
     if (by_cluster & exclusive_motifs) {
-      motifs_top <- motifs_list %>%
-        unlist() %>%
-        unname()
+      motifs_top <- motifs_list %>% unlist() %>% unname()
 
       samp_id <- 1:length(motifs_top)
       group <- names(motifs_list) %>%
-        lapply(function(clu) {
-          rep(clu, length(motifs_list[[clu]]))
-        }) %>%
-        unlist()
+        lapply(function(clu) { rep(clu, length(motifs_list[[clu]])) }) %>% unlist()
 
       # Build a legend "bar"
       groups <- data.frame(samp_id = samp_id, group = group)

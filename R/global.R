@@ -65,7 +65,7 @@ suppressMessages({
 })
 
 options(shiny.maxRequestSize = 30000 * 1024^2)
-# plan(multisession)
+plan(multisession)
 
 # Get lower triangle of the correlation matrix
 get_lower_tri <- function(cormat) {

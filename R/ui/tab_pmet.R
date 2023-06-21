@@ -16,9 +16,6 @@ tabPanel(
           inline = TRUE
         )
       ),
-      # input files
-      # div(
-      # id = "input_file_div",
       # motif database
       div(
         id = "motif_db_class",
@@ -39,10 +36,10 @@ tabPanel(
           selected = "jaspar_plants_non_redundant_2018",
           selectize = TRUE
         ),
-        div(id = "motif_db_div", uiOutput("motif_db_output")),
+        # div(id = "motif_db_div", uiOutput("motif_db_output")),
         div(
-          id = "uploaded_motif_db_div",
-          fileInput("uploaded_motif_db", "Upload motif meme file",
+          id = "uploaded_meme_div",
+          fileInput("uploaded_meme", "Upload motif meme file",
             multiple = FALSE,
             accept = ".meme"
           ),
@@ -176,7 +173,8 @@ tabPanel(
         style = "margin-bottom:30px; margin-top:20px;",
         uiOutput("pmet_result_download_ui"),
         uiOutput("pmet_result_download_ui1")
-      )
+      ),
+      actionButton("test", "Analyze PMET")
     ),
     mainPanel()
   )

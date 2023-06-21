@@ -118,7 +118,7 @@ server {
 After PMET calculation is completed, Shiny will generate a download button that is specifically for the PMET result archive. This functionality can be found in `utils/command_call_pmet.R` line 115.
 
 ```R
-result_link <- paste0("http://127.0.0.1:84/result/", paste0(user_folder_name, ".zip"))
+result_link <- paste0("http://127.0.0.1:84/result/", paste0(pmetPair_path_name, ".zip"))
 ```
 
 #### CPU
