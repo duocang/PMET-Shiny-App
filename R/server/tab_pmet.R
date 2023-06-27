@@ -28,17 +28,20 @@ observe({
     shinyjs::show("uploaded_meme_div")
     shinyjs::show("uploaded_fasta_div")
 
+    shinyjs::show("demo_intervals_file_link")
+    shinyjs::hide("demo_genome_file_link")
+
     shinyjs::hide("run_pmet_div")
     shinyjs::hide("motif_db")
     shinyjs::hide("uploaded_annotation_div")
     shinyjs::hide("utr5_div")
-    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation",
+    for (i in c("uploaded_meme", "uploaded_fasta", "uploaded_annotation",
               "gene_for_pmet", "promoter_length", "promoter_number",
               "utr5", "promoters_overlap"
               )) {
       reset(i)
     }
-    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation", "gene_for_pmet")) {
+    for (i in c("uploaded_meme", "uploaded_fasta", "uploaded_annotation", "gene_for_pmet")) {
       showFeedbackDanger(inputId = i, text = "")
     }
   } else if (input$motif_db != "uploaded_motif") {
@@ -56,7 +59,7 @@ observe({
     shinyjs::disable("promoter_number_div")
     shinyjs::disable("promoters_overlap_div")
     shinyjs::disable("utr5_div")
-    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation",
+    for (i in c("uploaded_meme", "uploaded_fasta", "uploaded_annotation",
               "gene_for_pmet", "promoter_length", "promoter_number",
               "utr5", "promoters_overlap"
               )) {
@@ -64,6 +67,9 @@ observe({
     }
     showFeedbackDanger(inputId = "gene_for_pmet", text = "")
   } else {
+    shinyjs::hide("demo_intervals_file_link")
+    shinyjs::show("demo_genome_file_link")
+
     # show self upload option of motif DB
     shinyjs::show("uploaded_meme_div")
     shinyjs::show("uploaded_fasta_div")
@@ -76,13 +82,13 @@ observe({
     shinyjs::enable("utr5_div")
     shinyjs::enable("promoters_overlap_div")
 
-    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation",
+    for (i in c("uploaded_meme", "uploaded_fasta", "uploaded_annotation",
               "gene_for_pmet", "promoter_length", "promoter_number",
               "utr5", "promoters_overlap"
               )) {
       reset(i)
     }
-    for (i in c("uploaded_meme", "uploaded_fasta", "motif_annotation", "gene_for_pmet")) {
+    for (i in c("uploaded_meme", "uploaded_fasta", "uploaded_annotation", "gene_for_pmet")) {
       showFeedbackDanger(inputId = i, text = "")
     }
   }
@@ -261,6 +267,17 @@ output$demo_genes_file_link <- downloadHandler(
   }
 )
 
+
+output$demo_intervals_file_link <- downloadHandler(
+  filename = function() {
+    "intervals.fa"
+  },
+  content = function(file) {
+    data <- readLines("data/intervals.fa")
+    writeLines(data, file)
+  }
+)
+
 output$demo_motif_db_link <- downloadHandler(
   filename = function() {
     "example_motif.meme"
@@ -281,10 +298,6 @@ observeEvent(input$userEmail, {
     showFeedbackWarning(inputId = "userEmail", text = "invalid Email")
   }
 })
-# iv <- InputValidator$new()
-#   iv$add_rule("userEmail", sv_required())
-#   iv$add_rule("userEmail", sv_email())
-#   iv$enable()
 
 # show/hide Run button () ------------------------------------------------------
 observe({
@@ -314,8 +327,7 @@ observeEvent(input$run_pmet_button, {
     })
 
     shinyjs::disable("run_pmet_button")
-    shinyjs::show("stop_bnt_div")
-    runjs('document.getElementById("stop_bnt_div").scrollIntoView();')
+    runjs('document.getElementById("run_pmet_div").scrollIntoView();')
 
     notifi_pmet_id <<- showNotification("PMET is running...", type = "message", duration = 0)
 
@@ -352,7 +364,6 @@ observeEvent(input$run_pmet_button, {
       # 2. hide STOP button
       resetLoadingButton("run_pmet_button")
       shinyjs::enable("run_pmet_button")
-      shinyjs::hide("stop_bnt_div")
       removeNotification(notifi_pmet_id)
       showNotification("PMET finished.", type = "error", duration = 0)
 
@@ -404,36 +415,6 @@ observeEvent(input$run_pmet_button, {
   } # end of if else
 })
 
-# STOP buttion: activities when stop pmet job------------------------------------------------
-observeEvent(input$stop, {
-
-  cli::cat_rule(sprintf("Task stops！"))
-  print(pmetPair_path)
-  print(pmetIndex_path)
-
-  pid_exists <- TRUE
-  while (pid_exists) {
-    pids <- pid_pmet_finder_func(user_id)
-
-    if (is.null(pids)) {
-      pid_exists <- FALSE
-    }
-
-    for (pid in pids) {
-      system("nohup R/utils/pmet_kill_by_pid.sh &"))
-      print(pid)
-    }
-    Sys.sleep(5)
-  }
-
-  showNotification("PMET had been stopped!!!", type = "error", duration = 0)
-
-  resetLoadingButton("run_pmet_button")
-  shinyjs::enable("run_pmet_button")
-  shinyjs::hide("stop_bnt_div")
-  shinyjs::hide("pmet_result_download_button")
-  removeNotification(notifi_pmet_id)
-}, ignoreInit = T)
 
 # hide download button every time change uploads
 observeEvent(c( input$motif_db, input$uploaded_fasta_div, input$uploaded_annotation_div,

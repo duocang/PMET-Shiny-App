@@ -50,10 +50,12 @@ tabPanel(
           accept = c(".fasta", ".fa")
         ),
         tags$a(
+          id = "demo_genome_file_link",
           href = "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/arabidopsis_thaliana/dna/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa.gz",
-          download = "example_annotation.gff3",
+          download = "Arabidopsis_thaliana.TAIR10.dna.toplevel.fa.gz",
           "Example genome"
-        )
+        ),
+        downloadLink("demo_intervals_file_link", "Example intervals collection")
       ), # end of uploaded_fasta_div
       div(id = "uploaded_annotation_div",
         fileInput("uploaded_annotation", "Upload annotation file",
@@ -145,15 +147,6 @@ tabPanel(
                 label = "Run PMET",
                 loadingLabel = "Running...",
                 style = "width: 135px"
-              )
-            ),
-            shinyjs::hidden(
-              div(
-                id = "stop_bnt_div",
-                style = "margin-bottom:30px; margin-top:20px;",
-                actionButton("stop", "Stop",
-                  style = "color: #ffff; background-color: #e95420; width: 135px"
-                )
               )
             )
           )

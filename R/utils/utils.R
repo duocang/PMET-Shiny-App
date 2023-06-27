@@ -51,8 +51,7 @@ paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_fo
   },
   "3" = {
     motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
-      paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
-      paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+      paste0(., "_", user_id)
 
     pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
   })

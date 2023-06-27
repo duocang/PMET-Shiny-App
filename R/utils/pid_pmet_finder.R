@@ -1,4 +1,5 @@
 library(dplyr)
+library(stringr)
 # 执行命令并提取符合条件的 Command 信息
 # Execute a command and extract Command information that matches a given pattern
 # Arguments:
@@ -22,7 +23,7 @@ pid_pmet_finder_func <- function(pattern) {
 	# 	-b binomial_thresholds.txt
 	#		-c IC.txt -f fimohits -t 8
 	# 	-o /Users/nuioi/projects/pmet_shiny_nginx/result/TT_gmail.com_at_at-jaspar_2018_2023Jun15_0015
-  matched_commands <- grep("(python|awk|fimo|pmetParallel|pmetindex)", output, value = TRUE) %>%
+  matched_commands <- grep("(fimo|pmetParallel|pmetindex|PMET|PMETindex|PMETdev)", output, value = TRUE) %>%
 		grep(pattern, ., value = TRUE)
 
 	if (identical(matched_commands, character(0))) {
@@ -30,7 +31,7 @@ pid_pmet_finder_func <- function(pattern) {
 	}
 
 	pids <- lapply(matched_commands, function (i) {
-      pid <- str_split(i, " ")[[1]][1]
+			pid <- str_extract(i, "^\\s*\\d+") %>% as.numeric()
     }) %>% unlist()
 
   return(pids)
