@@ -5,7 +5,7 @@ library(dplyr)
 #   pattern: The pattern to match in the Command information
 # Returns:
 #   A character vector containing the matched Command information
-pid.pmet.finder.func <- function(pattern) {
+pid_pmet_finder_func <- function(pattern) {
   # 使用系统命令和管道获取所有 Command 信息
 	# Execute a system command with a pipe to retrieve all Command information
   command <- paste("ps -e -o pid,command", sep = "")
@@ -22,22 +22,25 @@ pid.pmet.finder.func <- function(pattern) {
 	# 	-b binomial_thresholds.txt
 	#		-c IC.txt -f fimohits -t 8
 	# 	-o /Users/nuioi/projects/pmet_shiny_nginx/result/TT_gmail.com_at_at-jaspar_2018_2023Jun15_0015
-  matched_commands <- grep("(fimo|pmetParallel|pmetindex)", output, value = TRUE) %>%
+  matched_commands <- grep("(python|awk|fimo|pmetParallel|pmetindex)", output, value = TRUE) %>%
 		grep(pattern, ., value = TRUE)
 
 	if (identical(matched_commands, character(0))) {
 		return(0)
 	}
-	pid <- stringr::str_split(matched_commands, " ")[[1]][1]
 
-  return(pid)
+	pids <- lapply(matched_commands, function (i) {
+      pid <- str_split(i, " ")[[1]][1]
+    }) %>% unlist()
+
+  return(pids)
 }
 
 
-# Extract Command information containing "pmetParallel" in R
-# 提取 Command 信息中含有 "pmetParallel" 的命令
-pattern <- "bidopsis_thaliana-jaspar_plants_non_redundant_2018_2"
-matched_commands <- pid.pmet.finder.func(pattern)
+# # Extract Command information containing "pmetParallel" in R
+# # 提取 Command 信息中含有 "pmetParallel" 的命令
+# pattern <- "bidopsis_thaliana-jaspar_plants_non_redundant_2018_2"
+# matched_commands <- pid.pmet.finder.func(pattern)
 
-# 打印符合条件的 Command 信息
-print(matched_commands)
+# # 打印符合条件的 Command 信息
+# print(matched_commands)

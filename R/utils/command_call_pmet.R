@@ -72,7 +72,11 @@ command_run_pmet <- function( input,
         )
         system("chmod +x PMETdev/scripts/gff3sort/gff3sort.pl")
         system("chmod +x PMETdev/PMETindex_promoters_parallel_delete_fimo.sh")
-        messages <- system(bash_pmet, intern=TRUE)
+        message <- tryCatch({
+          system(bash_pmet, intern=TRUE)
+        }, error = function(err) {
+          return("PMET STOP")
+        })
       }
     },
     "3" = {

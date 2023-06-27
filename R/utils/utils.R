@@ -35,6 +35,10 @@ pmet_mode_func <- function(input) {
 
 paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_folder = NULL) {
 
+  user_id <- paste0(str_replace(input$userEmail, "@", "-"),
+                    "_",
+                    format(Sys.time(), "%Y%b%d_%H%M"))
+
   switch(mode,
   "1" = {
     species <- str_split(input$motif_db, "-")[[1]][1]
@@ -42,10 +46,7 @@ paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_fo
     pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
   },
   "2" = {
-    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
-      paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
-      paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-
+    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>% paste0(., "_", user_id)
     pmetIndex_path <- file.path("data/PMETindex", input$motif_db, motif_db)
   },
   "3" = {
@@ -56,17 +57,14 @@ paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_fo
     pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
   })
 
-  folder_name <- str_split(input$userEmail, "@")[[1]] %>%
-    paste0(collapse = "_") %>%
-    paste0("_", input$motif_db) %>%
-    paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
+  folder_name <- paste0(input$motif_db, "_", user_id)
 
   pmetPair_path <- file.path("result", folder_name)
   genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
 
   return(list(genes_path     = genes_path,
               pmetIndex_path = pmetIndex_path,
-              folder_name    = folder_name,
+              user_id        = user_id,
               pmetPair_path  = pmetPair_path))
 }
 

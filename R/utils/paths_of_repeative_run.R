@@ -50,7 +50,8 @@ paths_of_repeative_run_func <- function(input,
     cat(sprintf("%-20s %d\n", paste0(name, ":"), value))
   }
 
-  pmet_config <- list(pmetPair_path           = NULL,
+  pmet_config <- list(user_id                 = NULL,
+                      pmetPair_path           = NULL,
                       pmetIndex_path          = NULL,
                       genes_path              = NULL,
                       indexing_pairing_needed = NULL,
@@ -59,6 +60,8 @@ paths_of_repeative_run_func <- function(input,
   UPLOAD_DIR <- "data/PMETindex/uploaded_motif"
 
   pmet_paths  <- paths_for_pmet_func(input, mode, first_run, temp_folder)
+
+  pmet_config$user_id <- pmet_paths$user_id
 
   c_pmetPair_path  <- pmet_paths$pmetPair_path         # current
   c_pmetIndex_path <- pmet_paths$pmetIndex_path

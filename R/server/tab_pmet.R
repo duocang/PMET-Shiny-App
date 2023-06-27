@@ -296,7 +296,7 @@ observe({
 })
 
 # Run PMET ---------------------------------------------------------------------
-folder_name    <- "" # a global variable to track current job (folder/path)
+user_id        <- "" # a global variable to track current job (folder/path)
 pmetPair_path  <- ""
 pmetIndex_path <- ""
 notifi_pmet_id <- NULL # id to remove notification when stop pmet job
@@ -323,8 +323,6 @@ observeEvent(input$run_pmet_button, {
     # previous_paths["pmetPair_path" ] <- pmetPair_path
     # previous_paths["pmetIndex_path"] <- pmetIndex_path
     previous_paths <- list(pmetPair_path = pmetPair_path, pmetIndex_path=pmetIndex_path)
-    print("后十八届")
-    print(previous_paths)
     mode           <- pmet_mode_func(input)
     pmet_config    <- paths_of_repeative_run_func(input,
                                                   session_id,
@@ -333,8 +331,9 @@ observeEvent(input$run_pmet_button, {
                                                   flag_first_run(),
                                                   mode)
 
-    pmetPair_path    <<- pmet_config$pmetPair_path
-    pmetIndex_path   <<- pmet_config$pmetIndex_path
+    pmetPair_path  <<- pmet_config$pmetPair_path
+    pmetIndex_path <<- pmet_config$pmetIndex_path
+    user_id        <<- pmet_config$user_id
 
     inputs <- reactiveValuesToList(input)
     # PMET job is runnig in the back
@@ -409,39 +408,37 @@ observeEvent(input$run_pmet_button, {
 observeEvent(input$stop, {
 
   cli::cat_rule(sprintf("Task stops！"))
-  print(folder_name)
+  print(pmetPair_path)
+  print(pmetIndex_path)
 
+  pid_exists <- TRUE
+  while (pid_exists) {
+    pids <- pid_pmet_finder_func(user_id)
 
-  pid <- pid.pmet.finder.func(folder_name)
-  print(pid)
+    if (is.null(pids)) {
+      pid_exists <- FALSE
+    }
 
-  # when pmetParaleel is finished, there will be no pid returned.
-  if (!identical(pid, character(0))) {
-    # system(paste0("kill -9 ", pid))
-
-    # system(paste0("rm -rf ", "result/", pmetPair_path))
-    # system(paste0("rm -rf ", "result/", pmetPair_path, ".zip"))
-
-    showNotification("PMET had been stopped!!!", type = "error", duration = 0)
-
-    resetLoadingButton("run_pmet_button")
-    shinyjs::enable("run_pmet_button")
-    shinyjs::hide("stop_bnt_div")
-    shinyjs::hide("pmet_result_download_button")
-    removeNotification(notifi_pmet_id)
+    for (pid in pids) {
+      system("nohup R/utils/pmet_kill_by_pid.sh &"))
+      print(pid)
+    }
+    Sys.sleep(5)
   }
+
+  showNotification("PMET had been stopped!!!", type = "error", duration = 0)
+
+  resetLoadingButton("run_pmet_button")
+  shinyjs::enable("run_pmet_button")
+  shinyjs::hide("stop_bnt_div")
+  shinyjs::hide("pmet_result_download_button")
+  removeNotification(notifi_pmet_id)
 }, ignoreInit = T)
 
-# hide download button every time change gene file
+# hide download button every time change uploads
 observeEvent(c( input$motif_db, input$uploaded_fasta_div, input$uploaded_annotation_div,
                 input$gene_for_pmet_div, input$promoter_length, input$max_motif_matches,
                 input$promoter_number, input$utr5, input$promoters_overlap,
                 input$userEmail_div), {
   shinyjs::hide("pmet_result_download_button")
-})
-
-observeEvent(input$test, {
-
-  print("FDA发腮阿赛发腮")
-
 })
