@@ -8,8 +8,7 @@ tabPanel(
     sidebarPanel(
       width = 4,
       # promoters
-      div(
-        id = "promoters_div",
+      div(id = "promoters_div",
         div("Type of Sequences:", class = "big_font"),
         radioButtons("sequence_type", NULL,
           c("Promoters" = "promoters", "Genomic intervals" = "intervals"),
@@ -17,8 +16,7 @@ tabPanel(
         )
       ),
       # motif database
-      div(
-        id = "motif_db_class",
+      div(id = "motif_db_class",
         selectInput(
           inputId = "motif_db", label = "Motif database",
           choices = list(
@@ -46,8 +44,7 @@ tabPanel(
           downloadLink("demo_motif_db_link", "Example motif DB")
         )
       ),
-      div(
-        id = "uploaded_fasta_div",
+      div(id = "uploaded_fasta_div",
         fileInput("uploaded_fasta", "Upload genome file",
           multiple = FALSE,
           accept = c(".fasta", ".fa")
@@ -58,8 +55,7 @@ tabPanel(
           "Example genome"
         )
       ), # end of uploaded_fasta_div
-      div(
-        id = "uploaded_annotation_div",
+      div(id = "uploaded_annotation_div",
         fileInput("uploaded_annotation", "Upload annotation file",
           multiple = FALSE,
           accept = ".gff3"
@@ -70,9 +66,8 @@ tabPanel(
           "Example annotation"
         )
       ), # end of uploaded_annotation_div
-      div(
-        id = "gene_for_pmet_div",
-        fileInput("gene_for_pmet", "Gene clusters and genes",
+      div(id = "gene_for_pmet_div",
+        fileInput("gene_for_pmet", "Clusters and genes (intervals)",
           multiple = FALSE,
           accept = ".txt"
         ),
@@ -87,8 +82,7 @@ tabPanel(
         )
       ), # end of gene_for_pmet_div
       # parameters
-      div(
-        id = "parameters_div",
+      div(id = "parameters_div",
         div("Parameters", class = "big_font"),
         fluidRow(
           class = "parameters_id",
@@ -138,13 +132,11 @@ tabPanel(
       ),
 
       # personal info
-      div(
-        id = "userEmail_div",
-        textInput("userEmail", "Email", value = "")
+      div(id = "userEmail_div",
+        textInput("userEmail", "Email", value = ""),
       ),
       # action button
-      div(
-        class = "run_pmet_div",
+      div(class = "run_pmet_div",
         shinyjs::hidden(
           shiny::div(
             id = "run_pmet_button_div",
@@ -168,14 +160,13 @@ tabPanel(
         )
       ),
       # Download PMET result button
-      div(
-        id = "pmet_result_download_ui_div",
+      div(id = "pmet_result_download_ui_div",
         style = "margin-bottom:30px; margin-top:20px;",
         uiOutput("pmet_result_download_ui"),
         uiOutput("pmet_result_download_ui1")
-      ),
-      actionButton("test", "Analyze PMET")
+      )
     ),
-    mainPanel()
+    mainPanel({
+    })
   )
 )

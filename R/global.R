@@ -42,6 +42,7 @@ suppressMessages({
     "tibble",             # creating and manipulating data frames with enhanced features compared to traditional data frames.
     "tidyverse",          # data manipulation, visualization, and analysis.
     "tictoc",             # measuring the time taken by R code execution.
+    "shinyvalidate",      # shinyvalidate adds input validation capabilities to Shiny.
     "zip"                 # reading, writing, and manipulating ZIP archives in R.
 )
 
@@ -62,6 +63,7 @@ suppressMessages({
   # source("R/utils/send_mail.R")
   source("R/utils/pid_pmet_finder.R")
   source("R/utils/paths_of_repeative_run.R")
+  source("R/utils/check_gene_file_fucn.R")
 })
 
 options(shiny.maxRequestSize = 30000 * 1024^2)

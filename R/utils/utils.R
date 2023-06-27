@@ -17,47 +17,6 @@ valid.files.email.func <- function(input) {
   return(valid.email.func(input$userEmail) & all_files_uploaded)
 }
 
-
-
-# # prepare all paths/directories needed by PMET
-# paths_for_pmet_func <- function(input) {
-#   if (input$motif_db != "uploaded_motif") {
-#     species <- str_split(input$motif_db, "-")[[1]][1]
-
-#     pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
-#     folder_name <- str_split(input$userEmail, "@")[[1]] %>%
-#       paste0(collapse = "_") %>%
-#       paste0("_", species, "_", input$motif_db) %>%
-#       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-#     # pmetPair_path <- file.path(project_path, "result", folder_name)
-#     pmetPair_path <- file.path("result", folder_name)
-#   }
-
-#   if (input$sequence_type == "intervals" | input$motif_db == "uploaded_motif"){
-
-#     motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
-#       paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
-#       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-
-#     pmetIndex_path <- file.path("data/PMETindex", input$motif_db, motif_db)
-#     folder_name <- str_split(input$userEmail, "@")[[1]] %>%
-#       paste0(collapse = "_") %>%
-#       paste0("_", input$motif_db) %>%
-#       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-#     pmetPair_path <- file.path( "result", folder_name)
-#   }
-
-#   genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
-
-#   return(list(genes_path     = genes_path,
-#               pmetIndex_path = pmetIndex_path,
-#               folder_name    = folder_name,
-#               pmetPair_path    = pmetPair_path))
-# }
-# prepare all paths/directories needed by PMET
-
-
-
 pmet_mode_func <- function(input) {
   if (input$sequence_type == "intervals") {
     return(3)
@@ -69,7 +28,6 @@ pmet_mode_func <- function(input) {
 }
 
 
-
 # mode:
 #   1: upload self meme files
 #   2: select precomputed species
@@ -77,41 +35,39 @@ pmet_mode_func <- function(input) {
 
 paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_folder = NULL) {
 
-  if (mode == 1) {
+  switch(mode,
+  "1" = {
     species <- str_split(input$motif_db, "-")[[1]][1]
 
     pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
-    folder_name <- str_split(input$userEmail, "@")[[1]] %>%
-      paste0(collapse = "_") %>%
-      paste0("_", species, "_", input$motif_db) %>%
-      paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-  } else {
+  },
+  "2" = {
     motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
       paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
 
     pmetIndex_path <- file.path("data/PMETindex", input$motif_db, motif_db)
-    folder_name <- str_split(input$userEmail, "@")[[1]] %>%
-      paste0(collapse = "_") %>%
-      paste0("_", input$motif_db) %>%
+  },
+  "3" = {
+    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
+      paste0(., "_", str_replace(input$userEmail, "@", "-")) %>%
       paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
-  }
+
+    pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
+  })
+
+  folder_name <- str_split(input$userEmail, "@")[[1]] %>%
+    paste0(collapse = "_") %>%
+    paste0("_", input$motif_db) %>%
+    paste0("_", format(Sys.time(), "%Y%b%d_%H%M"))
 
   pmetPair_path <- file.path("result", folder_name)
   genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
 
-  # if (first_run) {
-  #   # rename temp folder in first run of PMET
-  #   file.rename(file.path("result", temp_folder), pmetPair_path)
-  #   if (mode != 1) {
-  #     file.rename(file.path(UPLOAD_DIR, temp_folder), pmetIndex_path)
-  #   }
-  # }
-
   return(list(genes_path     = genes_path,
               pmetIndex_path = pmetIndex_path,
               folder_name    = folder_name,
-              pmetPair_path    = pmetPair_path))
+              pmetPair_path  = pmetPair_path))
 }
 
 # copy file from shiny temp folder to a folder created for PMETindex
@@ -122,7 +78,7 @@ temp_2_local_func <- function(local_dir, session_id, input_file) {
 
   # create folder
   dir_path <- file.path(local_dir, session_id)
-  dir.create(dir_path, recursive = TRUE)
+  dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
 
   # copy file
   file_path <- file.path(dir_path, new_file_name)
@@ -136,7 +92,6 @@ colors.plotly.func <- function() {
   colz <- setNames(data.frame(vals[o], cols[o]), NULL)
   return(colz)
 }
-
 
 # create an empty data.frame with all pairs of motif-motif combination in a long format to be joined with PMET results
 epmty.df.func <- function(motifs) {

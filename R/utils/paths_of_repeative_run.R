@@ -44,7 +44,11 @@ paths_of_repeative_run_func <- function(input,
                                         first_run,
                                         mode) {
 
-  print(flags)
+
+  for (name in names(flags)) {
+    value <- flags[[name]]
+    cat(sprintf("%-20s %d\n", paste0(name, ":"), value))
+  }
 
   pmet_config <- list(pmetPair_path           = NULL,
                       pmetIndex_path          = NULL,
@@ -78,11 +82,9 @@ paths_of_repeative_run_func <- function(input,
     if (mode != 1) {
       file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$pmetIndex_path)
     }
-
-  }
+  } # if (first_run)
 
   if (!first_run) {
-    # print(flags)
     pairing_OK   <- file.exists(paste0(p_pmetPair_path   , "_FLAG"))
 
     if (mode == 1) {
@@ -92,7 +94,7 @@ paths_of_repeative_run_func <- function(input,
         pmet_config$genes_path     <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
 
         if (!pairing_OK) {
-          dir.create(pmet_config$pmetPair_path, recursive = TRUE)
+          dir.create(pmet_config$pmetPair_path, recursive = TRUE, showWarnings = FALSE)
           file.copy(input$gene_for_pmet$datapath, pmet_config$pmetPair_path, overwrite = TRUE)
           file.rename(file.path(pmet_config$pmetPair_path , "0.txt" ), pmet_config$genes_path)
         }
@@ -109,20 +111,18 @@ paths_of_repeative_run_func <- function(input,
         file.rename(file.path("result", temp_folder), pmet_config$pmetPair_path)
       }
     }# if !indexing
-
-    if (mode == 2) {
+    if (mode == 2 | mode == 3) {
       # if the previous run has completed of PMETindex, there will be a flag file generated
       indexing_OK <- file.exists(paste0(p_pmetindex_path, "_FLAG"))
 
       # after the previous run, the flag will be set to all zeros, meaning no upload changed
       if ( sum(unlist(flags)) == 0 ) {
-        print("afaFDA发森阿赛")
         pmet_config$pmetPair_path  <- ifelse(pairing_OK, p_pmetPair_path, c_pmetPair_path)
         pmet_config$pmetIndex_path <- p_pmetindex_path
         pmet_config$genes_path     <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
 
         if (!pairing_OK) {
-          dir.create(pmet_config$pmetPair_path, recursive = TRUE)
+          dir.create(pmet_config$pmetPair_path, recursive = TRUE, showWarnings = FALSE)
           file.copy(input$gene_for_pmet$datapath, pmet_config$genes_path, overwrite = TRUE)
         }
         pmet_config$pairing_need            <- !pairing_OK && indexing_OK
@@ -131,7 +131,8 @@ paths_of_repeative_run_func <- function(input,
 
       } else if ( flags$gene_for_pmet == 1 & sum(unlist(flags)) == 1) {
         pmet_config$pmetPair_path  <- c_pmetPair_path
-        pmet_config$pmetIndex_path <- p_pmetindex_path
+        pmet_config$pmetIndex_path <- ifelse(indexing_OK, p_pmetindex_path, c_pmetPair_path)
+
         pmet_config$genes_path     <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
 
         pmet_config$indexing_pairing_needed <- !indexing_OK
@@ -159,8 +160,8 @@ paths_of_repeative_run_func <- function(input,
           temp_2_local_func(UPLOAD_DIR, temp_folder, input$uploaded_annotation)
         }
         if (flags$gene_for_pmet == 0) {
-          # create local folders
-          dir.create(file.path("result", temp_folder), recursive = TRUE)
+          # # create local folders
+          # dir.create(file.path("result", temp_folder), recursive = TRUE, showWarnings = FALSE)
           temp_2_local_func("result", temp_folder, input$gene_for_pmet)
         }
         file.rename(file.path("result", temp_folder), pmet_config$pmetPair_path)
@@ -169,6 +170,9 @@ paths_of_repeative_run_func <- function(input,
     } # if (mode == 2)
   } # if (!first_run)
 
-  print(pmet_config)
+  for (name in names(pmet_config)) {
+    value <- pmet_config[[name]]
+    cat(sprintf("%-20s %s\n", paste0(name, ":"), value))
+  }
   return(pmet_config)
 } # function definition

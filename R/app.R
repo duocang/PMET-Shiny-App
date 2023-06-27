@@ -1,6 +1,7 @@
 source("R/global.R")
 
 ui <- fluidPage(
+  # shinythemes::themeSelector(),  # <--- Add this somewhere in the UI
   disconnectMessage2(),
   useShinyjs(),
   navbarPage(
