@@ -10,12 +10,13 @@ ui <- fluidPage(
     header = includeCSS("R/www/shiny.css"),
     title = "PMET",
     # include the UI for each tab
-    source("R/ui/tab_home.R", local = TRUE)$value,
-    source("R/ui/tab_pmet.R", local = TRUE)$value,
+    source("R/ui/tab_home.R"   , local = TRUE)$value,
+    source("R/ui/tab_start.R"  , local = TRUE)$value,
+    # source("R/ui/tab_pmet.R", local = TRUE)$value,
     source("R/ui/tab_heatmap.R", local = TRUE)$value,
     # source("ui/tab_dataviewer.R", local = TRUE)$value,
-    source("R/ui/tab_about.R", local = TRUE)$value,
-    source("R/ui/tab_author.R", local = TRUE)$value
+    source("R/ui/tab_about.R"  , local = TRUE)$value,
+    source("R/ui/tab_author.R" , local = TRUE)$value
   ),
   style = "padding: 0px;", # no gap in navbar
   actionButton("show_tutorial", "Tips", style = "position: absolute; top: 15px; right: 5px; z-index:10000;")
@@ -23,12 +24,13 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   # Include the logic (server) for each tab
-  source("R/server/tab_home.R", local = TRUE)$value
-  source("R/server/tab_pmet.R", local = TRUE)$value
+  source("R/server/tab_home.R"   , local = TRUE)$value
+  source("R/server/tab_start.R"  , local = TRUE)$value
+  # source("R/server/tab_pmet.R", local = TRUE)$value
   source("R/server/tab_heatmap.R", local = TRUE)$value
   # source("server/tab_dataviewer.R", local = TRUE)$value
-  source("R/server/tab_about.R", local = TRUE)$value
-  source("R/server/tab_author.R", local = TRUE)$value
+  source("R/server/tab_about.R"  , local = TRUE)$value
+  source("R/server/tab_author.R" , local = TRUE)$value
 
 
   # workthrough tips of Run PMET ------------------------------------------------------
@@ -77,13 +79,5 @@ server <- function(input, output, session) {
     }
     # update records of visited page
     navbar_visited <<- c(navbar_visited, input$navbar) %>% unique()
-  })
-
-  # show walk through when button is clicked
-  observeEvent(input$show_tutorial, {
-    switch(input$navbar,
-      # "home_tabpanel"    = introjs(session, options = list(steps = home_steps())),
-      "run_tabpanel"     = introjs(session, options = list(steps = pmet_tips())),
-      "heatmap_tabpanel" = introjs(session, options = list(steps = heatmap_tips())))
   })
 }

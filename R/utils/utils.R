@@ -17,6 +17,22 @@ valid.files.email.func <- function(input) {
   return(valid.email.func(input$userEmail) & all_files_uploaded)
 }
 
+
+# check files uploaded and email before running PMET
+valid_inputs_func <- function(input, mode) {
+  motif_db   <- input$motif_db
+  fasta      <- input$uploaded_fasta$datapath
+  annotation <- input$uploaded_annotation$datapath
+  genes      <- input$gene_for_pmet$datapath
+
+  if (motif_db == "uploaded_motif") {
+    all_files_uploaded <- ifelse(length(c(motif_db, fasta, annotation, genes)) == 4, TRUE, FALSE)
+  } else {
+    all_files_uploaded <- !is.null(genes)
+  }
+  return(valid.email.func(input$userEmail) & all_files_uploaded)
+}
+
 pmet_mode_func <- function(input) {
   if (input$sequence_type == "intervals") {
     return(3)
@@ -66,6 +82,50 @@ paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_fo
               user_id        = user_id,
               pmetPair_path  = pmetPair_path))
 }
+
+
+
+
+paths_for_pmet_func_ <- function(input = NULL, mode = NULL) {
+
+  user_id <- paste0(str_replace(input$userEmail, "@", "-"),
+                    "_",
+                    format(Sys.time(), "%Y%b%d_%H%M"))
+
+  switch(mode,
+  "promoters_pre" = {
+    species <- str_split(input$motif_db, "-")[[1]][1]
+    pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
+  },
+  "promoters" = {
+    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>% paste0(., "_", user_id)
+    pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
+  },
+  "intervals" = {
+    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>% paste0(., "_", user_id)
+    pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
+  })
+
+  folder_name <- paste0(input$motif_db, "_", user_id)
+
+  pmetPair_path <- file.path("result", folder_name)
+  genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
+
+  return(list(genes_path     = genes_path,
+              pmetIndex_path = pmetIndex_path,
+              user_id        = user_id,
+              pmetPair_path  = pmetPair_path))
+}
+
+
+
+
+
+
+
+
+
+
 
 # copy file from shiny temp folder to a folder created for PMETindex
 temp_2_local_func <- function(local_dir, session_id, input_file) {
