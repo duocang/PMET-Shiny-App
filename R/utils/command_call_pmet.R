@@ -1,4 +1,4 @@
-# command_run_pmet <- function(input = NULL, paths = NULL) {
+# Function to run PMET with indexing and pairing
 command_run_pmet <- function( input,
                               pmetIndex_path  = NULL,
                               pmetPair_path     = NULL,

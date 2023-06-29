@@ -54,7 +54,7 @@ withBusyIndicatorServer <- function(buttonId, expr) {
     shinyjs::enable(buttonId)
     shinyjs::hide(selector = loadingEl)
   })
-  
+
   # Try to run the code when the button is clicked and show an error message if
   # an error occurs or a success message if it completes
   tryCatch({

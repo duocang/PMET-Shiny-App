@@ -10,7 +10,7 @@ This is a Shiny app developed for PMET.
 │   ├── server     # server side of shiny
 │   ├── ui         # UI-side of shiny
 │   ├── utils      # R functions 
-│   └── www        # JS with D3 for heatmap, used in tab_heatmap.R
+│   └── www        # JS with D3 for heatmap, used in tab_visualize.R
 ├── app.R          # start shiny app
 ├── data           # demo data for PMETindex and PMET
 ├── readme.md

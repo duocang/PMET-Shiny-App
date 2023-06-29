@@ -3,33 +3,15 @@
 UPLOAD_DIR     <- "data/PMETindex/uploaded_motif"
 job_id         <- runif(1, 100, 999999999) %/% 1
 
-flag_first_run <- reactiveVal(TRUE)
-flag_upload_changed <- list(
-  sequence_type       = 0,
-  motif_db            = 0,
-  uploaded_meme       = 0,
-  uploaded_fasta      = 0,
-  uploaded_annotation = 0,
-  gene_for_pmet       = 0,
-  promoter_length     = 0,
-  max_motif_matches   = 0,
-  promoter_number     = 0,
-  utr5                = 0,
-  promoters_overlap   = 0
-)
-
-
 trig <- reactiveVal(FALSE)
 
-vals <- reactiveValues(trig = TRUE, mode = "promoters", navbar = "home_tabpanel")
-
 observeEvent(input$show_tutorial, {
-  vals$trig <- !vals$trig
+  trig(!trig())
 })
 
-promoters_handler     <- promoters_server    ("promoters",     job_id, flag_upload_changed, reactive(vals$trig), reactive(input$mode), reactive(input$navbar))
-promoters_pre_handler <- promoters_pre_server("promoters_pre", job_id, flag_upload_changed, reactive(vals$trig), reactive(input$mode), reactive(input$navbar))
-intervals_handler     <- intervals_server    ("intervals",     job_id, flag_upload_changed, reactive(vals$trig), reactive(input$mode), reactive(input$navbar))
+promoters_handler     <- promoters_server    ("promoters",     job_id, trig, reactive(input$mode), reactive(input$navbar))
+promoters_pre_handler <- promoters_pre_server("promoters_pre", job_id, trig, reactive(input$mode), reactive(input$navbar))
+intervals_handler     <- intervals_server    ("intervals",     job_id, trig, reactive(input$mode), reactive(input$navbar))
 
 
 output$mode_ui <-  renderUI({
@@ -44,9 +26,8 @@ output$mode_ui <-  renderUI({
 observe({
   switch(input$mode,
     "promoters_pre" = {
-      # showFeedbackDanger(inputId = "promoters_pre-gene_for_pmet", text = "No motif meme files")
       input_temp <- promoters_pre_handler$input
-      if (!is.null(input_temp$gene_for_pmet$datapath) & valid.email.func(input$userEmail)) {
+      if (!is.null(input_temp$gene_for_pmet$datapath) & is_valid_email(input$userEmail)) {
         shinyjs::show("run_pmet_button_div")
       } else {
         shinyjs::hide("run_pmet_button_div")
@@ -58,19 +39,18 @@ observe({
           & !is.null(input_temp$uploaded_annotation$datapath)
           & !is.null(input_temp$uploaded_meme$datapath)
           & !is.null(input_temp$gene_for_pmet$datapath)
-          & valid.email.func(input$userEmail)) {
+          & is_valid_email(input$userEmail)) {
             shinyjs::show("run_pmet_button_div")
           } else {
             shinyjs::hide("run_pmet_button_div")
           }
     },
     "intervals" = {
-
       input_temp <- intervals_handler$input
       if (  !is.null(input_temp$uploaded_fasta$datapath)
           & !is.null(input_temp$uploaded_meme$datapath)
           & !is.null(input_temp$gene_for_pmet$datapath)
-          & valid.email.func(input$userEmail)) {
+          & is_valid_email(input$userEmail)) {
             shinyjs::show("run_pmet_button_div")
           } else {
             shinyjs::hide("run_pmet_button_div")
@@ -83,7 +63,7 @@ observe({
 observeEvent(input$userEmail, {
   if (input$userEmail == "") { # no typing
     showFeedbackDanger(inputId = "userEmail", text = "Email needed")
-  } else if (valid.email.func(input$userEmail)) { # invalid email
+  } else if (is_valid_email(input$userEmail)) { # invalid email
     showFeedbackSuccess(inputId = "userEmail", text = "Results will be sent via Email.")
   } else { # valid email
     showFeedbackWarning(inputId = "userEmail", text = "invalid Email")
@@ -96,18 +76,11 @@ notifi_pmet_id <- NULL # id to remove notification when stop pmet job
 observeEvent(input$run_pmet_button, {
 
   mode <- input$mode
-  print(mode)
 
   inputs <- switch(mode,
-    "promoters_pre" = {
-      promoters_pre_handler$input
-    },
-    "promoters"     = {
-      promoters_handler$input
-    },
-    "intervals"     = {
-      intervals_handler$input
-    }
+    "promoters_pre" = { promoters_pre_handler$input },
+    "promoters"     = { promoters_handler$input },
+    "intervals"     = { intervals_handler$input }
   ) %>% reactiveValuesToList()
 
   inputs$userEmail <- input$userEmail
@@ -123,7 +96,7 @@ observeEvent(input$run_pmet_button, {
 
   notifi_pmet_id <<- showNotification("PMET is running...", type = "message", duration = 0)
 
-  pmet_paths  <- paths_for_pmet_func_(inputs, mode)
+  pmet_paths  <- pmet_paths_generator(inputs, mode)
 
   if (mode == "promoters_pre") {
     file.rename(file.path("result", job_id), pmet_paths$pmetPair_path)
@@ -134,7 +107,7 @@ observeEvent(input$run_pmet_button, {
 
   # PMET job is runnig in the back
   future_promise({
-    command_run_pmet_( inputs,
+    command_run_pmet_(inputs,
                       pmet_paths$pmetIndex_path,
                       pmet_paths$pmetPair_path,
                       pmet_paths$genes_path,
@@ -162,9 +135,6 @@ observeEvent(input$run_pmet_button, {
     }) # end of rednderUI
     # automatically scroll to the spot of download button
     runjs('document.getElementById("pmet_result_download_ui_div").scrollIntoView();')
-
-    # when PMET done, then it is not the first time of PMET
-    flag_first_run(FALSE) #
   }) # end of future
 
   cli::cat_rule(sprintf("pmet task starts！"))

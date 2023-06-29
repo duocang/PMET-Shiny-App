@@ -1,14 +1,4 @@
 suppressMessages({
-  # library(tibble)
-  # library(jsonify)
-  # library(shinyjs)
-  # library(openxlsx)
-  # library(rintrojs)
-  # library(fullPage)
-  # library(shinyWidgets)
-  # library(bslib)
-  # library(purrr)
-
   # Used packages
   pacotes <- c(
     "bslib",              # customizing the appearance of Shiny applications using Bootstrap.
@@ -55,15 +45,13 @@ suppressMessages({
   })
 
   source("R/utils/utils.R")
-  source("R/utils/helpers.R")
+  source("R/utils/shiny_busy_indicator.R")
   # source("R/module/heatmap.R")
   source("R/module/tab_table.R")
   source("R/module/promoters.R")
   source("R/module/promoters_precomputed.R")
   source("R/module/intervals.R")
   source("R/utils/command_call_pmet.R")
-  source("R/utils/create_forked_task.R")
-  # source("R/utils/send_mail.R")
   source("R/utils/pid_pmet_finder.R")
   source("R/utils/paths_of_repeative_run.R")
   source("R/utils/check_gene_file_fucn.R")

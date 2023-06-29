@@ -22,7 +22,7 @@ intervals_ui <- function(id, height = 800, width = 850) {
   )
 }
 
-intervals_server <- function(id, job_id, flag_upload_changed, trigger, mode, navbar) {
+intervals_server <- function(id, job_id, trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -34,8 +34,6 @@ intervals_server <- function(id, job_id, flag_upload_changed, trigger, mode, nav
         req(input$uploaded_fasta)
         # copy uploaded genome fasta to session folder for PMET to run in the back
         temp_2_local_func(UPLOAD_DIR, job_id, input$uploaded_fasta)
-
-        flag_upload_changed[["uploaded_fasta"]] <<- 1
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_fasta$datapath)) {
@@ -52,8 +50,6 @@ intervals_server <- function(id, job_id, flag_upload_changed, trigger, mode, nav
         # copy uploaded motif to session folder for PMET to run in the back
         temp_2_local_func(UPLOAD_DIR, job_id, input$uploaded_meme)
 
-        flag_upload_changed[["uploaded_meme"]] <<- 1
-
         # indicators for file uploaded
         if (!is.null(input$uploaded_meme$datapath)) {
           showFeedbackSuccess(inputId = "uploaded_meme")
@@ -68,10 +64,9 @@ intervals_server <- function(id, job_id, flag_upload_changed, trigger, mode, nav
         req(input$gene_for_pmet)
         # copy uploaded genes to result folder for PMET to run in the back
         temp_2_local_func("result", job_id, input$gene_for_pmet)
-        flag_upload_changed[["gene_for_pmet"]] <<- 1
 
         inputs <- reactiveValuesToList(input)
-        genes_status <- check_gene_file_func_(input$gene_for_pmet$size,
+        genes_status <- check_gene_file(input$gene_for_pmet$size,
                                               input$gene_for_pmet$datapath,
                                               motif_db = NULL,
                                               mode = "intervals")
@@ -126,6 +121,7 @@ intervals_server <- function(id, job_id, flag_upload_changed, trigger, mode, nav
         }
       )
 
+      # workthrough tips of Run PMET ------------------------------------------------
       elements <- c(
         "#uploaded_fasta_div",
         "#uploaded_meme_div",
@@ -139,7 +135,6 @@ intervals_server <- function(id, job_id, flag_upload_changed, trigger, mode, nav
       intro <- data.frame(element = elements, intro = intors)
 
       observeEvent(trigger(), {
-        print(navbar())
         if (mode() == "intervals" & navbar() == "run_start") {
           introjs(session, options = list(steps = intro))
         }

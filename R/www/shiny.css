@@ -1,17 +1,10 @@
-body {
-  /* max-width: 1650px; */
-  min-width: 950px;
-  margin: 0 auto;
+.col-sm-4 {
+  width: 400px;
 }
 
-.well {
-  left: -140px;
-  max-width: 380px;
-  min-width: 380px;
+.main {
+  width: 100%;
 }
-
-
-
 
 .one_upload {
   margin-bottom: 10px;
@@ -38,10 +31,6 @@ body {
   border-radius: 3px;
 }
 
-
-/* #uploaded_fasta_div>div {
-  margin-bottom: 0px;
-} */
 
 /* gap betwen label and box of fileInput */
 .progress {

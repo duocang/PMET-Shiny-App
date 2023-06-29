@@ -1,95 +1,26 @@
-valid.email.func <- function(x) {
+# Check if the given value is a valid email address
+# Parameters:
+#   - x: Value to be checked
+# Returns:
+#   - Logical value indicating if the value is a valid email address
+is_valid_email <- function(x) {
   grepl("\\<[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\>", as.character(x), ignore.case = TRUE)
 }
 
-# check files uploaded and email before running PMET
-valid.files.email.func <- function(input) {
-  motif_db   <- input$motif_db
-  fasta      <- input$uploaded_fasta$datapath
-  annotation <- input$uploaded_annotation$datapath
-  genes      <- input$gene_for_pmet$datapath
+# Generate file paths for PMET analysis
+# Parameters:
+#   - input: Input data containing user information and selected options
+#   - mode: Mode of analysis ("promoters_pre", "promoters", "intervals")
+# Returns:
+#   - List of file paths and user ID
+#     - genes_path: Path to the genes file
+#     - pmetIndex_path: Path to the PMET index file
+#     - user_id: Unique user ID
+#     - pmetPair_path: Path to the PMET pair results folder
 
-  if (motif_db == "uploaded_motif") {
-    all_files_uploaded <- ifelse(length(c(motif_db, fasta, annotation, genes)) == 4, TRUE, FALSE)
-  } else {
-    all_files_uploaded <- !is.null(genes)
-  }
-  return(valid.email.func(input$userEmail) & all_files_uploaded)
-}
+pmet_paths_generator <- function(input = NULL, mode = NULL) {
 
-
-# check files uploaded and email before running PMET
-valid_inputs_func <- function(input, mode) {
-  motif_db   <- input$motif_db
-  fasta      <- input$uploaded_fasta$datapath
-  annotation <- input$uploaded_annotation$datapath
-  genes      <- input$gene_for_pmet$datapath
-
-  if (motif_db == "uploaded_motif") {
-    all_files_uploaded <- ifelse(length(c(motif_db, fasta, annotation, genes)) == 4, TRUE, FALSE)
-  } else {
-    all_files_uploaded <- !is.null(genes)
-  }
-  return(valid.email.func(input$userEmail) & all_files_uploaded)
-}
-
-pmet_mode_func <- function(input) {
-  if (input$sequence_type == "intervals") {
-    return(3)
-  } else if (input$motif_db == "uploaded_motif") {
-    return(2)
-  } else {
-    return(1)
-  }
-}
-
-
-# mode:
-#   1: upload self meme files
-#   2: select precomputed species
-#   3: interval pmet
-
-paths_for_pmet_func <- function(input = NULL, mode = 1, first_run =TRUE, temp_folder = NULL) {
-
-  user_id <- paste0(str_replace(input$userEmail, "@", "-"),
-                    "_",
-                    format(Sys.time(), "%Y%b%d_%H%M"))
-
-  switch(mode,
-  "1" = {
-    species <- str_split(input$motif_db, "-")[[1]][1]
-
-    pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
-  },
-  "2" = {
-    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>% paste0(., "_", user_id)
-    pmetIndex_path <- file.path("data/PMETindex", input$motif_db, motif_db)
-  },
-  "3" = {
-    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>%
-      paste0(., "_", user_id)
-
-    pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
-  })
-
-  folder_name <- paste0(input$motif_db, "_", user_id)
-
-  pmetPair_path <- file.path("result", folder_name)
-  genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
-
-  return(list(genes_path     = genes_path,
-              pmetIndex_path = pmetIndex_path,
-              user_id        = user_id,
-              pmetPair_path  = pmetPair_path))
-}
-
-
-
-
-paths_for_pmet_func_ <- function(input = NULL, mode = NULL) {
-
-  user_id <- paste0(str_replace(input$userEmail, "@", "-"),
-                    "_",
+  user_id <- paste0(str_replace(input$userEmail, "@", "-"), "_",
                     format(Sys.time(), "%Y%b%d_%H%M"))
 
   switch(mode,
@@ -118,23 +49,20 @@ paths_for_pmet_func_ <- function(input = NULL, mode = NULL) {
 }
 
 
-
-
-
-
-
-
-
-
-
-# copy file from shiny temp folder to a folder created for PMETindex
-temp_2_local_func <- function(local_dir, session_id, input_file) {
+# Move a temporary file to the local directory
+# Parameters:
+#   - local_dir: Local directory path
+#   - temp_folder: Temporary folder name within the local directory
+#   - input_file: Input file object (shiny input)
+#     - datapath: file path
+#     - name: New file name
+temp_2_local_func <- function(local_dir, temp_folder, input_file) {
 
   temp_file     <- input_file$datapath
   new_file_name <- input_file$name
 
   # create folder
-  dir_path <- file.path(local_dir, session_id)
+  dir_path <- file.path(local_dir, temp_folder)
   dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
 
   # copy file

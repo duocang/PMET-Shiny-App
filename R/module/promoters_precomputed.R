@@ -27,7 +27,7 @@ promoters_pre_ui <- function(id, height = 800, width = 850) {
   )
 }
 
-promoters_pre_server <- function(id, job_id, flag_upload_changed, trigger, mode, navbar) {
+promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -38,11 +38,10 @@ promoters_pre_server <- function(id, job_id, flag_upload_changed, trigger, mode,
         req(input$gene_for_pmet)
         # copy uploaded genes to result folder for PMET to run in the back
         temp_2_local_func("result", job_id, input[["gene_for_pmet"]])
-        flag_upload_changed[["gene_for_pmet"]] <<- 1
 
         inputs <- reactiveValuesToList(input)
 
-        genes_status <- check_gene_file_func_(input$gene_for_pmet$size,
+        genes_status <- check_gene_file(input$gene_for_pmet$size,
                                               input$gene_for_pmet$datapath,
                                               input$motif_db,
                                               mode = "promoters_pre")
@@ -105,6 +104,8 @@ promoters_pre_server <- function(id, job_id, flag_upload_changed, trigger, mode,
         write.table(read.table("data/data_for_promoters/example_genes.txt"), file, quote = FALSE, row.names = FALSE, col.names = FALSE)
       }
     )
+
+    # workthrough tips of Run PMET -----------------------------------------------
     elements <- c(
         "#motif_db_div",
         "#gene_for_pmet_div"
@@ -116,7 +117,6 @@ promoters_pre_server <- function(id, job_id, flag_upload_changed, trigger, mode,
     intro <- data.frame(element = elements, intro = intors)
 
     observeEvent(trigger(), {
-      print(navbar())
       if (mode() == "promoters_pre" & navbar() == "run_start") {
         introjs(session, options = list(steps = intro))
       }
