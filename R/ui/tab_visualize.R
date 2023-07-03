@@ -6,19 +6,6 @@ tabPanel(
   sidebarLayout(
     sidebarPanel(
       width = 4,
-      # get window size and access via input$dimension[1] and input$dimension[2] in server side
-      tags$head(tags$script('
-          var dimension = [0, 0];
-          $(document).on("shiny:connected", function(e) {
-            dimension[0] = window.innerWidth;
-            dimension[1] = window.innerHeight;
-            Shiny.onInputChange("dimension", dimension);
-          });
-          $(window).resize(function(e) {
-              dimension[0] = window.innerWidth;
-              dimension[1] = window.innerHeight;
-              Shiny.onInputChange("dimension", dimension);
-          });')),
       # Tell shiny what version of d3 we want
       tags$script(src='//d3js.org/d3.v3.min.js'),
       # Input: Select a file ----
@@ -48,17 +35,9 @@ tabPanel(
           icon = icon("paint-brush"),
           style = "color: #ffff; background-color: #fb8b05;"),
         downloadButton("download.button", "Download", class = "btn-success")
-      ),
-      div(
-        actionButton("download.svg", "Download SVG")
       )
     ),
     mainPanel(
-      # bsCollapse(id = "heat_map_tabs", open = "Heat map",
-      #   bsCollapsePanel("Heat map"    , div(id = "placeholder", uiOutput("d3"))),
-      #   bsCollapsePanel("Motifs"      , verbatimTextOutput("dimension_display")),
-      #   bsCollapsePanel("Data viewer" , uiOutput(("datatable_tabs")) )
-      # )
       tabsetPanel(
         type = "tabs",
         id = "heat_map_tabs",

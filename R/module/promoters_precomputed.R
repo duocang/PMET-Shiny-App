@@ -46,6 +46,7 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
                                               input$motif_db,
                                               mode = "promoters_pre")
 
+        hideFeedback(inputId = "gene_for_pmet")
         if (length(genes_status) == 3) {
           genes_skipped(genes_status[[3]])
           shinyjs::show("skipped_genes_link")

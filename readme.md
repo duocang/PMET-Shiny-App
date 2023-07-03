@@ -17,7 +17,7 @@ This is a Shiny app developed for PMET.
 └── result         # result of Shiny app
 ```
 
-### Install GNU Parallel
+## Install GNU Parallel
 
 GNU Parallel helps PMET index (FIMO and PMET index) to run in parallel mode.
 
@@ -32,7 +32,7 @@ Put GNU Parallel silent:
  parallel --citation
 ```
 
-### Install FIMO (meme)
+## Install The MEME Suite (FIMO and fasta-get-markov)
 
 ```bash
 # cd a folder you want to put the software
@@ -53,8 +53,16 @@ Add following into bash profile file.
 export PATH=$HOME/meme/bin:$HOME/meme/libexec/meme-5.5.2:$PATH
 ```
 
-### Install samtools
+## Install samtools
 
+Install from conda or mamba:
+
+```bash
+conda install -c bioconda samtools
+```
+
+Install from source:
+> assuming you create a directory named `samtools` in home directory (~) and install samtools there.
 ```bash
 wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
 
@@ -62,25 +70,50 @@ cd samtools-1.17    # and similarly for bcftools and htslib
 ./configure --prefix=$HOME/samtools
 make
 make install
+
+# Add following into bash profile file or .zshrc (if zsh used).
+
+# assuming you put samtools-1.17 folder under your home folder
+export PATH=$HOME/samtools/bin:$PATH
 ```
 
-Add following into bash profile file.
+##  Install bedtools
+It is recommended to install bedtools via apt/yum or conda.
+```bash
+conda install -c bioconda bedtools
+```
+or
 
 ```bash
-# assuming you put samtools-1.17 folder under your home folder
-export PATH=$HOME/samtools/bin:$PATH 
+conda install bedtools
+
+# Debian/Ubuntu
+apt-get install bedtools
+
+# Fedora/Centos
+yum install BEDTools
 ```
 
-### Python libraries
+It is possible to compile the bedtools by running the following commands.
+
+```bash
+wget https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
+tar -zxvf bedtools-2.29.1.tar.gz
+cd bedtools2
+make
+```
+
+## Python libraries
 
 ```bash
 pip install numpy
 pip install pandas
-
-mamba install samtools
+pip install scipy
+pip install bio
+pip install biopython
 ```
 
-### Setup Shiny server and nginx
+## Setup Shiny server and nginx
 
 Please follow [Shiny Server Deployment](https://cran.r-project.org/web/packages/ReviewR/vignettes/deploy_server.html) for more details.
 
@@ -121,13 +154,13 @@ After PMET calculation is completed, Shiny will generate a download button that 
 result_link <- paste0("http://127.0.0.1:84/result/", paste0(pmetPair_path_name, ".zip"))
 ```
 
-#### CPU
+### CPU
 
 Currently, PMET uses 4 CPU cores by default. If you have abundant computing resources, you can modify the -t parameter in `utils/command_call_pmet.R`. It seems that 4 CPU cores should be sufficient for the performance.
 
 <img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181500980.png" style="zoom: 50%;" />
 
-### R packages
+## R packages
 
 To avoid any inconvenience, I will provide you with the required R packages here.
 
@@ -215,7 +248,7 @@ if (length(failed_packages) > 0) {
 }
 ```
 
-### PMET index and PMET
+## PMET index and PMET
 
 Both are writen in C++, source code can be found in `PMETdev/src/indexing` and `PMETdev/src/pmetParallel`.
 

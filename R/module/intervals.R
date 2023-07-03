@@ -37,8 +37,10 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_fasta$datapath)) {
+          hideFeedback(inputId = "uploaded_fasta")
           showFeedbackSuccess(inputId = "uploaded_fasta")
         } else {
+          hideFeedback(inputId = "uploaded_fasta")
           showFeedbackDanger(inputId = "uploaded_fasta", text = "No motif")
         }
       }, ignoreInit = T)
@@ -52,8 +54,10 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_meme$datapath)) {
+          hideFeedback(inputId = "uploaded_fasta")
           showFeedbackSuccess(inputId = "uploaded_meme")
         } else {
+          hideFeedback(inputId = "uploaded_fasta")
           showFeedbackDanger(inputId = "uploaded_meme", text = "No motif")
         }
       }, ignoreInit = T)
@@ -67,9 +71,10 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
 
         inputs <- reactiveValuesToList(input)
         genes_status <- CheckGeneFile(input$gene_for_pmet$size,
-                                              input$gene_for_pmet$datapath,
-                                              motif_db = NULL,
-                                              mode = "intervals")
+                                      input$gene_for_pmet$datapath,
+                                      motif_db = NULL,
+                                      mode = "intervals")
+        hideFeedback(inputId = "uploaded_fasta")
         switch(genes_status,
           "OK" = {
             showFeedbackSuccess(inputId = "gene_for_pmet")

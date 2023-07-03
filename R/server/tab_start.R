@@ -62,10 +62,13 @@ observe({
 # feedback for no email --------------------------------------------------------
 observeEvent(input$userEmail, {
   if (input$userEmail == "") { # no typing
+    hideFeedback(inputId = "userEmail")
     showFeedbackDanger(inputId = "userEmail", text = "Email needed")
   } else if (ValidEmail(input$userEmail)) { # invalid email
+    hideFeedback(inputId = "userEmail")
     showFeedbackSuccess(inputId = "userEmail", text = "Results will be sent via Email.")
   } else { # valid email
+    hideFeedback(inputId = "userEmail")
     showFeedbackWarning(inputId = "userEmail", text = "invalid Email")
   }
 })

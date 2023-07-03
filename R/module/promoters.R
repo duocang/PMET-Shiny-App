@@ -106,6 +106,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         TempToLocal(UPLOAD_DIR, job_id, input$uploaded_fasta)
 
         # indicators for file uploaded
+        hideFeedback(inputId = "uploaded_fasta")
         if (!is.null(input$uploaded_fasta$datapath)) {
           showFeedbackSuccess(inputId = "uploaded_fasta")
         } else {
@@ -121,6 +122,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         TempToLocal(UPLOAD_DIR, job_id, input$uploaded_annotation)
 
         # indicators for file uploaded
+        hideFeedback(inputId = "uploaded_annotation")
         if (!is.null(input$uploaded_annotation$datapath)) {
           showFeedbackSuccess(inputId = "uploaded_annotation")
         } else {
@@ -136,6 +138,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         TempToLocal(UPLOAD_DIR, job_id, input$uploaded_meme)
 
         # indicators for file uploaded
+        hideFeedback(inputId = "uploaded_meme")
         if (!is.null(input$uploaded_meme$datapath)) {
           showFeedbackSuccess(inputId = "uploaded_meme")
         } else {
@@ -153,26 +156,27 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         genes_status <- CheckGeneFile(input$gene_for_pmet$size,
                                               input$gene_for_pmet$datapath,
                                               mode = "promoters")
+        hideFeedback(inputId = "gene_for_pmet")
         switch(genes_status,
-        "OK" = {
-          showFeedbackSuccess(inputId = "gene_for_pmet")
-        },
-        "no_content" = {
-          showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
-        },
-        "wrong_column" = {
-          showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
-        },
-        "gene_wrong_format" = {
-          showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
-        },
-        "intervals_wrong_format" = {
-          showFeedbackDanger( inputId = "gene_for_pmet", text = "Genomic intervals pattern: chromosome:number-number.")
-        },
-        "no_valid_genes" = {
-          showFeedbackDanger(inputId = "gene_for_pmet", text = "No valid genes available in the uploaded file")
-        })
-      }, ignoreInit = T)
+          "OK" = {
+            showFeedbackSuccess(inputId = "gene_for_pmet")
+          },
+          "no_content" = {
+            showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
+          },
+          "wrong_column" = {
+            showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
+          },
+          "gene_wrong_format" = {
+            showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
+          },
+          "intervals_wrong_format" = {
+            showFeedbackDanger( inputId = "gene_for_pmet", text = "Genomic intervals pattern: chromosome:number-number.")
+          },
+          "no_valid_genes" = {
+            showFeedbackDanger(inputId = "gene_for_pmet", text = "No valid genes available in the uploaded file")
+          })
+        }, ignoreInit = T)
 
       # Download example genes file for PMET ---------------------------------------
       output$demo_genes_file_link <- downloadHandler(

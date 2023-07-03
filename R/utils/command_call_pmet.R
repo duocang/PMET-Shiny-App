@@ -1,9 +1,9 @@
 # Function to run PMET with indexing and pairing
 ComdRunPmet <- function(input,
-                              pmetIndex_path  = NULL,
-                              pmetPair_path   = NULL,
-                              genes_path      = NULL,
-                              model           = NULL) {
+                        pmetIndex_path  = NULL,
+                        pmetPair_path   = NULL,
+                        genes_path      = NULL,
+                        model           = NULL) {
 
   # send email to user when pmet is done
   temp <- str_split(pmetPair_path, "/")[[1]]

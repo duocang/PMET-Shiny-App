@@ -25,9 +25,6 @@ observeEvent(input$pmet_result_file, {
   removeUI(selector = "#heatmap_module_content")
   removeUI(selector = "#heatmaply.ui")
 
-  print("加载文件")
-  print(ValidatePmetResult(input$pmet_result_file$datapath))
-
   file.status("NO")
   # indicators for PMET result file uploaded
   switch(ValidatePmetResult(input$pmet_result_file$datapath),
@@ -59,12 +56,14 @@ observeEvent(input$pmet_result_file, {
 # feedback for other parameters
 observe({
   if (is.na(input$topn_pair) | is.null(input$topn_pair) | input$topn_pair <= 0) {
+    hideFeedback(inputId = "topn_pair")
     showFeedbackDanger("topn_pair", "Please enter a positive integer")
   } else {
     hideFeedback("topn_pair")
   }
 
   if (is.na(input$p_adj) | is.null(input$p_adj) | input$p_adj <= 0 | input$p_adj > 1) {
+    hideFeedback(inputId = "p_adj")
     showFeedbackDanger("p_adj", "Please enter a valid p-value")
   } else {
     hideFeedback("p_adj")
@@ -191,13 +190,10 @@ observe({
   req(input$p_adj)
 
   shinyjs::hide("download.button")
-  # shinyjs::hide("placeholder") # hide  d3 plot
 })
 
 # display motif text ---------------------------------------------------------
 output$dimension_display <- renderText({
-  # print screen size
-  # paste(input$dimension[1]/12*8, input$dimension[2], input$dimension[2]/input$dimension[1])
 
   results <- pmet.result.processed()
   motifs_top_clusters_list <- results$motifs
@@ -360,12 +356,5 @@ observeEvent(pmet.result.processed(), {
     res[, c("cluster", "motif1", "motif2", "gene_num", "p_adj")]
   })
   server_data("info1", result)
-})
-
-
-
-observeEvent(input$download.svg, {
-  print("下载svg")
-  session$sendCustomMessage('svgClassName', "#d3")
 })
 
