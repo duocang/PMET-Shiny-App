@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 # and send notifications when result done
 # Arguments:
 #   folder_path: The path of the folder to monitor
-watchFolder <- function(folder_path) {
+WatchFolder <- function(folder_path) {
   previous_folders <- list.files(folder_path)
 
   while (TRUE) {
@@ -29,7 +29,7 @@ watchFolder <- function(folder_path) {
 
         Sys.sleep(5)
         # send the result link via email
-        send_result_mail(recipient, result_link)
+        SendResultMail(recipient, result_link)
         print(paste0("Sned result to user: ", zip_file))
         Sys.sleep(5)
         bash_rm <- paste0("rm -rf ", "result/", str_remove(zip_file, ".zip"))
@@ -51,4 +51,4 @@ watchFolder <- function(folder_path) {
 folder_path <- "result"
 
 # Start monitoring the folder
-watchFolder(folder_path)
+WatchFolder(folder_path)

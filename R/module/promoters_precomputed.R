@@ -37,11 +37,11 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
       observeEvent(input$gene_for_pmet, {
         req(input$gene_for_pmet)
         # copy uploaded genes to result folder for PMET to run in the back
-        temp_2_local_func("result", job_id, input[["gene_for_pmet"]])
+        TempToLocal("result", job_id, input[["gene_for_pmet"]])
 
         inputs <- reactiveValuesToList(input)
 
-        genes_status <- check_gene_file(input$gene_for_pmet$size,
+        genes_status <- CheckGeneFile(input$gene_for_pmet$size,
                                               input$gene_for_pmet$datapath,
                                               input$motif_db,
                                               mode = "promoters_pre")

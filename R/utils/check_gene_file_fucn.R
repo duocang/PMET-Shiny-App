@@ -12,7 +12,7 @@
 #   - "no_valid_genes": If no valid genes are available in the uploaded file
 #   - List(nrow(genes_skipped), nrow(genes_uploaded), genes_skipped): If there
 
-check_gene_file <- function(gene_file_size = NULL, gene_file_path = NULL, motif_db = NULL, mode = NULL) {
+CheckGeneFile <- function(gene_file_size = NULL, gene_file_path = NULL, motif_db = NULL, mode = NULL) {
 
   if (gene_file_size== 0 |is.null(gene_file_path) )
     return("no_content")

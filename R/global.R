@@ -55,18 +55,13 @@ suppressMessages({
   source("R/utils/pid_pmet_finder.R")
   source("R/utils/paths_of_repeative_run.R")
   source("R/utils/check_gene_file_fucn.R")
+  source("R/utils/process_pmet_result.R")
+  source("R/utils/motif_pair_plot_homog.R")
+  source("R/utils/motif_pair_plot_hetero.R")
+  source("R/utils/motif_pair_diagonal.R")
+  source("R/utils/motif_pair_gene_diagonal.R")
 })
 
 options(shiny.maxRequestSize = 30000 * 1024^2)
 plan(multisession)
 
-# Get lower triangle of the correlation matrix
-get_lower_tri <- function(cormat) {
-  cormat[upper.tri(cormat)] <- NA
-  return(cormat)
-}
-# Get upper triangle of the correlation matrix
-get_upper_tri <- function(cormat) {
-  cormat[lower.tri(cormat)] <- NA
-  return(cormat)
-}

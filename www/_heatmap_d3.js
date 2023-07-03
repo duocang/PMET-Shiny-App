@@ -3,59 +3,13 @@
 //Wrap the entire D3 script in this function. It is looking for a jsondata message sent from Shinys server session object.
 Shiny.addCustomMessageHandler('jsondata', function (pmet) {
 
+  console.log(pmet)
+
   //Lets nuke out any thing on our page with the id of "d3Graph". This will prevent 
   //our app from making a new graph each time a parameter is changed
   // d3.select("#d3").remove();
   // d3.select("#d3Graph").remove();
   d3.selectAll("svg").remove();
-
-  // svg.selectAll(".rect1").remove();
-  // svg.selectAll("#xAxis").remove();
-  // svg.selectAll("#yAxis").remove();
-
-  //The message comes from shiny, it is the json payload from our session
-
-
-
-
-
-  // var ids = Object.keys(pmet.data);
-
-  // // set the dimensions and margins of the graph
-  // var margin = { top: 5, right: 30, bottom: 150, left: 80 },
-  //   width = 420 - margin.left - margin.right,
-  //   height = 470 - margin.top - margin.bottom;
-
-  // var valMax = 0;
-  // var valMin = 0;
-
-  // for (var id of ids) {
-  //   var dataFiltered = pmet.data[id].filter(function (dat) { return dat.gene_num > 0 })
-
-  //   valMax = Math.max(valMax, Math.max(...dataFiltered.map(o => o.p_adj)))
-  //   valMin = Math.min(valMin, Math.min(...dataFiltered.map(o => o.p_adj)))
-  // }
-
-
-  // for (var id of ids) {
-  //   // append the svg object to the body of the page
-  //   var mainsvg = d3.select("#placeholder_" + id)
-  //     .append("svg")
-  //     .attr("id", "mainsvg-" + id)
-  //     .attr("width", width + margin.left + margin.right)
-  //     .attr("height", height + margin.top + margin.bottom)
-  //     .append("g")
-  //     .attr("transform",
-  //       "translate(" + margin.left + "," + margin.top + ")");
-
-  //   var svgHeatmap = drawHeatmap(data = pmet.data[id],
-  //     svg = mainsvg,
-  //     svgID = "#placeholder_" + id,
-  //     heatmapID = "rect" + id,
-  //     valMax = valMax,
-  //     valMin = valMin,
-  //     clusters = pmet.clusters)
-  // }
 
   console.log(pmet)
   if (pmet.method == "All") {

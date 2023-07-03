@@ -1,5 +1,5 @@
 # Download example PMET result -----------------------------------------------
-output$example_pmet_result_file_download <- downloadHandler(
+output$demo_pmet_result_download <- downloadHandler(
   filename = function() {
     "example_pmet_result.txt"
   },
@@ -9,291 +9,170 @@ output$example_pmet_result_file_download <- downloadHandler(
   }
 )
 
-# observeEvent(input$demo_pmet_result_link, {
-#   print("demo_genes_file_link")
 
-#   dat <- data.table::fread("data/example_pmet_result.txt")
-#   Sys.sleep(0.5)
-#   showModal(modalDialog(
-#     title = "Example PMET result:",
-#     DT::renderDataTable({dat}, options = list(scrollX=TRUE, scrollCollapse=TRUE)),
-#     footer = tagList(
-#       # tags$span(style="color:red;font-weight:bold;float:left;","No column names needed"),
-#       downloadButton("demo_pmet_result_down_btn", "Download"),
-#       modalButton("Cancel"))
-#   )) # end of showModal
-# })
+# feedback for file uploaded
+showFeedbackDanger(inputId = "pmet_result_file", text = "No PMET result found")
+file.status <- reactiveVal("NO")
+observeEvent(input$pmet_result_file, {
+  req(input$pmet_result_file)
+  # remove all UI when loading new data
+  removeUI(selector = "#heatmap_module_content")
+  removeUI(selector = "#heatmaply.ui")
+  # remove all UI when loading new data
+  removeUI(selector = "#heatmap_module_content")
+  removeUI(selector = "#heatmaply.ui")
+  # remove all UI when loading new data
+  removeUI(selector = "#heatmap_module_content")
+  removeUI(selector = "#heatmaply.ui")
 
-# # Download demo PMET result when button clicked ---------------------------------------
-# output$demo_pmet_result_down_btn <- downloadHandler(
-#   filename = function() {
-#     "example_pmet_result.txt"
-#   },
-#   content = function(file) {
-#     write.table(data.table::fread("data/example_pmet_result.txt"), file, quote = FALSE, sep = "\t")
-#   }
-# ) # downLoadHandler end
+  print("加载文件")
+  print(ValidatePmetResult(input$pmet_result_file$datapath))
 
-
-
-# feedback for no file uploaded when page first opened
-showFeedbackDanger(inputId = "pmet_result", text = "No PMET result found")
-
-# upload PMET result ---------------------------------------------------------
-pmet_result <- reactive({
-  withProgress(message = "Reading data", value = 0, {
-    # remove all UI when loading new data
-    removeUI(selector = "#heatmap_module_content")
-    removeUI(selector = "#heatmaply.ui")
-    # remove all UI when loading new data
-    removeUI(selector = "#heatmap_module_content")
-    removeUI(selector = "#heatmaply.ui")
-    # remove all UI when loading new data
-    removeUI(selector = "#heatmap_module_content")
-    removeUI(selector = "#heatmaply.ui")
-
-    incProgress(0.2)
-
-    # indicators for file uploaded
-    if (!is.null(input$pmet_result)) {
-      hideFeedback("pmet_result")
-      showFeedbackSuccess(inputId = "pmet_result")
-    } else {
-      showFeedbackDanger(inputId = "pmet_result", text = "No PMET result found")
-    }
-
-    file <- input$pmet_result
-    ext <- tools::file_ext(file$datapath)
-    req(file)
-    validate(need(ext == "txt", "Please upload a txt file"))
-
-    incProgress(0.3)
-
-    dat_first_row <- tryCatch(
-      {
-        readLines(input$pmet_result$datapath, n = 1)
-      },
-      error = function(e) {
-        message("Error: ", e$message)
-        NULL
-      }
-    ) # end of tryCatch
-
-    print(dat_first_row) # print)
-
-    pmet_result_rowname <- "Cluster\tMotif 1\tMotif 2\tNumber of genes in cluster with both motifs\tTotal number of genes with both motifs\tNumber of genes in cluster\tRaw p-value\tAdjusted p-value (BH)\tAdjusted p-value (Bonf)\tAdjusted p-value (Global Bonf)\tGenes"
-
-    print(identical(dat_first_row, pmet_result_rowname))
-
-    if (identical(dat_first_row, character(0))) {
-      hideFeedback("pmet_result")
-      showFeedbackDanger(inputId = "pmet_result", text = "Empty file")
-    } else if (!identical(dat_first_row, pmet_result_rowname)) {
+  file.status("NO")
+  # indicators for PMET result file uploaded
+  switch(ValidatePmetResult(input$pmet_result_file$datapath),
+    "No" = {
+      hideFeedback(inputId = "pmet_result_file")
+      showFeedbackDanger(inputId = "pmet_result_file", text = "Upload a txt file of PMET result")
+    },
+    "Type" = {
+      hideFeedback(inputId = "pmet_result_file")
+      showFeedbackDanger(inputId = "pmet_result_file", text = "Wrong file type, only .txt allowed")
+    },
+    "Empty" = {
+      hideFeedback(inputId = "pmet_result_file")
+      showFeedbackDanger(inputId = "pmet_result_file", text = "Empty file")
+    },
+    "Wrong" = {
       print("Wrong format of uploaded file")
-      hideFeedback("pmet_result")
-      showFeedbackDanger(inputId = "pmet_result", text = "Wrong format of uploaded file")
+      hideFeedback(inputId = "pmet_result_file")
+      showFeedbackDanger(inputId = "pmet_result_file", text = "Wrong format of uploaded file content")
+    },
+    "OK" = {
+      hideFeedback(inputId = "pmet_result_file")
+      showFeedbackSuccess(inputId = "pmet_result_file")
+      file.status("OK")
     }
-    incProgress(0.5)
+  )
+}, ignoreInit = T)
 
-    validate(need(identical(dat_first_row, pmet_result_rowname), "Please upload a corret PMET result file."))
+# feedback for other parameters
+observe({
+  if (is.na(input$topn_pair) | is.null(input$topn_pair) | input$topn_pair <= 0) {
+    showFeedbackDanger("topn_pair", "Please enter a positive integer")
+  } else {
+    hideFeedback("topn_pair")
+  }
 
-    tic("Read data")
-    df <- data.table::fread(input$pmet_result$datapath,
-      select = c(
-        "Cluster", "Motif 1", "Motif 2",
-        "Number of genes in cluster with both motifs",
-        "Adjusted p-value (BH)", "Genes"
-      ),
-      verbose = FALSE
-    ) %>%
-      setNames(c("cluster", "motif1", "motif2", "gene_num", "p_adj", "genes")) %>%
-      # dplyr::filter(gene_num > 0) %>%
-      arrange(desc(p_adj)) %>%
-      mutate(`motif_pair` = paste0(motif1, "^^", motif2))
-    toc()
-  }) # end of progress
-  return(df)
-}) # end of pmet_result <- reactive({
-
-
-# filter data ----------------------------------------------------------------
-# observeEvent(input$topn_pair, {
-#   updateNumericInput(session, "topn_pair",
-#     value = ({
-#       if (!(is.numeric(input$topn_pair))) {
-#         5
-#       } else if (!(is.null(input$topn_pair) || is.na(input$topn_pair))) {
-#         if (input$topn_pair < 1) {
-#           1
-#         } else if (input$topn_pair > 80) {
-#           80
-#         } else {
-#           return(isolate(input$topn_pair))
-#         }
-#       } else {
-#         5
-#       }
-#     }) # value
-#   ) # updateNumericInput
-# }) # observeEvent
-
-# observeEvent(input$p_adj, {
-#   print(input$p_adj)
-#   print("fdasfa词的放大法")
-#   updateNumericInput(session, "p_adj",
-#     value = ({
-#       if (!(is.numeric(input$p_adj))) {
-#         0.05
-#       } else if (!(is.null(input$p_adj) || is.na(input$p_adj))) {
-#         if (input$p_adj < 0) {
-#           0.05
-#         } else if (input$p_adj > 1) {
-#           1
-#         } else {
-#           return(isolate(input$p_adj))
-#         }
-#       } else {
-#         0.05
-#       }
-#     }) # value
-#   ) # updateNumericInput
-# }) # observeEvent
-
-
-iv <- InputValidator$new()
-iv$add_rule("topn_pair", sv_numeric())
-iv$add_rule("p_adj", sv_numeric())
-
-# Finally, `enable()` the validation rules
-iv$enable()
-
-
-# filter data and update selection box -----------------------------------------
-results <- reactive({
-  validate(need(!is.null(input$p_adj), "Please enter a positive integer."))
-  validate(need(!is.na(input$p_adj), "Please enter a positive integer."))
-  validate(need(input$p_adj >= 0, "Please enter a positive integer."))
-  validate(need(is.integer(as.integer(input$p_adj)), "Please enter a positive integer."))
-
-  validate(need(!is.null(input$topn_pair), "Please enter a positive integer."))
-  validate(need(!is.na(input$topn_pair), "Please enter a positive integer."))
-  validate(need(input$topn_pair >= 0, "Please enter a positive integer."))
-  validate(need(is.integer(as.integer(input$topn_pair)), "Please enter a positive integer."))
-
-  # validate if there will be no data left after filtering
-  if (min(pmet_result()$p_adj) > input$p_adj) {
-    hideFeedback("p_adj")
-    showFeedbackDanger(inputId = "p_adj", text = "No records left after filtering")
-  } else if (min(pmet_result()$p_adj) == 1) {
-    hideFeedback("p_adj")
-    showFeedbackDanger(inputId = "p_adj", text = "No meaninful records left after filtering")
+  if (is.na(input$p_adj) | is.null(input$p_adj) | input$p_adj <= 0 | input$p_adj > 1) {
+    showFeedbackDanger("p_adj", "Please enter a valid p-value")
   } else {
     hideFeedback("p_adj")
   }
-  validate(need(
-    min(pmet_result()$p_adj) < input$p_adj,
-    "You may need to make less p.adj restriction."
-  ))
+  req(input$topn_pair, input$p_adj)
 
-  # filtering data
+  validate(need(!is.na(input$p_adj) & !is.null(input$p_adj), "Please enter a positive integer."))
+  # validate(need(!is.na(input$p_adj), "Please enter a positive number."))
+  validate(need(input$p_adj >= 0, "Please enter a positive integer."))
+  validate(need(is.integer(as.integer(input$p_adj)), "Please enter a positive integer."))
+
+  validate(need(!is.na(input$topn_pair) & !is.null(input$topn_pair), "Please enter a positive integer."))
+  # validate(need(!is.na(input$topn_pair), "Please enter a positive integer."))
+  validate(need(input$topn_pair >= 0, "Please enter a positive integer."))
+  validate(need(is.integer(as.integer(input$topn_pair)), "Please enter a positive integer."))
+})
+
+
+# reactive raw PMET result ---------------------------------------------------------
+pmet.result.raw <- reactive({
+  req(input$pmet_result_file)
+  req(file.status() == "OK", "PMET result uploaded successfully!")
+
+  withProgress(message = "Reading data", value = 0, {
+
+    incProgress(0.5, detail = "Read PMET result ....")
+
+    tic("Read PMET result ....")
+    suppressMessages({
+      pmet.result <- data.table::fread(input$pmet_result_file$datapath,
+        select = c(
+          "Cluster", "Motif 1", "Motif 2",
+          "Number of genes in cluster with both motifs",
+          "Adjusted p-value (BH)", "Genes"
+        ), verbose = FALSE) %>%
+        setNames(c("cluster", "motif1", "motif2", "gene_num", "p_adj", "genes")) %>%
+        # dplyr::filter(gene_num > 0) %>%
+        arrange(desc(p_adj)) %>%
+        mutate(`motif_pair` = paste0(motif1, "^^", motif2))
+    })
+    incProgress(0.8, detail = "Upload PMET result ....")
+    toc()
+  }) # end of progress
+  return(pmet.result)
+}) # end of pmet.result.raw <- reactive({
+
+
+# filter data and update selection box -----------------------------------------
+# 1. check if p-value is to harsh
+# 2. filtering data and split pmet result into individual clusters
+# 3. update cluster selection box
+# this step should (could) be put into the progress of pmet.result.raw().
+# But it is put here dedicatly because the sild-effect of input$p_adj and input$topn_pair
+# will only trigger data processing itself instead of forcing PMET result uploading agai
+#
+pmet.result.processed <- reactive({
+  req(input$p_adj)
+  req(input$topn_pair)
+  req(pmet.result.raw())
+  # 1.
+  # feedback: validate if there will be no data left after filtering
+  if (min(pmet.result.raw()$p_adj) > input$p_adj) {
+    hideFeedback("p_adj")
+    showFeedbackDanger(inputId = "p_adj", text = "No records left, please consider less p.ad restriction")
+    validate(need(min(pmet.result.raw()$p_adj) < input$p_adj, "You may need to make less p.adj restriction"))
+  } else if (min(pmet.result.raw()$p_adj) == 1) {
+    hideFeedback("p_adj")
+    showFeedbackDanger(inputId = "p_adj", text = "No meaninful records left after filtering")
+    validate(need(min(pmet.result.raw()$p_adj) < 1, "No meaninful records left after filtering"))
+  } else {
+    hideFeedback("p_adj")
+  }
+  # 2.
+  # filtering data and split pmet result into individual clusters
   withProgress(message = "Filtering data", value = 0.3, {
-    # filter data
-    pmet_result_processed <- pmet.result.proces.func(
-      pmet_result = pmet_result(),
-      p_adj_limt = input$p_adj,
-      gene_portion = 0.05,
-      topn = input$topn_pair,
-      unique_cmbination = input$motif_pair_unique
-    )
+    incProgress(0.3, detail = "Filtering data....")
+    pmet.result.processed <- ProcessPmetResult( pmet_result       = pmet.result.raw(),
+                                                p_adj_limt        = input$p_adj,
+                                                gene_portion      = 0.05,
+                                                topn              = input$topn_pair,
+                                                unique_cmbination = input$motif_pair_unique)
+    incProgress(0.7)
 
-    incProgress(0.8)
-    clusters <- pmet_result_processed$motifs %>%
-      names() %>%
-      sort()
-
+    # 3.
     # update cluster selection box
+    clusters <- pmet.result.processed$motifs %>% names() %>% sort()
     if (input$motif_pair_unique == "TRUE") {
       clusters <- c("Overlap", "All", clusters)
     } else {
+      # clusters <- c("All", "Aggregation", clusters)
       clusters <- c("All", "Aggregation", clusters)
     }
     updateSelectInput(session, "method", choices = clusters, selected = input$method)
 
     incProgress(0.9)
-    return(pmet_result_processed)
+    return(pmet.result.processed)
   }) # withProgress
 })
 
-# clusters of processed data -------------------------------------------------
-
-
-# reshape processed data -----------------------------------------------------
-result_reshaped <- reactiveVal()
-
-observe({
-  results <- results()
-
-  withProgress(message = "Creating data for heatmap", value = 20, {
-    # update data for plot
-    result_reshaped(data.reshape.func11(results$pmet_result, results$motifs, counts = "p_adj"))
-  }) # withProgress
-})
-
-
-# data (reactive value) for heat map -----------------------------------------
-plot_data <- reactive({
-  dat_list <- result_reshaped()
-  clusters <- names(dat_list) %>% sort()
-
-  # Overlap --------------------------------------------------
-  if (input$method == "Overlap") {
-    # merge data into DF[[1]]
-    dat <- dat_list[[1]]
-
-    # move all non-NA row from other DFs to DF[[1]]
-    for (i in 2:length(dat_list)) {
-      indx <- which(!is.na(dat_list[[i]][, "cluster"]))
-
-      dat[indx, ] <- dat_list[[i]][indx, ]
-      dat[indx, "cluster"] <- names(dat_list)[i]
-    }
-  }
-  # All ---------------------------------------------------
-  else if (input$method == "All") {
-    dat <- dat_list
-  } # each cluster ----------------------------------------------
-  else if (input$method %in% clusters) {
-    dat <- dat_list[[input$method]]
-  } # Aggregation ----------------------------------------------
-  else if (input$method == "Aggregation") {
-    top_motif_list <- results()$motifs
-
-    dat <- list()
-
-    for (clu_motif in clusters) {
-      top_motifs <- top_motif_list[[clu_motif]]
-      a <- pmet_result() %>% filter(motif1 %in% top_motifs & motif2 %in% top_motifs)
-      a$p_adj <- round(-log10(a$p_adj), 2)
-
-      for (clu_dat in clusters) {
-        dat[[paste0(clu_motif, "_", clu_dat)]] <- a %>%
-          filter(cluster == clu_dat) %>%
-          arrange(motif1, desc(motif2))
-      }
-    }
-  }
-  return(dat)
-})
 
 # show buttons of data viewer and plot when data loaded
 observe({
+  req(pmet.result.processed())
   shinyjs::hide("plot.button")
   shinyjs::hide("download.button")
-  # shinyjs::hide("dataviewer_btn")
 
-  if (!is.null(plot_data())) {
+  if (!is.null(pmet.result.processed())) {
     shinyjs::show("plot.button")
-    # shinyjs::show("dataviewer_btn")
   }
 })
 # show download button after ploting
@@ -312,15 +191,15 @@ observe({
   req(input$p_adj)
 
   shinyjs::hide("download.button")
-  shinyjs::hide("placeholder") # hide  d3 plot
+  # shinyjs::hide("placeholder") # hide  d3 plot
 })
-
 
 # display motif text ---------------------------------------------------------
 output$dimension_display <- renderText({
   # print screen size
   # paste(input$dimension[1]/12*8, input$dimension[2], input$dimension[2]/input$dimension[1])
-  results <- results()
+
+  results <- pmet.result.processed()
   motifs_top_clusters_list <- results$motifs
   if (!is.null(motifs_top_clusters_list)) {
     names(motifs_top_clusters_list) %>%
@@ -334,63 +213,128 @@ output$dimension_display <- renderText({
   }
 })
 
-
 # display D3 heat map --------------------------------------------------------
-# Lets look for changes in our vehicle class dropdown then crunch the data and serve it to D3
-observeEvent(input$plot.button,
-  {
-    dat <- list(
-      method = input$method,
-      data = plot_data(),
-      clusters = sort(names(result_reshaped()))
-    )
-    # json data for D3 -----------------------------------------
-    json_pmet <- pretty_json(jsonify::to_json(dat))
+# serve plot data to D3
+observeEvent(input$plot.button, {
 
-    # S end that json from the session to our javascript --------
-    session$sendCustomMessage(type = "jsondata", json_pmet)
-  },
-  ignoreNULL = FALSE,
-  ignoreInit = FALSE
-)
+  motifs <- TopMotifsGenerator(pmet.result.processed()$motifs, by.cluster = FALSE, exclusive.motifs = TRUE)
+  num.motifs <- length(motifs)
 
-# This tells shiny to run our javascript file "script.js" and send it to the UI for rendering
+  # expend ggplot with genes for hover information
+  dat_list   <- MotifPairGeneDiagonal(pmet.result.processed()$pmet_result, motifs, counts = "p_adj")
+  clusters   <- names(dat_list) %>% sort()
+
+  # Overlap mode: merge all non-NA data into one heat map (different colors for different clusters)
+  if (input$method == "Overlap") {
+    # merge data into DF[[1]]
+    dat <- dat_list[[1]]
+    # move all non-NA values from other DFs to DF[[1]]
+    for (i in 2:length(dat_list)) {
+      indx                 <- which(!is.na(dat_list[[i]][, "cluster"]))
+      dat[indx,          ] <- dat_list[[i]][indx, ]
+      dat[indx, "cluster"] <- names(dat_list)[i]
+    }
+
+    dat[, "motif1"] <- match(dat[, "motif1"], motifs)
+    dat[, "motif2"] <- match(dat[, "motif2"], motifs)
+  } else if (input$method == "All") {
+    for (clu in clusters) {
+      dat_list[[clu]][, "motif1"] <- match(dat_list[[clu]][, "motif1"], motifs)
+      dat_list[[clu]][, "motif2"] <- match(dat_list[[clu]][, "motif2"], motifs)
+    }
+    dat <- dat_list
+  } else if (input$method %in% clusters) {
+    dat <- dat_list[[input$method]]
+
+    dat[, "motif1"] <- match(dat[, "motif1"], motifs)
+    dat[, "motif2"] <- match(dat[, "motif2"], motifs)
+    print(dat[, 1:3])
+  } else if (input$method == "Aggregation") {
+    # top_motif_list <- pmet.result.processed()$motifs
+
+    # dat <- list()
+
+    # for (clu_motif in clusters) {
+    #   top_motifs <- top_motif_list[[clu_motif]]
+    #   a <- pmet_result() %>% filter(motif1 %in% top_motifs & motif2 %in% top_motifs)
+    #   a$p_adj <- round(-log10(a$p_adj), 2)
+
+    #   for (clu_dat in clusters) {
+    #     dat[[paste0(clu_motif, "_", clu_dat)]] <- a %>%
+    #       filter(cluster == clu_dat) %>%
+    #       arrange(motif1, desc(motif2))
+    #   }
+    # }
+  }
+
+  dat <- list(
+    method = input$method,
+    data = dat,
+    clusters = clusters,
+    motifs = motifs
+  )
+
+  # json data for D3
+  json_pmet <- pretty_json(jsonify::to_json(dat))
+
+  # send json from the session to javascript
+  session$sendCustomMessage(type = "jsondata", json_pmet)
+  }, ignoreNULL = FALSE, ignoreInit = FALSE)
+
+# This tells shiny to run javascript file and send it to the UI for rendering
 output$d3 <- renderUI({
-  HTML('<script type="text/javascript", src="script.js">  </script>')
+  HTML('<script type="text/javascript", src="heatmap.js">  </script>')
 })
 
 # download heat map ---------------------------------------------------------
 output$download.button <- downloadHandler(
   filename = function() {
-    "a.png"
+    "heatmap.png"
   },
   content = function(file) {
-    results <- results()
+    results  <- pmet.result.processed()
     clusters <- names(results$pmet_result) %>% sort()
 
+
     if (input$method == "Overlap") {
-      p <- plot.moti.pair.overlap.func(results$pmet_result, results$motifs)
-    } else {
-      if (input$method == "All") {
-        respective_plot <- FALSE
-      } else if (input$method %in% clusters) {
-        respective_plot <- TRUE
+
+      motifs <- TopMotifsGenerator(pmet.result.processed()$motifs, by.cluster = FALSE, exclusive.motifs = TRUE)
+      num.motifs <- length(motifs)
+
+      # expend ggplot with genes for hover information
+      dat_list   <- MotifPairGeneDiagonal(pmet.result.processed()$pmet_result, motifs, counts = "p_adj")
+      clusters   <- names(dat_list) %>% sort()
+
+      # merge data into DF[[1]]
+      dat <- dat_list[[1]]
+      # move all non-NA values from other DFs to DF[[1]]
+      for (i in 2:length(dat_list)) {
+        indx                 <- which(!is.na(dat_list[[i]][, "cluster"]))
+        dat[indx,          ] <- dat_list[[i]][indx, ]
+        dat[indx, "cluster"] <- names(dat_list)[i]
       }
 
-      p <- plot.motif.pair.func(results$pmet_result,
-        results$motifs,
-        counts = "p_adj",
-        exclusive_motifs = TRUE,
-        by_cluster = FALSE,
-        show_cluster = FALSE,
-        legend_title = "-log10(p.adj)",
-        nrow_ = 2,
-        ncol_ = 2,
-        axis_lables = "",
-        show_axis_text = TRUE,
-        diff_colors = TRUE,
-        respective_plot = respective_plot,
-        return.data = FALSE
+      p <- MotifPairPlotHetero(dat,  "p_adj", motifs, clusters)
+    } else {
+      if (input$method == "All") {
+        respective.plot <- FALSE
+      } else if (input$method %in% clusters) {
+        respective.plot <- TRUE
+      }
+
+      p <- MotifPairPlotHomog(results$pmet_result,
+                              results$motifs,
+                              counts            = "p_adj",
+                              exclusive.motifs  = TRUE,
+                              by.cluster        = FALSE,
+                              show.cluster      = FALSE,
+                              legend.title      = "-log10(p.adj)",
+                              nrow_             = 2,
+                              ncol_             = 2,
+                              axis.lables       = "",
+                              show.axis.text    = TRUE,
+                              diff.colors       = TRUE,
+                              respective.plot   = respective.plot
       )
 
       if (input$method %in% clusters) {
@@ -410,9 +354,18 @@ output$datatable_tabs <- renderUI({
   )
 })
 
-observeEvent(results(), {
-  result <- lapply(results()$pmet_result, function(res) {
+
+observeEvent(pmet.result.processed(), {
+  result <- lapply(pmet.result.processed()$pmet_result, function(res) {
     res[, c("cluster", "motif1", "motif2", "gene_num", "p_adj")]
   })
   server_data("info1", result)
 })
+
+
+
+observeEvent(input$download.svg, {
+  print("下载svg")
+  session$sendCustomMessage('svgClassName', "#d3")
+})
+

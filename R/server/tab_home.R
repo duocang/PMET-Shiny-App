@@ -21,7 +21,7 @@ observeEvent(input$jump_heat_bnt, {
 
 output$photo <- renderImage({
   list(
-    src = file.path("R/www/figures/PMET_workflow_with_interval_option.png"),
+    src = file.path("www/figures/PMET_workflow_with_interval_option.png"),
     contentType = "image/png",
     width = 1000
   )

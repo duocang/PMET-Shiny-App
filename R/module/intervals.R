@@ -33,7 +33,7 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
 
         req(input$uploaded_fasta)
         # copy uploaded genome fasta to session folder for PMET to run in the back
-        temp_2_local_func(UPLOAD_DIR, job_id, input$uploaded_fasta)
+        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_fasta)
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_fasta$datapath)) {
@@ -48,7 +48,7 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
         req(input$uploaded_meme)
 
         # copy uploaded motif to session folder for PMET to run in the back
-        temp_2_local_func(UPLOAD_DIR, job_id, input$uploaded_meme)
+        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_meme)
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_meme$datapath)) {
@@ -63,10 +63,10 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
 
         req(input$gene_for_pmet)
         # copy uploaded genes to result folder for PMET to run in the back
-        temp_2_local_func("result", job_id, input$gene_for_pmet)
+        TempToLocal("result", job_id, input$gene_for_pmet)
 
         inputs <- reactiveValuesToList(input)
-        genes_status <- check_gene_file(input$gene_for_pmet$size,
+        genes_status <- CheckGeneFile(input$gene_for_pmet$size,
                                               input$gene_for_pmet$datapath,
                                               motif_db = NULL,
                                               mode = "intervals")

@@ -103,7 +103,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         req(input$uploaded_fasta)
 
         # copy uploaded genome fasta to session folder for PMET to run in the back
-        temp_2_local_func(UPLOAD_DIR, job_id, input$uploaded_fasta)
+        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_fasta)
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_fasta$datapath)) {
@@ -118,7 +118,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         req(input$uploaded_annotation)
 
         # copy uploaded annotation to session folder for PMET to run in the back
-        temp_2_local_func(UPLOAD_DIR, job_id, input$uploaded_annotation)
+        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_annotation)
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_annotation$datapath)) {
@@ -133,7 +133,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         req(inputId = "uploaded_meme")
 
         # copy uploaded motif to session folder for PMET to run in the back
-        temp_2_local_func(UPLOAD_DIR, job_id, input$uploaded_meme)
+        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_meme)
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_meme$datapath)) {
@@ -148,9 +148,9 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         req(inputId = "uploaded_gene_for_pmet")
 
         # copy uploaded genes to result folder for PMET to run in the back
-        temp_2_local_func("result", job_id, input$gene_for_pmet)
+        TempToLocal("result", job_id, input$gene_for_pmet)
 
-        genes_status <- check_gene_file(input$gene_for_pmet$size,
+        genes_status <- CheckGeneFile(input$gene_for_pmet$size,
                                               input$gene_for_pmet$datapath,
                                               mode = "promoters")
         switch(genes_status,

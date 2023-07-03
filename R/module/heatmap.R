@@ -41,7 +41,7 @@ headmapServer <- function(id, data, title = NA, ncol = 2, show_legend = "No Lege
           zauto = FALSE,
           zmin = 1,
           zmax = zmax,
-          colorscale = colors.plotly.func(),
+          colorscale = GenerateColorMapping(),
           text = ~p_adj_genes,
           hovertemplate = paste0(
             "Motif X:          %{x}<br>",

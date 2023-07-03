@@ -1,4 +1,4 @@
-# The function `paths_of_repeative_run_func` returns a list `pmet_config` that
+# The function `PathsPmetRepeat` returns a list `pmet_config` that
 # contains path configuration information based on different input parameters
 # and flag variables. This path configuration information is used for executing
 # a repetitive running function.
@@ -37,7 +37,7 @@
 #     - If flags vector indicates no changes and the previous run was successful, no indexing or pairing is needed.
 #     - If flags vector indicates changes, only pairing is needed.
 # - Returns pmet_config list containing the path configuration information as the result.
-paths_of_repeative_run_func <- function(input,
+PathsPmetRepeat <- function(input,
                                         temp_folder,
                                         previous_paths,
                                         flags,
@@ -154,18 +154,18 @@ paths_of_repeative_run_func <- function(input,
 
         # copy uploaded files from var (temp) to local folders
         if (flags$uploaded_meme == 0) {
-          temp_2_local_func(UPLOAD_DIR, temp_folder, input$uploaded_meme)
+          TempToLocal(UPLOAD_DIR, temp_folder, input$uploaded_meme)
         }
         if (flags$uploaded_fasta == 0) {
-          temp_2_local_func(UPLOAD_DIR, temp_folder, input$uploaded_fasta)
+          TempToLocal(UPLOAD_DIR, temp_folder, input$uploaded_fasta)
         }
         if (flags$uploaded_annotation == 0) {
-          temp_2_local_func(UPLOAD_DIR, temp_folder, input$uploaded_annotation)
+          TempToLocal(UPLOAD_DIR, temp_folder, input$uploaded_annotation)
         }
         if (flags$gene_for_pmet == 0) {
           # # create local folders
           # dir.create(file.path("result", temp_folder), recursive = TRUE, showWarnings = FALSE)
-          temp_2_local_func("result", temp_folder, input$gene_for_pmet)
+          TempToLocal("result", temp_folder, input$gene_for_pmet)
         }
         file.rename(file.path("result", temp_folder), pmet_config$pmetPair_path)
         file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$pmetIndex_path)

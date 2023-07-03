@@ -4,7 +4,7 @@ library(mailR)
 # Arguments:
 #   recipient: The recipient of the email
 #   result_link: The result link of the email
-send_result_mail <- function(recipient = NULL, result_link = NULL) {
+SendResultMail <- function(recipient = NULL, result_link = NULL) {
   sender <- "result@pmet.simpleconstellation.com"
 
   subject <- "PMET result is ready!"
@@ -40,4 +40,4 @@ recipient <- args[1]
 result_link <- args[2]
 
 # 调用发送邮件函数
-send_result_mail(recipient = recipient, result_link = result_link)
+SendResultMail(recipient = recipient, result_link = result_link)

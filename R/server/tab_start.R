@@ -27,7 +27,7 @@ observe({
   switch(input$mode,
     "promoters_pre" = {
       input_temp <- promoters_pre_handler$input
-      if (!is.null(input_temp$gene_for_pmet$datapath) & is_valid_email(input$userEmail)) {
+      if (!is.null(input_temp$gene_for_pmet$datapath) & ValidEmail(input$userEmail)) {
         shinyjs::show("run_pmet_button_div")
       } else {
         shinyjs::hide("run_pmet_button_div")
@@ -39,7 +39,7 @@ observe({
           & !is.null(input_temp$uploaded_annotation$datapath)
           & !is.null(input_temp$uploaded_meme$datapath)
           & !is.null(input_temp$gene_for_pmet$datapath)
-          & is_valid_email(input$userEmail)) {
+          & ValidEmail(input$userEmail)) {
             shinyjs::show("run_pmet_button_div")
           } else {
             shinyjs::hide("run_pmet_button_div")
@@ -50,7 +50,7 @@ observe({
       if (  !is.null(input_temp$uploaded_fasta$datapath)
           & !is.null(input_temp$uploaded_meme$datapath)
           & !is.null(input_temp$gene_for_pmet$datapath)
-          & is_valid_email(input$userEmail)) {
+          & ValidEmail(input$userEmail)) {
             shinyjs::show("run_pmet_button_div")
           } else {
             shinyjs::hide("run_pmet_button_div")
@@ -63,7 +63,7 @@ observe({
 observeEvent(input$userEmail, {
   if (input$userEmail == "") { # no typing
     showFeedbackDanger(inputId = "userEmail", text = "Email needed")
-  } else if (is_valid_email(input$userEmail)) { # invalid email
+  } else if (ValidEmail(input$userEmail)) { # invalid email
     showFeedbackSuccess(inputId = "userEmail", text = "Results will be sent via Email.")
   } else { # valid email
     showFeedbackWarning(inputId = "userEmail", text = "invalid Email")
@@ -96,7 +96,7 @@ observeEvent(input$run_pmet_button, {
 
   notifi_pmet_id <<- showNotification("PMET is running...", type = "message", duration = 0)
 
-  pmet_paths  <- pmet_paths_generator(inputs, mode)
+  pmet_paths  <- PmetPathsGenerator(inputs, mode)
 
   if (mode == "promoters_pre") {
     file.rename(file.path("result", job_id), pmet_paths$pmetPair_path)
@@ -107,7 +107,7 @@ observeEvent(input$run_pmet_button, {
 
   # PMET job is runnig in the back
   future_promise({
-    command_run_pmet_(inputs,
+    ComdRunPmet(inputs,
                       pmet_paths$pmetIndex_path,
                       pmet_paths$pmetPair_path,
                       pmet_paths$genes_path,
