@@ -193,6 +193,7 @@ packages <- c(
   "RinteRface/fullPage",  # Create full page scrollable web pages with Shiny and R Markdown
   "shiny",                # creation of interactive web applications
   "shinyBS",              # Bootstrap styling
+  "shinybusy",          # Automated (or not) busy indicator for Shiny apps & other progress / notifications tools
   "shinydashboard",       # creation of dashboard-style Shiny apps
   "shinyFeedback",        # user feedback integration
   "shinycssloaders",      # loading animation integration
@@ -283,3 +284,6 @@ g++ -g -Wall -std=c++11 Output.cpp motif.cpp motifComparison.cpp main.cpp -o ../
 ```
 
 
+
+[GitHub Ribbons](https://github.blog/2008-12-19-github-ribbons/)
+[GitHub Corners](https://tholman.com/github-corners/)

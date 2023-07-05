@@ -20,6 +20,7 @@ suppressMessages({
     "scales",             # controlling the scaling of data in R graphics.
     "shiny",              # building interactive web applications in R.
     "shinyBS",            # adding additional Bootstrap functionality to Shiny applications.
+    "shinybusy",          # Automated (or not) busy indicator for Shiny apps & other progress / notifications tools
     "shinydashboard",     # creating dashboards with a tabbed layout in Shiny.
     "shinydisconnect",    # handling disconnections and reconnections in Shiny applications.
     "shinyFeedback",      # providing user feedback and notifications in Shiny applications.

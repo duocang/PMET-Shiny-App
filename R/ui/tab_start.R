@@ -2,7 +2,7 @@ tabPanel(
   introjsUI(),
   useShinyFeedback(),
   title = "START",
-  value = "run_start",
+  value = "pmet_tabpanel",
   pageWithSidebar(
     dashboardHeader(disable = TRUE),
     sidebarPanel(
@@ -22,29 +22,24 @@ tabPanel(
       div(id = "userEmail_div",
         textInput("userEmail", "Email", value = ""),
       ),
-      # action button
       div(class = "run_pmet_div",
+        style = "margin-top:30px;display:flex;justify-content:center;align-items:center;margin-top:30px",
         shinyjs::hidden(
-          shiny::div(
-            id = "run_pmet_button_div",
-            withBusyIndicatorUI(
-              loadingButton("run_pmet_button",
-                label = "Run PMET",
-                loadingLabel = "Running...",
-                style = "width: 135px"
-              )
+          div(id = "run_pmet_button_div",
+            actionButton("run_pmet_button",
+              label = "Run PMET",
+              style = "width: 130px;color:#ffff; background-color:#fb8b05;"
             )
           )
-        )
-      ),
-      # Download PMET result button
-      div(id = "pmet_result_download_ui_div",
-        style = "margin-bottom:30px; margin-top:20px;",
-        uiOutput("pmet_result_download_ui"),
-        uiOutput("pmet_result_download_ui1")
+        ),
+        uiOutput("pmet_result_download_ui")
       )
     ),
     mainPanel({
+      # Use this function somewhere in UI
+      use_busy_spinner(spin = "fading-circle")
+      div(id = "workflow_mode",
+        imageOutput("image"))
     })
   )
 )

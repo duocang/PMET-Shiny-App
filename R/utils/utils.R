@@ -97,8 +97,8 @@ TempToLocal <- function(local_dir, temp_folder, input_file) {
   dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
 
   # copy file
-  file_path <- file.path(dir_path, new_file_name)
-  file.copy(temp_file, file_path, overwrite = TRUE)
+  # file_path <- file.path(dir_path, new_file_name)
+  file.copy(temp_file, dir_path, overwrite = TRUE)
 }
 
 #' GenerateColorMapping: Generate a color mapping for numeric values

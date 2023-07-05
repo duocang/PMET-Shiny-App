@@ -28,16 +28,20 @@ tabPanel(
       div(id = "p_adj_div",
         numericInput("p_adj", "P.adj:", 0.05, min = 0, max = 1, step = 0.001)
       ),
-      div(
-        actionButton(
-          "plot.button",
-          "Plot",
-          icon = icon("paint-brush"),
-          style = "color: #ffff; background-color: #fb8b05;"),
-        downloadButton("download.button", "Download", class = "btn-success")
+      div(style = "display:flex;justify-content:center;align-items:center;margin-top:30px",
+          shinyjs::hidden(actionButton(
+            "plot.button",
+            "Plot",
+            icon = icon("paint-brush"),
+            style = "width: 120px;color:#ffff;background-color:#fb8b05;")),
+          shinyjs::hidden(downloadButton("download.button",
+            "Download",
+            class = "btn-success",
+            style = "width: 120px;margin-left: 50px;"))
       )
     ),
     mainPanel(
+      add_busy_spinner(spin = "cube-grid"),
       tabsetPanel(
         type = "tabs",
         id = "heat_map_tabs",

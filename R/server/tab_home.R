@@ -9,7 +9,7 @@
 
 observeEvent(input$jump_pmet_bnt, {
   updateTabsetPanel(session, "navbar",
-    selected = "run_tabpanel"
+    selected = "pmet_tabpanel"
   )
 })
 
@@ -19,7 +19,16 @@ observeEvent(input$jump_heat_bnt, {
   )
 })
 
-output$photo <- renderImage({
+output$logo <- renderImage({
+  list(
+    src = file.path("www/figures/logo.png"),
+    contentType = "image/png",
+    width = 400,
+    height = 200
+  )
+}, deleteFile = FALSE)
+
+output$workflow <- renderImage({
   list(
     src = file.path("www/figures/PMET_workflow_with_interval_option.png"),
     contentType = "image/png",

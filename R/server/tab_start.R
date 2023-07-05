@@ -77,19 +77,29 @@ observeEvent(input$userEmail, {
 notifi_pmet_id <- NULL # id to remove notification when stop pmet job
 
 observeEvent(input$run_pmet_button, {
+  show_spinner()
+  # show_modal_spinner()
+  # notify_success("Well done!")
+  report(
+    title = "PMET is running...",
+    text ="You are safe to close this page and result will be send via email.",
+    button = "OK",
+    type = "info"
+  )
 
   mode <- input$mode
 
   inputs <- switch(mode,
     "promoters_pre" = { promoters_pre_handler$input },
-    "promoters"     = { promoters_handler$input },
-    "intervals"     = { intervals_handler$input }
+    "promoters"     = { promoters_handler$input     },
+    "intervals"     = { intervals_handler$input     }
   ) %>% reactiveValuesToList()
 
   inputs$userEmail <- input$userEmail
 
   shinyjs::hide("pmet_result_download_button") # hide download button
   shinyjs::disable("run_pmet_button")          # disable rum button
+  shinyjs::disable("a")          # disable rum button
   # run butn clicked, wrap the code in a call to `withBusyIndicatorServer()`
   withBusyIndicatorServer("sf-loading-button-run_pmet_button", {
     Sys.sleep(0.5)
@@ -104,18 +114,22 @@ observeEvent(input$run_pmet_button, {
   if (mode == "promoters_pre") {
     file.rename(file.path("result", job_id), pmet_paths$pmetPair_path)
   } else {
-    file.rename(file.path("result", job_id), pmet_paths$pmetPair_path)
+    file.rename(file.path("result", job_id  ), pmet_paths$pmetPair_path)
     file.rename(file.path(UPLOAD_DIR, job_id), pmet_paths$pmetIndex_path)
   }
 
   # PMET job is runnig in the back
   future_promise({
     ComdRunPmet(inputs,
-                      pmet_paths$pmetIndex_path,
-                      pmet_paths$pmetPair_path,
-                      pmet_paths$genes_path,
-                      mode)
+                pmet_paths$pmetIndex_path,
+                pmet_paths$pmetPair_path,
+                pmet_paths$genes_path,
+                mode)
   }) %...>% (function(result_link) {
+    # remove the indicator of pmete running (shinybusy)
+    hide_spinner()
+    # remove_modal_spinner()
+
     cli::cat_rule(sprintf("pmet done!"))
     Sys.sleep(0.5)
     # 1. reset loadingButton (RUN PMET) to its active state after PMET DONE
@@ -130,15 +144,43 @@ observeEvent(input$run_pmet_button, {
     output$pmet_result_download_ui <- renderUI({
       actionButton(
         "pmet_result_download_button",
-        "PMET result",
+        "Result",
         icon = icon("download"),
+        class = "btn-success",
         onclick = paste0("location.href='", result_link, "'"),
-        style = "width: 135px"
+        style = "width: 130px;margin-left: 30px;"
       )
     }) # end of rednderUI
     # automatically scroll to the spot of download button
-    runjs('document.getElementById("pmet_result_download_ui_div").scrollIntoView();')
+    runjs('document.getElementById("run_pmet_div").scrollIntoView();')
   }) # end of future
 
   cli::cat_rule(sprintf("pmet task starts！"))
 })
+
+
+output$image <- renderImage({
+  style = "margin-left: 0px;"
+  workflow_path <- switch(input$mode,
+    "promoters_pre" = {
+      height = 800
+      style = "margin-left: 400px;"
+      "www/figures/pmet_heterotypic.png"
+    },
+    "promoters" = {
+      height = 800
+      "www/figures/PMET_workflow_promoters_PMET_PMETindex.png"
+    },
+    "intervals" = {
+      height = 800
+      "www/figures/PMET_workflow_intervals_PMET_PMETindex.png"
+    }
+  )
+
+  list(
+    src         = workflow_path,
+    contentType = "image/png",
+    height       = height,
+    style       = style
+  )
+}, deleteFile=FALSE, )
