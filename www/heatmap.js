@@ -3,12 +3,13 @@
 //Wrap the entire D3 script in this function. It is looking for a jsondata message sent from Shinys server session object.
 Shiny.addCustomMessageHandler('jsondata', function (pmet) {
 
-  //Lets nuke out any thing on our page with the id of "d3Graph". This will prevent
-  //our app from making a new graph each time a parameter is changed
-  // d3.select("#d3").remove();
-  // d3.select("#d3Graph").remove();
-  d3.selectAll("svg").remove();
-  console.log(pmet)
+  //Lets nuke out any thing on our page with the id of "d3Temp". This will prevent
+  d3.select("#d3Temp").remove();
+  const d3Placeholder = document.getElementById("placeholder");
+  const d3Temp = document.createElement("div");
+  d3Temp.id = "d3Temp";
+  d3Placeholder.appendChild(d3Temp);
+
 
   var clusters = pmet.clusters;
 
@@ -29,7 +30,7 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       var colorInd = clusters.indexOf(id);
 
       var svgHeatmap = DrawHeatmap( data       = pmet.data[id],
-                                    sagID      = "#placeholder",
+                                    sagID      = "#d3Temp",
                                     heatmapID  = id,
                                     valMax     = valMax,
                                     valMin     = valMin,
