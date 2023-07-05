@@ -351,8 +351,24 @@ universe_file=$outputdir/universe.txt
 gene_file=$genefile
 
 
-grep -vwFf $outputdir/universe.txt $genefile > $pmetoutput/genes_skipped.txt
-grep -wFf  $outputdir/universe.txt $genefile > $pmetoutput/genes_used_PMET.txt
+# grep -vwFf  $pmetindex/universe.txt $genefile > $outputdir/genes_skipped.txt
+# grep -wFf   $pmetindex/universe.txt $genefile > $outputdir/genes_used_PMET.txt
+
+if grep -wFf  $pmetindex/universe.txt $genefile > $outputdir/genes_used_PMET.txt; then
+    echo "Find valid gene(s)"
+else
+    echo "NO valid genes" > $outputdir/genes_used_PMET.txt
+    echo "Search failed. Aborting further commands."
+    exit 1
+fi
+
+
+if grep -vwFf $pmetindex/universe.txt $genefile > $outputdir/genes_skipped.txt; then
+    echo "Find skipped gene(s)"
+else
+    echo "NO skipped genes" > $outputdir/genes_skipped.txt
+    echo "Search finished. Continuting further commands."
+fi
 
 
 PMETdev/scripts/pmetParallel_linux \
