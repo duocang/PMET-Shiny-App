@@ -4,7 +4,7 @@ output$demo_pmet_result_download <- downloadHandler(
     "example_pmet_result.txt"
   },
   content = function(file) {
-    data <- data.table::fread("data/example_pmet_result.txt")
+    data <- data.table::fread("data/demo_pmet_analysis/example_pmet_result.txt")
     write.table(data, file, quote = FALSE, sep = "\t")
   }
 )
@@ -41,7 +41,7 @@ observeEvent(input$pmet_result_file, {
       showFeedbackDanger(inputId = "pmet_result_file", text = "Empty file")
     },
     "Wrong" = {
-      print("Wrong format of uploaded file")
+      # print("Wrong format of uploaded file")
       hideFeedback(inputId = "pmet_result_file")
       showFeedbackDanger(inputId = "pmet_result_file", text = "Wrong format of uploaded file content")
     },
@@ -244,7 +244,6 @@ observeEvent(input$plot.button, {
 
     dat[, "motif1"] <- match(dat[, "motif1"], motifs)
     dat[, "motif2"] <- match(dat[, "motif2"], motifs)
-    print(dat[, 1:3])
   } else if (input$method == "Aggregation") {
     # top_motif_list <- pmet.result.processed()$motifs
 

@@ -26,20 +26,19 @@ tabPanel(
         style = "margin-top:30px;display:flex;justify-content:center;align-items:center;margin-top:30px",
         shinyjs::hidden(
           div(id = "run_pmet_button_div",
-            actionButton("run_pmet_button",
+            loadingButton("run_pmet_button",
               label = "Run PMET",
               style = "width: 130px;color:#ffff; background-color:#fb8b05;"
             )
           )
         ),
-        uiOutput("pmet_result_download_ui")
+        uiOutput("pmet_result_download_ui"),
+        # Use this function somewhere in UI
+        use_busy_spinner(spin = "fading-circle", position = "bottom-left")
       )
     ),
     mainPanel({
-      # Use this function somewhere in UI
-      use_busy_spinner(spin = "fading-circle")
-      div(id = "workflow_mode",
-        imageOutput("image"))
+      div(id = "workflow_mode", imageOutput("image"))
     })
   )
 )

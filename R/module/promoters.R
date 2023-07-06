@@ -97,7 +97,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
     id,
     function(input, output, session) {
 
-      UPLOAD_DIR <- "data/PMETindex/uploaded_motif"
+      UPLOAD_DIR <- "result/indexing"
       # self uploaded genome fasta  --------------------------------------------------
       observeEvent(input$uploaded_fasta, {
         req(input$uploaded_fasta)
@@ -184,7 +184,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
           "example_genes.txt"
         },
         content = function(file) {
-          write.table(read.table("data/data_for_promoters/example_genes.txt"), file, quote = FALSE, row.names = FALSE, col.names = FALSE)
+          write.table(read.table("data/demo_promoters/example_genes.txt"), file, quote = FALSE, row.names = FALSE, col.names = FALSE)
         }
       )
 
@@ -193,7 +193,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
           "example_motif.meme"
         },
         content = function(file) {
-          data <- readLines("data/data_for_promoters/example_motif.meme")
+          data <- readLines("data/demo_promoters/example_motif.meme")
           writeLines(data, file)
         }
       )

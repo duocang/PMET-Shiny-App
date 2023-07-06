@@ -57,7 +57,7 @@ PathsPmetRepeat <- function(input,
                       indexing_pairing_needed = NULL,
                       pairing_need            = NULL)
 
-  UPLOAD_DIR <- "data/PMETindex/uploaded_motif"
+  UPLOAD_DIR <- "result/indexing"
 
   pmet_paths  <- paths_for_pmet_func(input, mode, first_run, temp_folder)
 

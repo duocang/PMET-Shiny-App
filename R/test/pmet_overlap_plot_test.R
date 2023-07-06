@@ -22,7 +22,7 @@ counts = "p_adj"
 by.cluster       = FALSE
 exclusive.motifs = TRUE
 
-pmet.file <- "data/example_pmet_result.txt"
+pmet.file <- "data/demo_pmet_analysis/example_pmet_result.txt"
 
 pmet.result.raw  <- pmet.result <- data.table::fread(pmet.file,
                                                      select = c(
@@ -41,7 +41,7 @@ pmet.result.processed <- ProcessPmetResult( pmet_result       = pmet.result.raw,
                                             gene_portion      = 0.05,
                                             topn              = topn_pair,
                                             unique_cmbination = motif_pair_unique)
-# 
+#
 # > length(unlist(pmet.result.processed$motifs))
 # [1] 14
 # > length(unique(unlist(pmet.result.processed$motifs)))
@@ -70,14 +70,3 @@ for (i in 2:length(dat_list)) {
 p <- MotifPairPlotHetero(dat,  "p_adj", motifs, clusters)
 
 ggsave("R/test/heatmap.png", p, width = 16, height = 14, dpi = 320, units = "in")
-
-
-
-
-
-
-
-
-
-
-

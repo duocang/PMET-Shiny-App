@@ -31,37 +31,46 @@ ValidEmail <- function(x) {
 #'   }
 #'
 #' @examples
-#' generate_pmet_file_paths(input_data, mode = "promoters_pre")
+#' library(stringr)
+#' inputs <- list(userEmail    = "2@gmail.com",
+#'               uploaded_meme = list( path = "xuesong", name = "jaspar.meme"),
+#'               gene_for_pmet = list( path = "xuesong", name = "crotex.txt"))
+#' mode <- "promoters"
+#' PmetPathsGenerator(inputs, mode)
+#'
+#' $user_id
+#' [1] "2-gmail.com_2023Jul05_1331"
+#'
+#' $genes_path
+#' [1] "result/2-gmail.com_2023Jul05_1331/crotex.txt"
+#'
+#' $pmetIndex_path
+#' [1] "result/indexing/2-gmail.com_2023Jul05_1331"
+#'
+#' $pmetPair_path
+#' [1] "result/2-gmail.com_2023Jul05_1331"
 #'
 #' @keywords PMET analysis, file paths, user ID
 #' @export
+
 PmetPathsGenerator <- function(input = NULL, mode = NULL) {
 
   user_id <- paste0(str_replace(input$userEmail, "@", "-"), "_",
                     format(Sys.time(), "%Y%b%d_%H%M"))
 
-  switch(mode,
-  "promoters_pre" = {
+  if (mode == "promoters_pre") {
     species <- str_split(input$motif_db, "-")[[1]][1]
-    pmetIndex_path <- file.path("data/PMETindex", species, input$motif_db)
-  },
-  "promoters" = {
-    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>% paste0(., "_", user_id)
-    pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
-  },
-  "intervals" = {
-    motif_db <- input$uploaded_meme$name %>% str_replace(".meme", "") %>% paste0(., "_", user_id)
-    pmetIndex_path <- file.path("data/PMETindex/uploaded_motif", motif_db)
-  })
+    pmetIndex_path <- file.path("data/indexing", species, input$motif_db)
+  } else {
+    pmetIndex_path <- file.path("result/indexing", user_id)
+  }
+  pmetPair_path <- file.path("result", user_id)
 
-  folder_name <- paste0(input$motif_db, "_", user_id)
-
-  pmetPair_path <- file.path("result", folder_name)
   genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
 
-  return(list(genes_path     = genes_path,
+  return(list(user_id        = user_id,
+              genes_path     = genes_path,
               pmetIndex_path = pmetIndex_path,
-              user_id        = user_id,
               pmetPair_path  = pmetPair_path))
 }
 

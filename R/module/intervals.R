@@ -17,7 +17,9 @@ intervals_ui <- function(id, height = 800, width = 850) {
       downloadLink(ns("demo_motif_db_link"), "Example motif DB")
     ),
     div(id = "gene_for_pmet_div", class = "one_upload",
-      fileInput(ns("gene_for_pmet"), "Clusters and intervals", multiple = FALSE, accept = ".txt")
+      fileInput(ns("gene_for_pmet"), "Clusters and intervals", multiple = FALSE, accept = ".txt"),
+      # example gene list
+      downloadLink(ns("demo_genes_file_link"), "Example peaks (intervals)")
     )
   )
 }
@@ -26,7 +28,7 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
-      UPLOAD_DIR <- "data/PMETindex/uploaded_motif"
+      UPLOAD_DIR <- "result/indexing"
 
       # self uploaded genome fasta  --------------------------------------------------
       observeEvent(input$uploaded_fasta, {
@@ -54,10 +56,10 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
 
         # indicators for file uploaded
         if (!is.null(input$uploaded_meme$datapath)) {
-          hideFeedback(inputId = "uploaded_fasta")
+          hideFeedback(inputId = "uploaded_meme")
           showFeedbackSuccess(inputId = "uploaded_meme")
         } else {
-          hideFeedback(inputId = "uploaded_fasta")
+          hideFeedback(inputId = "uploaded_meme")
           showFeedbackDanger(inputId = "uploaded_meme", text = "No motif")
         }
       }, ignoreInit = T)
@@ -74,24 +76,31 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
                                       input$gene_for_pmet$datapath,
                                       motif_db = NULL,
                                       mode = "intervals")
-        hideFeedback(inputId = "uploaded_fasta")
+        print(genes_status)
+        hideFeedback(inputId = "gene_for_pmet")
         switch(genes_status,
           "OK" = {
+            hideFeedback(inputId = "gene_for_pmet")
             showFeedbackSuccess(inputId = "gene_for_pmet")
           },
           "no_content" = {
+            hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
           },
           "wrong_column" = {
+            hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
           },
           "gene_wrong_format" = {
+            hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
           },
           "intervals_wrong_format" = {
+            hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger( inputId = "gene_for_pmet", text = "Genomic intervals pattern: chromosome:number-number.")
           },
           "no_valid_genes" = {
+            hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger(inputId = "gene_for_pmet", text = "No valid genes available in the uploaded file")
           })
       }, ignoreInit = T)
@@ -101,7 +110,7 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
           "intervals.fa"
         },
         content = function(file) {
-          data <- readLines("data/data_for_intervals/intervals.fa")
+          data <- readLines("data/demo_intervals/intervals.fa")
           writeLines(data, file)
         }
       )
@@ -111,17 +120,17 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
           "motif.meme"
         },
         content = function(file) {
-          data <- readLines("data/data_for_intervals/motif.meme")
+          data <- readLines("data/demo_intervals/motif.meme")
           writeLines(data, file)
         }
       )
 
-      output$gene_for_pmet <- downloadHandler(
+      output$demo_genes_file_link <- downloadHandler(
         filename = function() {
           "intervals.txt"
         },
         content = function(file) {
-          data <- readLines("data/data_for_intervals/intervals.txt")
+          data <- readLines("data/demo_intervals/intervals.txt")
           writeLines(data, file)
         }
       )

@@ -16,7 +16,7 @@ pid_pmet_finder_func <- function(pattern) {
 	# Use regular expressions to match Command information
 	# matched_commands example:
 	# 323 PMETdev/scripts/pmetParallel_linux
-	# 	-d data/PMETindex/at/at-jaspar_2018
+	# 	-d data/indexing/at/at-jaspar_2018
 	# 	-g result/tt_gmail.com_at_at-jaspar_2018_2023Jun15_0015/genes_used_PMET.txt
 	# 	-i 24
 	# 	-p promoter_lengths.txt

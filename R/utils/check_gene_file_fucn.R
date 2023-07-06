@@ -34,9 +34,8 @@ CheckGeneFile <- function(gene_file_size = NULL, gene_file_path = NULL, motif_db
   # Perform checks based on the sequence type
   switch(mode,
     "intervals" = {
-      pattern <- "^1:\\d+-\\d+$" # # Define the pattern for valid interval format
-      num_invalid_intervals <- (!grepl(pattern, genes_uploaded[, "gene"])) %>% sum()
-      if (num_invalid_intervals != 0) {
+      valid_rows <- grep("^\\d+_\\d+-\\d+$", genes_uploaded[, "gene"], invert = FALSE)  # 使用正则表达式匹配符合格式的行
+      if (length(valid_rows) != nrow(genes_uploaded)) {
         return("intervals_wrong_format")
       } else {
         return("OK")
@@ -44,7 +43,7 @@ CheckGeneFile <- function(gene_file_size = NULL, gene_file_path = NULL, motif_db
     },
     "promoters_pre" = {
         # if motifs selected, check the uploaded genes with the gene list in our folder, named universe.txt
-        genes_universe <- file.path("data/PMETindex",
+        genes_universe <- file.path("data/indexing",
                                     str_split(motif_db, "-")[[1]][1],
                                     motif_db, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
 

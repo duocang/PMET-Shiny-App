@@ -45,10 +45,11 @@ topn=5000
 maxk=5
 fimothresh=0.05
 pmetroot="scripts"
-threads=8
+threads=4
 icthreshold=24
 
-outputdir=
+indexingOutputDir=
+pairingOutputDir=
 genomefile=
 memefile=
 
@@ -66,7 +67,7 @@ while getopts ":r:o:k:n:f:t:x:g:e:l:" options; do
         r) echo "Full path of PMET_index:  $OPTARG" >&2
         pmetroot=$OPTARG;;
         o) echo "Output directory for results: $OPTARG" >&2
-        outputdir=$OPTARG;;
+        indexingOutputDir=$OPTARG;;
         n) echo "Top n promoter hits to take per motif: $OPTARG" >&2
         topn=$OPTARG;;
         k) echo "Top k motif hits within each promoter: $OPTARG" >&2
@@ -76,7 +77,7 @@ while getopts ":r:o:k:n:f:t:x:g:e:l:" options; do
         t) echo "Number of threads: $OPTARG" >&2
         threads=$OPTARG;;
         x) echo "Output directory for PMET results: $OPTARG" >&2
-        pmetoutput=$OPTARG;;
+        pairingOutputDir=$OPTARG;;
         g) echo "gene: $OPTARG" >&2
         genefile=$OPTARG;;
         c) echo "IC threshold: $OPTARG" >&2
@@ -97,8 +98,8 @@ shift $((OPTIND - 1))
 genomefile=$1
 memefile=$2
 
-[ ! -d $outputdir ] && mkdir $outputdir
-# cd $outputdir
+[ ! -d $indexingOutputDir ] && mkdir $indexingOutputDir
+# cd $indexingOutputDir
 
 echo "Preparing sequences...";
 
@@ -107,54 +108,54 @@ echo "Preparing sequences...";
 # requested, but any genes not in promoter_lengths file are filtered out before we get to PMET binary stage
 # In this version we can just take a copy of all IDs in promoter lengths as we dont to UTR stuff
 
-universefile=$outputdir/universe.txt
+universefile=$indexingOutputDir/universe.txt
 
-if [[ ! -f "$universefile" || ! -f "$outputdir/promoter_lengths.txt" ]]; then
+if [[ ! -f "$universefile" || ! -f "$indexingOutputDir/promoter_lengths.txt" ]]; then
     # should have been done by consistency checker
     # *** ADD THE DEPUPLICATION OF THE FASTA FILE HERE ****
     python3 $pmetroot/deduplicate.py \
             $genomefile \
-            $outputdir/no_duplicates.fa
+            $indexingOutputDir/no_duplicates.fa
 
     # generate the promoter lengths file from the fasta file
     python3 $pmetroot/parse_promoter_lengths_from_fasta.py \
-            $outputdir/no_duplicates.fa \
-            $outputdir/promoter_lengths.txt
-    # rm -f $outputdir/no_duplicates.fa
+            $indexingOutputDir/no_duplicates.fa \
+            $indexingOutputDir/promoter_lengths.txt
+    # rm -f $indexingOutputDir/no_duplicates.fa
 
-    cut -f 1  $outputdir/promoter_lengths.txt > $universefile
+    cut -f 1  $indexingOutputDir/promoter_lengths.txt > $universefile
 fi
 
 # now we can actually FIMO our way to victory
-fasta-get-markov $genomefile > $outputdir/genome.bg
+fasta-get-markov $genomefile > $indexingOutputDir/genome.bg
 # FIMO barfs ALL the output. that's not good. time for individual FIMOs
 # on individual MEME-friendly motif files too
 
 echo "Processing motifs...";
 
 ### Make motif  files from user's meme file
-[ ! -d $outputdir/memefiles ] && mkdir $outputdir/memefiles
+[ ! -d $indexingOutputDir/memefiles ] && mkdir $indexingOutputDir/memefiles
 
 python3 $pmetroot/parse_memefile.py \
         $memefile \
-        $outputdir/memefiles/
+        $indexingOutputDir/memefiles/
 
 ### creates IC.txt tsv file from, motif files
 python3 $pmetroot/calculateICfrommeme_IC_to_csv.py \
-        $outputdir/memefiles/ \
-        $outputdir/IC.txt
+        $indexingOutputDir/memefiles/ \
+        $indexingOutputDir/IC.txt
 
 ### Create a fimo hits file form each motif file
-[ ! -d $outputdir/fimo ] && mkdir $outputdir/fimo
-[ ! -d $outputdir/fimohits ] && mkdir $outputdir/fimohits
+[ ! -d $indexingOutputDir/fimo ] && mkdir $indexingOutputDir/fimo
+[ ! -d $indexingOutputDir/fimohits ] && mkdir $indexingOutputDir/fimohits
 
 # shopt -s nullglob # prevent loop produncing '*.txt'
 
-# numfiles=$(ls -l $outputdir/memefiles/*.txt | wc -l)
+# numfiles=$(ls -l $indexingOutputDir/memefiles/*.txt | wc -l)
 # echo $numfiles" found"
 # n=0
 # # paralellise this loop
-# for memefile in $outputdir/memefiles/*.txt; do
+# for memefile in $indexingOutputDir/memefiles/*.txt; do
 #     let n=$n+1
 #     fimofile=`basename $memefile`
 #     echo $fimofile
@@ -162,17 +163,17 @@ python3 $pmetroot/calculateICfrommeme_IC_to_csv.py \
 #     fimo    --text \
 #             --thresh $fimothresh \
 #             --verbosity 1 \
-#             --bgfile $outputdir/genome.bg \
+#             --bgfile $indexingOutputDir/genome.bg \
 #             $memefile \
 #             $genomefile \
-#             > $outputdir/fimo/$fimofile &
+#             > $indexingOutputDir/fimo/$fimofile &
 #     [ `expr $n % $threads` -eq 0 ] && wait
 # done
 
 # Run fimo and pmetindex on each mitif (parallel version)
 runFimoIndexing () {
     memefile=$1
-    outputdir=$2
+    indexingOutputDir=$2
     fimothresh=$3
     pmetroot=$4
     maxk=$5
@@ -181,38 +182,38 @@ runFimoIndexing () {
     filename=`basename $memefile .txt`
     # echo $filename
 
-    mkdir -p $outputdir/fimo/$filename
+    mkdir -p $indexingOutputDir/fimo/$filename
 
     fimo \
         --no-qvalue \
         --text \
         --thresh $fimothresh \
         --verbosity 1 \
-        --bgfile $outputdir/genome.bg\
+        --bgfile $indexingOutputDir/genome.bg\
         $memefile \
-        $outputdir/no_duplicates.fa \
-        > $outputdir/fimo/$filename/$filename.txt
+        $indexingOutputDir/no_duplicates.fa \
+        > $indexingOutputDir/fimo/$filename/$filename.txt
     $pmetroot/pmetindex \
-        -f $outputdir/fimo/$filename \
+        -f $indexingOutputDir/fimo/$filename \
         -k $maxk \
         -n $topn \
-        -o $outputdir \
-        -p $outputdir/promoter_lengths.txt > $outputdir/pmetindex.log
-    rm -rf $outputdir/fimo/$filename
+        -o $indexingOutputDir \
+        -p $indexingOutputDir/promoter_lengths.txt > $indexingOutputDir/pmetindex.log
+    rm -rf $indexingOutputDir/fimo/$filename
 }
 export -f runFimoIndexing
 
-find $outputdir/memefiles -name \*.txt \
+find $indexingOutputDir/memefiles -name \*.txt \
     | parallel \
         --jobs=$threads \
-        "runFimoIndexing {} $outputdir $fimothresh $pmetroot $maxk $topn"
+        "runFimoIndexing {} $indexingOutputDir $fimothresh $pmetroot $maxk $topn"
 
 echo "Delete unnecessary files"
 
-rm -r $outputdir/memefiles
-rm $outputdir/genome.bg
+# rm -r $indexingOutputDir/memefiles
+# rm $indexingOutputDir/genome.bg
 
-touch ${outputdir}_FLAG
+touch ${indexingOutputDir}_FLAG
 # next stage needs the following inputs
 
 #   promoter_lengths.txt        made by parse_promoter_lengths.py from .bed file
@@ -221,25 +222,25 @@ touch ${outputdir}_FLAG
 #   gene input file             supplied by user
 
 # ------------------------------------ Run pmet ----------------------------------
-
-mkdir -p $pmetoutput
+echo "Runing PMET pairing..."
+mkdir -p $pairingOutputDir
 
 PMETdev/scripts/pmetParallel_linux \
-    -d $outputdir \
+    -d $indexingOutputDir \
     -g $genefile \
     -i $icthreshold \
     -p promoter_lengths.txt \
     -b binomial_thresholds.txt \
     -c IC.txt \
     -f fimohits \
-    -o $pmetoutput \
+    -o $pairingOutputDir \
     -t 1
 
-cat $pmetoutput/*.txt > $pmetoutput/motif_output.txt
-rm -rf  $pmetoutput/temp*.txt
-zip -j ${pmetoutput}.zip $pmetoutput/*
-rm -rf $pmetoutput
-touch ${pmetoutput}_FLAG
+cat $pairingOutputDir/*.txt > $pairingOutputDir/motif_output.txt
+rm -rf  $pairingOutputDir/temp*.txt
+zip -j ${pairingOutputDir}.zip $pairingOutputDir/*
+rm -rf $pairingOutputDir
+touch ${pairingOutputDir}_FLAG
 
 Rscript R/utils/send_mail.R $email $resultlink
 
