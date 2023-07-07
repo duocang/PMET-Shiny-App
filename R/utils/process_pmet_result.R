@@ -1,10 +1,10 @@
 # Get lower triangle of the correlation matrix
-get_lower_tri <- function(cormat) {
+GetLowerTriangle <- function(cormat) {
   cormat[upper.tri(cormat)] <- NA
   return(cormat)
 }
 # Get upper triangle of the correlation matrix
-get_upper_tri <- function(cormat) {
+GetUpperTriangle <- function(cormat) {
   cormat[lower.tri(cormat)] <- NA
   return(cormat)
 }
@@ -13,32 +13,25 @@ get_upper_tri <- function(cormat) {
 ValidatePmetResult <- function(filepath) {
 
   if (is.null(filepath)) {
-    return("No")
+    return("NO_FILE")
   }
 
-  if (tools::file_ext(filepath) != "txt") {
-    return("Type")
+  if(file.info(filepath)$size == 0) {
+    return("NO_CONTENT")
   }
 
   # read first line
   dat_first_row <- readLines(filepath, n = 1)
   # default header of PMET result
   pmet_result_rowname <- "Cluster\tMotif 1\tMotif 2\tNumber of genes in cluster with both motifs\tTotal number of genes with both motifs\tNumber of genes in cluster\tRaw p-value\tAdjusted p-value (BH)\tAdjusted p-value (Bonf)\tAdjusted p-value (Global Bonf)\tGenes"
-  # print(identical(dat_first_row, pmet_result_rowname))
-
-  if (identical(dat_first_row, character(0))) {
-    # hideFeedback("pmet_result_file")
-    # showFeedbackDanger(inputId = "pmet_result_file", text = "Empty file")
-    return("Empty")
-  } else if (!identical(dat_first_row, pmet_result_rowname)) {
+  if (!identical(dat_first_row, pmet_result_rowname)) {
     # print("Wrong format of uploaded file")
     # hideFeedback("pmet_result_file")
     # showFeedbackDanger(inputId = "pmet_result_file", text = "Wrong format of uploaded file")
-    return("Wrong")
+    return("WRONG_HEADER")
   }
   return("OK")
 }
-
 
 
 #' CreateMotifCombs: Create an empty data.frame with motif-motif combinations

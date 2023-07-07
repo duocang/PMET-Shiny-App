@@ -170,6 +170,7 @@ python3 $pmetroot/calculateICfrommeme_IC_to_csv.py \
 #     [ `expr $n % $threads` -eq 0 ] && wait
 # done
 
+echo "Runing FIMO and PMET index..."
 # Run fimo and pmetindex on each mitif (parallel version)
 runFimoIndexing () {
     memefile=$1
@@ -236,7 +237,7 @@ PMETdev/scripts/pmetParallel_linux \
     -o $pairingOutputDir \
     -t 1
 
-cat $pairingOutputDir/*.txt > $pairingOutputDir/motif_output.txt
+cat $pairingOutputDir/temp*.txt > $pairingOutputDir/motif_output.txt
 rm -rf  $pairingOutputDir/temp*.txt
 zip -j ${pairingOutputDir}.zip $pairingOutputDir/*
 rm -rf $pairingOutputDir

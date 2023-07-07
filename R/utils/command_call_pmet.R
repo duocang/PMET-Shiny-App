@@ -23,14 +23,10 @@ ComdRunPmet <- function(input,
         " -t 8",
         " -o ", pmetPair_path,
         "-e", recipient,
-        "-l", result_link,
-        " &")
-      print(bash_pmet)
+        "-l", result_link, " &")
       system("chmod +x PMETdev/PMET_only_promoters.sh")
-      messages <- system(bash_pmet, intern=TRUE)
     },
     "promoters" = {
-      # cli::cat_rule(sprintf("运行PMETindex！"))
       bash_pmet <- paste(
         "nohup PMETdev/PMETindex_promoters_parallel_delete_fimo.sh ",
         "-r ", "PMETdev/scripts ",
@@ -50,14 +46,9 @@ ComdRunPmet <- function(input,
         "-l", result_link,
         file.path(pmetIndex_path, paste0("0.", tools::file_ext(input$uploaded_fasta$name))),
         file.path(pmetIndex_path, "0.gff3"),
-        file.path(pmetIndex_path, "0.meme"),
-        "&"
-      )
-      print(bash_pmet)
+        file.path(pmetIndex_path, "0.meme"), "&")
       system("chmod +x PMETdev/scripts/gff3sort/gff3sort.pl")
       system("chmod +x PMETdev/PMETindex_promoters_parallel_delete_fimo.sh")
-      system(bash_pmet, intern=TRUE)
-
     },
     "intervals" = {
       bash_pmet <- paste(
@@ -73,16 +64,24 @@ ComdRunPmet <- function(input,
         "-e", recipient,
         "-l", result_link,
         file.path(pmetIndex_path, paste0("0.", tools::file_ext(input$uploaded_fasta$name))),
-        file.path(pmetIndex_path, "0.meme"),
-        "&"
-      )
-      print(bash_pmet)
+        file.path(pmetIndex_path, "0.meme"), "&")
       system("chmod +x PMETdev/PMETindex_intervals_parallel_delete_fimo.sh")
-      messages <- system(bash_pmet, intern=TRUE)
     })
 
-  if (file.exists(paste0(pmetPair_path, ".zip")))
+    print(bash_pmet)
+    messages <- system(bash_pmet, intern=TRUE)
+
+  if (file.exists(paste0(pmetPair_path, ".zip"))) {
+    # delete folder and FLAG of PMET index
+    if (model != "promoters_pre") {
+      bash_rm_pmetindex <- paste0("rm -rf ", pmetIndex_path, "_FLAG")
+      system(bash_rm_pmetindex, intern=TRUE)
+      bash_rm_pmetindex <- paste0("rm -rf ", pmetIndex_path)
+      system(bash_rm_pmetindex, intern=TRUE)
+    }
     return(result_link)
-  else
+  }
+  else {
     return("NO RESULT")
+  }
 }

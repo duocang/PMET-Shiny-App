@@ -28,19 +28,15 @@ observeEvent(input$pmet_result_file, {
   file.status("NO")
   # indicators for PMET result file uploaded
   switch(ValidatePmetResult(input$pmet_result_file$datapath),
-    "No" = {
+    "NO_FILE" = {
       hideFeedback(inputId = "pmet_result_file")
       showFeedbackDanger(inputId = "pmet_result_file", text = "Upload a txt file of PMET result")
     },
-    "Type" = {
-      hideFeedback(inputId = "pmet_result_file")
-      showFeedbackDanger(inputId = "pmet_result_file", text = "Wrong file type, only .txt allowed")
-    },
-    "Empty" = {
+    "NO_CONTENT" = {
       hideFeedback(inputId = "pmet_result_file")
       showFeedbackDanger(inputId = "pmet_result_file", text = "Empty file")
     },
-    "Wrong" = {
+    "WRONG_HEADER" = {
       # print("Wrong format of uploaded file")
       hideFeedback(inputId = "pmet_result_file")
       showFeedbackDanger(inputId = "pmet_result_file", text = "Wrong format of uploaded file content")

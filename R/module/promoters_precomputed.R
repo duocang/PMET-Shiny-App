@@ -22,7 +22,7 @@ promoters_pre_ui <- function(id, height = 800, width = 850) {
       # example gene list
       downloadLink(ns("demo_genes_file_link"), "Example gene"),
       shinyjs::hidden(
-        actionLink(ns("skipped_genes_link"), "Skipped genes", icon = icon("info-circle")))
+        actionLink(ns("skipped_genes_link"), "Genes not found", icon = icon("info-circle")))
     ) # end of gene_for_pmet_div
   )
 }
@@ -31,7 +31,9 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
-      genes_skipped  <- reactiveVal(NULL) # store skipped genes for download handler
+      ns <- session$ns
+
+      genes_not_found  <- reactiveVal(NULL) # store genes not found for download handler
 
       # self genes uploaded -----------------------------------------------------------
       observeEvent(input$gene_for_pmet, {
@@ -41,31 +43,28 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
 
         inputs <- reactiveValuesToList(input)
 
-        genes_status <- CheckGeneFile(input$gene_for_pmet$size,
-                                              input$gene_for_pmet$datapath,
-                                              input$motif_db,
-                                              mode = "promoters_pre")
+        genes_status <- CheckGeneFile(input$gene_for_pmet$datapath, mode = "promoters_pre", input$motif_db)
 
         hideFeedback(inputId = "gene_for_pmet")
         if (length(genes_status) == 3) {
-          genes_skipped(genes_status[[3]])
+          genes_not_found(genes_status[[3]])
           shinyjs::show("skipped_genes_link")
           showFeedbackWarning(
             inputId = "gene_for_pmet",
-            text = paste(genes_status[[1]], "out of", genes_status[[2]], "genes are skipped"))
+            text = paste(genes_status[[1]], "out of", genes_status[[2]], "genes are not found"))
         } else {
           shinyjs::hide("skipped_genes_link")
           switch(genes_status,
             "OK" = {
               showFeedbackSuccess(inputId = "gene_for_pmet")
             },
-            "no_content" = {
+            "NO_CONTENT" = {
               showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
             },
-            "wrong_column" = {
+            "WORNG_COLUMN_NUMBER" = {
               showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
             },
-            "gene_wrong_format" = {
+            "GENE_WRONG_FORMAT" = {
               showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
             },
             "no_valid_genes" = {
@@ -74,55 +73,58 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
         }
       }, ignoreInit = T)
 
-    # modal dialog shown, when link clicked (skipped genes are not nul)
-    observeEvent(input$skipped_genes_link, {
-      if (!is.null(genes_skipped())) {
-        Sys.sleep(0.2)
-        showModal(modalDialog(
-          title = "Skipped genes:",
-          DT::renderDataTable({ genes_skipped() }),
-          footer = tagList(
-            downloadButton("skipped_genes_down_btn", "Download"),
-            modalButton("Cancel"))
-        )) # end of showModal
-      }
-    })
+      # modal dialog shown, when link clicked (genes not found are not null)
+      observeEvent(input$skipped_genes_link, {
+        if (!is.null(genes_not_found())) {
+          Sys.sleep(0.5)
+          showModal(modalDialog(
+            title = "Genes not found:",
+            DT::renderDataTable({ genes_not_found() }),
+            footer = tagList(
+              downloadButton(ns("genes_not_found_down_btn"), "Download"),
+              modalButton("Cancel"))
+          )) # end of showModal
+        }
+      })
 
-    # Download Skipped genes when button clicked -----------------------------------
-    output$skipped_genes_down_btn <- downloadHandler(
-      filename = function() {
-        "genes_skipped.txt"
-      },
-      content = function(file) { write.table(genes_skipped(), file, quote = FALSE, row.names = FALSE) }
-    ) # downLoadHandler end
+      # Download genes not found when button clicked -----------------------------------
+      output$genes_not_found_down_btn <- downloadHandler(
+        filename = function() {
+          "genes_not_found.txt"
+        },
+        content = function(file) {
+          write.table(genes_not_found(), file, quote = FALSE, row.names = FALSE) }
+      ) # downLoadHandler end
 
-    # Download example genes file for PMET ---------------------------------------
-    output$demo_genes_file_link <- downloadHandler(
-      filename = function() {
-        "example_genes.txt"
-      },
-      content = function(file) {
-        write.table(read.table("data/data_for_promoters/example_genes.txt"), file, quote = FALSE, row.names = FALSE, col.names = FALSE)
-      }
-    )
 
-    # workthrough tips of Run PMET -----------------------------------------------
-    elements <- c(
-        "#motif_db_div",
-        "#gene_for_pmet_div"
-    )
-    intors <- c(
-      "Upload your own motif file or choose from the available defaults",
-      "A tab separated file containing the gene set number and gene."
-    )
-    intro <- data.frame(element = elements, intro = intors)
+      # Download example genes file for PMET ---------------------------------------
+      output$demo_genes_file_link <- downloadHandler(
+        filename = function() {
+          "example_genes.txt"
+        },
+        content = function(file) {
+          read.table("data/demo_promoters/example_genes.txt") %>%
+            write.table(file, quote = FALSE, row.names = FALSE, col.names = FALSE)
+        }
+      )
 
-    observeEvent(trigger(), {
-      if (mode() == "promoters_pre" & navbar() == "run_start") {
-        introjs(session, options = list(steps = intro))
-      }
-    }, ignoreInit = F)
+      # workthrough tips of Run PMET -----------------------------------------------
+      elements <- c(
+          "#motif_db_div",
+          "#gene_for_pmet_div"
+      )
+      intors <- c(
+        "Upload your own motif file or choose from the available defaults",
+        "A tab separated file containing the gene set number and gene."
+      )
+      intro <- data.frame(element = elements, intro = intors)
 
-  list(input = input)
+      observeEvent(trigger(), {
+        if (mode() == "promoters_pre" & navbar() == "run_start") {
+          introjs(session, options = list(steps = intro))
+        }
+      }, ignoreInit = F)
+
+      list(input = input)
     })
 }

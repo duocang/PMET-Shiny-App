@@ -351,7 +351,7 @@ universe_file=$indexingOutputDir/universe.txt
 gene_file=$genefile
 
 
-# grep -vwFf  $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_skipped.txt
+# grep -vwFf  $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_not_found.txt
 # grep -wFf   $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_used_PMET.txt
 
 if grep -wFf  $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_used_PMET.txt; then
@@ -363,10 +363,10 @@ else
 fi
 
 
-if grep -vwFf $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_skipped.txt; then
-    echo "Find skipped gene(s)"
+if grep -vwFf $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_not_found.txt; then
+    echo "Some gene(s) not found"
 else
-    echo "NO skipped genes" > $pairingOutputDir/genes_skipped.txt
+    echo "All genes found" > $pairingOutputDir/genes_not_found.txt
     echo "Search finished. Continuting further commands."
 fi
 

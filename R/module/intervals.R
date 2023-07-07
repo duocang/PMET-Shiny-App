@@ -20,6 +20,34 @@ intervals_ui <- function(id, height = 800, width = 850) {
       fileInput(ns("gene_for_pmet"), "Clusters and intervals", multiple = FALSE, accept = ".txt"),
       # example gene list
       downloadLink(ns("demo_genes_file_link"), "Example peaks (intervals)")
+    ),
+    # parameters
+    div(id = "parameters_div", class = "one_upload",
+      div("Parameters", class = "big_font"),
+      fluidRow(
+        div(id = "max_motif_matches_div", class = "parameters_box",
+          selectInput(
+            inputId = ns("max_motif_matches"), label = "Max motif matches",
+            choices = c(2, 3, 4, 5, 10, 15, 20), selected = 5
+          )
+        ),
+        div(id = "promoter_number_div", class = "parameters_box",
+          selectInput(
+            inputId = ns("promoter_number"),
+            label = "Number of selected promoters",
+            choices = c(2000, 3000, 4000, 5000, 10000),
+            selected = 5000
+          )
+        ),
+        div(id = "fimo_threshold_div", class = "parameters_box",
+          selectInput(
+            inputId = ns("fimo_threshold"),
+            label = "Fimo threshold",
+            choices = c(0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05),
+            selected = 0.05
+          )
+        )
+      )
     )
   )
 }
@@ -72,26 +100,23 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
         TempToLocal("result", job_id, input$gene_for_pmet)
 
         inputs <- reactiveValuesToList(input)
-        genes_status <- CheckGeneFile(input$gene_for_pmet$size,
-                                      input$gene_for_pmet$datapath,
-                                      motif_db = NULL,
-                                      mode = "intervals")
-        print(genes_status)
+        genes_status <- CheckGeneFile(input$gene_for_pmet$datapath, mode = "intervals")
+
         hideFeedback(inputId = "gene_for_pmet")
         switch(genes_status,
           "OK" = {
             hideFeedback(inputId = "gene_for_pmet")
             showFeedbackSuccess(inputId = "gene_for_pmet")
           },
-          "no_content" = {
+          "NO_CONTENT" = {
             hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
           },
-          "wrong_column" = {
+          "WORNG_COLUMN_NUMBER" = {
             hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
           },
-          "gene_wrong_format" = {
+          "GENE_WRONG_FORMAT" = {
             hideFeedback(inputId = "gene_for_pmet")
             showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
           },

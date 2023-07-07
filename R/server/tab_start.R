@@ -2,7 +2,7 @@
 myToastOptions <- list(
   positionClass = "toast-bottom-right",
   progressBar = TRUE,
-  timeOut = 30000,
+  timeOut = 600000,
   closeButton = TRUE,
 
   # same as defaults
@@ -18,13 +18,12 @@ myToastOptions <- list(
 )
 
 
-# session_id is the name of folde to keep uploaded files from user
-# because some data needed by PMET is not accessible after the session is closed
-UPLOAD_DIR     <- "result/indexing"
-job_id         <- runif(1, 100, 999999999) %/% 1
+# job_id is the name of folde to keep uploaded files from user
+# because some data needed by PMET is not accessible after shiny session is closed
+UPLOAD_DIR    <- "result/indexing"
+job_id        <- runif(1, 100, 999999999) %/% 1
 
 trig <- reactiveVal(FALSE)
-
 observeEvent(input$show_tutorial, {
   trig(!trig())
 })
@@ -55,35 +54,49 @@ observeEvent(input$userEmail, {
   }
 })
 
-# show/hide Run button () ------------------------------------------------------
-observe({
-  pmet_ready <- switch(input$mode,
-    "promoters_pre" = {
-      input_temp <- promoters_pre_handler$input
-      ifelse (!is.null(input_temp$gene_for_pmet$datapath) & ValidEmail(input$userEmail), TRUE, FALSE) %>%
-        return()
-    },
-    "promoters" = {
-      input_temp <- promoters_handler$input
-      ifelse (  !is.null(input_temp$uploaded_fasta$datapath) & !is.null(input_temp$uploaded_annotation$datapath)
-              & !is.null(input_temp$uploaded_meme$datapath ) & !is.null(input_temp$gene_for_pmet$datapath)
-              & ValidEmail(input$userEmail), TRUE, FALSE) %>%
-        return()
-    },
-    "intervals" = {
-      input_temp <- intervals_handler$input
-      ifelse (  !is.null(input_temp$uploaded_fasta$datapath) & !is.null(input_temp$uploaded_meme$datapath)
-              & !is.null(input_temp$gene_for_pmet$datapath ) & ValidEmail(input$userEmail), TRUE, FALSE) %>%
-        return()
-    }
-  )
 
-  hide_spinner() # when input changed, hide the spinner (indicator for job running)
+# show Run button () -----------------------------------------------------------
+# when the following requirements are met:
+# 1. all input is required
+# 2. gene file is a file with 2 columns
+# 3. valid email is provided
+observe({
+  # when input changed
+  # hide spinner (indicator for job running)
+  # hide run and download buttions
+  hide_spinner()
+  shinyjs::hide("toast-container")
   shinyjs::hide("run_pmet_button_div")
   shinyjs::hide("pmet_result_download_button")
 
+  # check file input and gene file
+  files_ready <- switch(input$mode,
+    "promoters_pre" = {
+      gene_file_status <-  CheckGeneFile( input$`promoters_pre-gene_for_pmet`$datapath,
+                                          "promoters_pre",
+                                          motif_db = input$`promoters_pre-motif_db`)
 
-  if (pmet_ready) {
+      all(gene_file_status == "OK") | (length(gene_file_status) == 3)
+    },
+    "promoters" = {
+      inputs <- list(
+        input$`promoters-uploaded_fasta`, input$`promoters-uploaded_annotation`,
+        input$`promoters-uploaded_meme` , input$`promoters-gene_for_pmet`)
+      files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
+      gene_file_status    <- CheckGeneFile(input$`promoters-gene_for_pmet`$datapath, "promoters")
+
+      files_upload_status &&  gene_file_status == "OK"
+    },
+    "intervals" = {
+      inputs              <- list( input$`uploaded_fasta`, input$`uploaded_meme`, input$`gene_for_pmet`)
+      files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
+      gene_file_status    <- CheckGeneFile(input$`intervals-gene_for_pmet`$datapath, "intervals")
+
+      files_upload_status &&  gene_file_status == "OK"
+    }
+  )
+
+  if (files_ready && ValidEmail(input$userEmail)) {
     shinyjs::show("run_pmet_button_div")
   } else {
     shinyjs::hide("run_pmet_button_div")
@@ -104,34 +117,32 @@ observeEvent(input$run_pmet_button, {
     button = "OK"
   )
 
-  mode <- input$mode
+  shinyjs::hide("pmet_result_download_button")
+  shinyjs::disable("run_pmet_button")
 
+  # move focus to run button
+  runjs('document.getElementById("run_pmet_div").scrollIntoView();')
+
+  notifi_pmet_id  <- showNotification("PMET is running...", type = "message", duration = 0)
+  notifi_pmet_ids <<- c(notifi_pmet_ids, notifi_pmet_id)
+
+  mode <- input$mode
   inputs <- switch(mode,
     "promoters_pre" = { promoters_pre_handler$input },
     "promoters"     = { promoters_handler$input     },
     "intervals"     = { intervals_handler$input     }
   ) %>% reactiveValuesToList()
-
   inputs$userEmail <- input$userEmail
 
-  shinyjs::hide("pmet_result_download_button") # hide download button
-  shinyjs::disable("run_pmet_button")          # disable rum button
-
-  # move focus to run button
-  runjs('document.getElementById("run_pmet_div").scrollIntoView();')
-
-  notifi_pmet_id <- showNotification("PMET is running...", type = "message", duration = 0)
-  notifi_pmet_ids <<- c(notifi_pmet_ids, notifi_pmet_id)
-
   pmet_paths  <- PmetPathsGenerator(inputs, mode)
-
+  # change temporary directory'name to a  user-specified (pattern: email_timepoint)
   if (mode == "promoters_pre") {
     file.rename(file.path("result", job_id), pmet_paths$pmetPair_path)
   } else {
     file.rename(file.path("result", job_id  ), pmet_paths$pmetPair_path)
     file.rename(file.path(UPLOAD_DIR, job_id), pmet_paths$pmetIndex_path)
   }
-
+  cli::cat_rule(sprintf("pmet task starts！"))
   # PMET job is runnig in the back
   future_promise({
     ComdRunPmet(inputs,
@@ -155,9 +166,11 @@ observeEvent(input$run_pmet_button, {
     # 2. hide STOP button
     resetLoadingButton("run_pmet_button")
     shinyjs::enable("run_pmet_button")
+    # when job is finished, disable the RUN buttion to avoid second run
+    shinyjs::hide("run_pmet_button_div")
 
     # download button for ngxin file
-    print(result_link)
+    shinyjs::show("pmet_result_download_button") # hide download button
     output$pmet_result_download_ui <- renderUI({
       actionButton(
         "pmet_result_download_button",
@@ -171,24 +184,21 @@ observeEvent(input$run_pmet_button, {
     # automatically scroll to the spot of download button
     runjs('document.getElementById("run_pmet_div").scrollIntoView();')
 
-    for (i in c("uploaded_fasta", "uploaded_annotation", "uploaded_meme", "gene_for_pmet")) {
-      reset(paste0(input$mode, "-", i))
-      hideFeedback(paste0(input$mode, "-", i))
-    }
-    reset("userEmail")
-    showFeedbackDanger("userEmail", text = "Email needed")
-    # when job is finished, disable the RUN buttion to avoid second run
-    shinyjs::hide("run_pmet_button_div")
-
     showToast(
       "success",
       "The result is ready to be downloaded!",
       .options = myToastOptions
     )
-  }) # end of future
-  cli::cat_rule(sprintf("pmet task starts！"))
-})
 
+    # reset all input files and parameters
+    for (i in c("uploaded_fasta", "uploaded_annotation", "uploaded_meme", "gene_for_pmet",
+                "promoter_length", "max_motif_matches", "promoter_number", "fimo_threshold",
+                "utr5", "promoters_overlap")) {
+      shinyjs::reset(paste0(input$mode, "-", i))
+      hideFeedback(paste0(input$mode, "-", i))
+    }
+  }) # end of future
+})
 
 output$image <- renderImage({
   style = "margin-left: 0px;"
@@ -214,4 +224,4 @@ output$image <- renderImage({
     height       = height,
     style       = style
   )
-}, deleteFile=FALSE, )
+}, deleteFile=FALSE)

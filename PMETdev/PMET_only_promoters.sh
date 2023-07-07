@@ -55,7 +55,7 @@ gene_file=$genefile
 
 echo "Extracting genes..."
 
-# grep -vwFf  $pmetindex/universe.txt $genefile > $outputdir/genes_skipped.txt
+# grep -vwFf  $pmetindex/universe.txt $genefile > $outputdir/genes_not_found.txt
 # grep -wFf   $pmetindex/universe.txt $genefile > $outputdir/genes_used_PMET.txt
 
 if grep -wFf  $pmetindex/universe.txt $genefile > $outputdir/genes_used_PMET.txt; then
@@ -67,10 +67,10 @@ else
 fi
 
 
-if grep -vwFf $pmetindex/universe.txt $genefile > $outputdir/genes_skipped.txt; then
-    echo "Find skipped gene(s)"
+if grep -vwFf $pmetindex/universe.txt $genefile > $outputdir/genes_not_found.txt; then
+    echo "Some gene(s) not found"
 else
-    echo "NO skipped genes" > $outputdir/genes_skipped.txt
+    echo "All genes found" > $outputdir/genes_not_found.txt
     echo "Search finished. Continuting further commands."
 fi
 

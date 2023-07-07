@@ -59,7 +59,7 @@ PMETdev/scripts/pmetParallel_linux \
     -t $threads \
     -o $outputdir > $outputdir/PMET_OUTPUT.log
 
-cat $outputdir/*.txt > $outputdir/motif_output.txt
+cat $outputdir/temp*.txt > $outputdir/motif_output.txt
 rm -rf  $outputdir/temp*.txt
 zip -j ${outputdir}.zip $outputdir/*
 rm -rf $outputdir

@@ -153,21 +153,19 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
         # copy uploaded genes to result folder for PMET to run in the back
         TempToLocal("result", job_id, input$gene_for_pmet)
 
-        genes_status <- CheckGeneFile(input$gene_for_pmet$size,
-                                              input$gene_for_pmet$datapath,
-                                              mode = "promoters")
+        genes_status <- CheckGeneFile(input$gene_for_pmet$datapath, mode = "promoters")
         hideFeedback(inputId = "gene_for_pmet")
         switch(genes_status,
           "OK" = {
             showFeedbackSuccess(inputId = "gene_for_pmet")
           },
-          "no_content" = {
+          "NO_CONTENT" = {
             showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
           },
-          "wrong_column" = {
+          "WORNG_COLUMN_NUMBER" = {
             showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
           },
-          "gene_wrong_format" = {
+          "GENE_WRONG_FORMAT" = {
             showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
           },
           "intervals_wrong_format" = {

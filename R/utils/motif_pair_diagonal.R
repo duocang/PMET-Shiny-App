@@ -66,7 +66,7 @@
 # @importFrom reshape2 melt
 # @importFrom reshape2 remove_rownames
 # @importFrom ggplot2 factor
-# @importFrom gtools get_upper_tri
+# @importFrom gtools GetUpperTriangle
 MotifPairDiagonal <- function(pmet.split,
                               motifs.top,
                               counts = "value") {
@@ -93,7 +93,7 @@ MotifPairDiagonal <- function(pmet.split,
     a$motif1 <- row.names(a)
     a <- a[match(motifs.top, a$motif1), ]
     # get up right half part of matrix
-    a[, 1:length(motifs.top)] <- get_upper_tri(a[, 1:length(motifs.top)])
+    a[, 1:length(motifs.top)] <- GetUpperTriangle(a[, 1:length(motifs.top)])
 
     a <- reshape2::melt(a, "motif1", variable.name = "motif2")
     a$motif1 <- factor(a$motif1, levels = motifs.top)

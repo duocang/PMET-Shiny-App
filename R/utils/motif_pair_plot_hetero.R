@@ -6,8 +6,6 @@ MotifPairPlotHetero <- function(plot.data = NULL,
   colors <- c("#ed3333", "#11659a", "#1a6840", "#f9a633", "#8b2671", "#2f2f35")[seq_along(clusters)]
   names(colors) <- clusters
 
-  print(motifs)
-
   p <- plot.data %>%
     ggplot(aes(motif1, motif2, alpha = p_adj, fill = factor(cluster))) +
     geom_tile(color = "white") +

@@ -62,7 +62,9 @@ conda install -c bioconda samtools
 ```
 
 Install from source:
+
 > assuming you create a directory named `samtools` in home directory (~) and install samtools there.
+
 ```bash
 wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
 
@@ -77,11 +79,14 @@ make install
 export PATH=$HOME/samtools/bin:$PATH
 ```
 
-##  Install bedtools
+## Install bedtools
+
 It is recommended to install bedtools via apt/yum or conda.
+
 ```bash
 conda install -c bioconda bedtools
 ```
+
 or
 
 ```bash
@@ -172,6 +177,10 @@ library(remotes)
 
 remotes::install_github("daattali/shinydisconnect")
 remotes::install_github("RinteRface/fullPage")
+remotes::install_github("dreamRs/shinybusy")
+remotes::install_github("merlinoa/shinyFeedback", build_vignettes = TRUE)
+remotes::install_github("daattali/shinycssloaders")
+
 # Used packages
 packages <- c(
   "bslib",                # Bootstrap themes and styles
@@ -282,8 +291,6 @@ or
 # PMETdev/src/pmetParallel
 g++ -g -Wall -std=c++11 Output.cpp motif.cpp motifComparison.cpp main.cpp -o ../../scripts/pmetParallel_linux -pthread
 ```
-
-
 
 [GitHub Ribbons](https://github.blog/2008-12-19-github-ribbons/)
 [GitHub Corners](https://tholman.com/github-corners/)
