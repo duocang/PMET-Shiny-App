@@ -18,26 +18,23 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
     subject = subject,
     body = body,
     smtp = list(
-      host.name = "v095996.kasserver.com", # smtp 服务器主机名
-      port = 587, # 默认端口
-      user.name = "", # 用户名
-      passwd = "", # 密码（授权码）
+      host.name = "v095996.kasserver.com",
+      port = 587,
+      user.name = "",
+      passwd = "",
       ssl = TRUE
     ),
     authenticate = TRUE,
     send = TRUE,
     # attach.files = emailFile,
-    encoding = "utf-8" # 编码
+    encoding = "utf-8"
   )
 }
 
 
-# 获取命令行参数
 args <- commandArgs(trailingOnly = TRUE)
 
-# 提取收件人和结果链接
 recipient <- args[1]
 result_link <- args[2]
 
-# 调用发送邮件函数
 SendResultMail(recipient = recipient, result_link = result_link)

@@ -1,3 +1,7 @@
+UPLOAD_DIR <- "result/indexing"
+NCPU       <- 6
+
+
 suppressMessages({
   # Used packages
   pacotes <- c(

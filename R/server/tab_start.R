@@ -41,16 +41,16 @@ output$mode_ui <-  renderUI({
   )})
 
 # feedback for no email --------------------------------------------------------
-observeEvent(input$userEmail, {
-  if (input$userEmail == "") { # no typing
-    hideFeedback(inputId = "userEmail")
-    showFeedbackDanger(inputId = "userEmail", text = "Email needed")
-  } else if (ValidEmail(input$userEmail)) { # invalid email
-    hideFeedback(inputId = "userEmail")
-    showFeedbackSuccess(inputId = "userEmail", text = "Results will be sent via Email.")
+observeEvent(input$email, {
+  if (input$email == "") { # no typing
+    hideFeedback(inputId = "email")
+    showFeedbackDanger(inputId = "email", text = "Email needed")
+  } else if (ValidEmail(input$email)) { # invalid email
+    hideFeedback(inputId = "email")
+    showFeedbackSuccess(inputId = "email", text = "Results will be sent via Email.")
   } else { # valid email
-    hideFeedback(inputId = "userEmail")
-    showFeedbackWarning(inputId = "userEmail", text = "invalid Email")
+    hideFeedback(inputId = "email")
+    showFeedbackWarning(inputId = "email", text = "invalid Email")
   }
 })
 
@@ -66,40 +66,40 @@ observe({
   # hide run and download buttions
   hide_spinner()
   shinyjs::hide("toast-container")
-  shinyjs::hide("run_pmet_button_div")
-  shinyjs::hide("pmet_result_download_button")
+  shinyjs::hide("run_pmet_btn_div")
+  shinyjs::hide("pmet_result_download_btn")
 
   # check file input and gene file
   files_ready <- switch(input$mode,
     "promoters_pre" = {
-      gene_file_status <-  CheckGeneFile( input$`promoters_pre-gene_for_pmet`$datapath,
+      gene_file_status <-  CheckGeneFile( input$`promoters_pre-genes`$datapath,
                                           "promoters_pre",
-                                          motif_db = input$`promoters_pre-motif_db`)
+                                          premade = input$`promoters_pre-premade`)
 
       all(gene_file_status == "OK") | (length(gene_file_status) == 3)
     },
     "promoters" = {
       inputs <- list(
-        input$`promoters-uploaded_fasta`, input$`promoters-uploaded_annotation`,
-        input$`promoters-uploaded_meme` , input$`promoters-gene_for_pmet`)
+        input$`promoters-fasta`, input$`promoters-gff3`,
+        input$`promoters-meme` , input$`promoters-genes`)
       files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
-      gene_file_status    <- CheckGeneFile(input$`promoters-gene_for_pmet`$datapath, "promoters")
+      gene_file_status    <- CheckGeneFile(input$`promoters-genes`$datapath, "promoters")
 
       files_upload_status &&  gene_file_status == "OK"
     },
     "intervals" = {
-      inputs              <- list( input$`uploaded_fasta`, input$`uploaded_meme`, input$`gene_for_pmet`)
+      inputs              <- list( input$`fasta`, input$`meme`, input$`genes`)
       files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
-      gene_file_status    <- CheckGeneFile(input$`intervals-gene_for_pmet`$datapath, "intervals")
+      gene_file_status    <- CheckGeneFile(input$`intervals-genes`$datapath, "intervals")
 
       files_upload_status &&  gene_file_status == "OK"
     }
   )
 
-  if (files_ready && ValidEmail(input$userEmail)) {
-    shinyjs::show("run_pmet_button_div")
+  if (files_ready && ValidEmail(input$email)) {
+    shinyjs::show("run_pmet_btn_div")
   } else {
-    shinyjs::hide("run_pmet_button_div")
+    shinyjs::hide("run_pmet_btn_div")
   }
 })
 
@@ -107,7 +107,7 @@ observe({
 # Run PMET ---------------------------------------------------------------------
 # A queue of notification IDs
 notifi_pmet_ids <-  character(0)
-observeEvent(input$run_pmet_button, {
+observeEvent(input$run_pmet_btn, {
   show_spinner()
   # show_modal_spinner()
   # notify_success("Well done!")
@@ -117,8 +117,8 @@ observeEvent(input$run_pmet_button, {
     button = "OK"
   )
 
-  shinyjs::hide("pmet_result_download_button")
-  shinyjs::disable("run_pmet_button")
+  shinyjs::hide("pmet_result_download_btn")
+  shinyjs::disable("run_pmet_btn")
 
   # move focus to run button
   runjs('document.getElementById("run_pmet_div").scrollIntoView();')
@@ -132,22 +132,22 @@ observeEvent(input$run_pmet_button, {
     "promoters"     = { promoters_handler$input     },
     "intervals"     = { intervals_handler$input     }
   ) %>% reactiveValuesToList()
-  inputs$userEmail <- input$userEmail
+  inputs$email <- input$email
 
   pmet_paths  <- PmetPathsGenerator(inputs, mode)
   # change temporary directory'name to a  user-specified (pattern: email_timepoint)
   if (mode == "promoters_pre") {
-    file.rename(file.path("result", job_id), pmet_paths$pmetPair_path)
+    file.rename(file.path("result", job_id), pmet_paths$pair_dir)
   } else {
-    file.rename(file.path("result", job_id  ), pmet_paths$pmetPair_path)
-    file.rename(file.path(UPLOAD_DIR, job_id), pmet_paths$pmetIndex_path)
+    file.rename(file.path("result", job_id  ), pmet_paths$pair_dir)
+    file.rename(file.path(UPLOAD_DIR, job_id), pmet_paths$index_dir)
   }
   cli::cat_rule(sprintf("pmet task starts！"))
   # PMET job is runnig in the back
   future_promise({
     ComdRunPmet(inputs,
-                pmet_paths$pmetIndex_path,
-                pmet_paths$pmetPair_path,
+                pmet_paths$index_dir,
+                pmet_paths$pair_dir,
                 pmet_paths$genes_path,
                 mode)
   }) %...>% (function(result_link) {
@@ -164,16 +164,16 @@ observeEvent(input$run_pmet_button, {
     Sys.sleep(0.5)
     # 1. reset loadingButton (RUN PMET) to its active state after PMET DONE
     # 2. hide STOP button
-    resetLoadingButton("run_pmet_button")
-    shinyjs::enable("run_pmet_button")
+    resetLoadingButton("run_pmet_btn")
+    shinyjs::enable("run_pmet_btn")
     # when job is finished, disable the RUN buttion to avoid second run
-    shinyjs::hide("run_pmet_button_div")
+    shinyjs::hide("run_pmet_btn_div")
 
     # download button for ngxin file
-    shinyjs::show("pmet_result_download_button") # hide download button
+    shinyjs::show("pmet_result_download_btn") # hide download button
     output$pmet_result_download_ui <- renderUI({
       actionButton(
-        "pmet_result_download_button",
+        "pmet_result_download_btn",
         "Result",
         icon = icon("download"),
         class = "btn-success",
@@ -191,9 +191,9 @@ observeEvent(input$run_pmet_button, {
     )
 
     # reset all input files and parameters
-    for (i in c("uploaded_fasta", "uploaded_annotation", "uploaded_meme", "gene_for_pmet",
-                "promoter_length", "max_motif_matches", "promoter_number", "fimo_threshold",
-                "utr5", "promoters_overlap")) {
+    for (i in c("fasta", "gff3", "meme", "genes",
+                "promoter_length", "max_match", "promoter_num", "ic_threshold",
+                "fimo_threshold", "utr5", "promoters_overlap")) {
       shinyjs::reset(paste0(input$mode, "-", i))
       hideFeedback(paste0(input$mode, "-", i))
     }

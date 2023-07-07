@@ -12,7 +12,7 @@ function usage () {
 
         Creates PMET index for Paired Motif Enrichment Test using genome files.
         Required arguments:
-        -r <PMETindex_path>	: Full path of python scripts called from this file. Required.
+        -r <index_dir>	: Full path of python scripts called from this file. Required.
         -i <gff3_identifier> : gene identifier in gff3 file e.g. gene_id=
 
         Optional arguments:

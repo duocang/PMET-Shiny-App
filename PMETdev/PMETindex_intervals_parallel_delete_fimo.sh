@@ -22,7 +22,7 @@ function usage () {
 
         Creates PMET index for Paired Motif Enrichment Test using genome files.
         Required arguments:
-        -r <PMETindex_path>	: Full path of python scripts called from this file. Required.
+        -r <index_dir>	: Full path of python scripts called from this file. Required.
         -i <gff3_identifier> : gene identifier in gff3 file e.g. gene_id=
 
         Optional arguments:
@@ -62,7 +62,7 @@ then
 fi
 
 # bring in arguments
-while getopts ":r:o:k:n:f:t:x:g:e:l:" options; do
+while getopts ":r:o:k:n:f:t:x:g:c:e:l:" options; do
     case $options in
         r) echo "Full path of PMET_index:  $OPTARG" >&2
         pmetroot=$OPTARG;;

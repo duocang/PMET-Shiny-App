@@ -1,19 +1,27 @@
 This is a Shiny app developed for PMET.
 
+
+
+![](www/figures/logo.png)
+
+
+
+## File tree
+
 ```shell
 .
 ├── PMETdev        # PMET/PMET_index (source code)
 ├── R              # r code of Shiny app
-│   ├── app.R      # integrate all UIs and Servers
-│   ├── global.R   # packages needed in shiny app
-│   ├── module     # modulaity of shiny heatmap (ggplot) and data-table view
-│   ├── server     # server side of shiny
-│   ├── ui         # UI-side of shiny
-│   ├── utils      # R functions 
-│   └── www        # JS with D3 for heatmap, used in tab_visualize.R
+│   ├── app.R      # integrate all UIs and Servers
+│   ├── global.R   # packages needed in shiny app
+│   ├── module     # modulaity of shiny heatmap (ggplot) and data-table view
+│   ├── server     # server side of shiny
+│   ├── ui         # UI-side of shiny
+│   └── utils      # R functions 
 ├── app.R          # start shiny app
 ├── data           # demo data for PMETindex and PMET
 ├── readme.md
+├── www            # JS with D3 for heatmap, used in tab_visualize.R
 └── result         # result of Shiny app
 ```
 
@@ -180,6 +188,7 @@ remotes::install_github("RinteRface/fullPage")
 remotes::install_github("dreamRs/shinybusy")
 remotes::install_github("merlinoa/shinyFeedback", build_vignettes = TRUE)
 remotes::install_github("daattali/shinycssloaders")
+remotes::install_github("dreamRs/shinyWidgets")
 
 # Used packages
 packages <- c(
@@ -291,6 +300,12 @@ or
 # PMETdev/src/pmetParallel
 g++ -g -Wall -std=c++11 Output.cpp motif.cpp motifComparison.cpp main.cpp -o ../../scripts/pmetParallel_linux -pthread
 ```
+
+![](www/figures/pmet_workflow_with_interval_option.png)
+
+
+
+
 
 [GitHub Ribbons](https://github.blog/2008-12-19-github-ribbons/)
 [GitHub Corners](https://tholman.com/github-corners/)

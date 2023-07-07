@@ -2,49 +2,58 @@ intervals_ui <- function(id, height = 800, width = 850) {
   ns <- NS(id)
   # motif database
   div(
-    div(id = "uploaded_fasta_div", class = "one_upload",
-      fileInput(ns("uploaded_fasta"), "Upload genome file",
+    div(id = "fasta_div", class = "one_upload",
+      fileInput(ns("fasta"), "Upload genome file",
         multiple = FALSE,
         accept = c(".fasta", ".fa")
       ),
-      downloadLink(ns("demo_intervals_file_link"), "Example intervals collection")
-    ), # end of uploaded_fasta_div
-    div(div = "uploaded_meme_div", class = "one_upload",
-      fileInput(ns("uploaded_meme"), "Upload motif meme file",
+      downloadLink(ns("demo_intervals_fa"), "Example intervals collection")
+    ), # end of fasta_div
+    div(div = "meme_div", class = "one_upload",
+      fileInput(ns("meme"), "Upload motif meme file",
         multiple = FALSE,
         accept = ".meme"
       ),
-      downloadLink(ns("demo_motif_db_link"), "Example motif DB")
+      downloadLink(ns("demo_meme"), "Example motif DB")
     ),
-    div(id = "gene_for_pmet_div", class = "one_upload",
-      fileInput(ns("gene_for_pmet"), "Clusters and intervals", multiple = FALSE, accept = ".txt"),
+    div(id = "peaks_div", class = "one_upload",
+      fileInput(ns("genes"), "Clusters and intervals", multiple = FALSE, accept = ".txt"),
       # example gene list
-      downloadLink(ns("demo_genes_file_link"), "Example peaks (intervals)")
+      downloadLink(ns("demo_genes"), "Example peaks (intervals)")
     ),
     # parameters
     div(id = "parameters_div", class = "one_upload",
       div("Parameters", class = "big_font"),
       fluidRow(
-        div(id = "max_motif_matches_div", class = "parameters_box",
+        div(id = "max_match_div", class = "parameters_box",
           selectInput(
-            inputId = ns("max_motif_matches"), label = "Max motif matches",
+            inputId = ns("max_match"), label = "Max motif matches",
             choices = c(2, 3, 4, 5, 10, 15, 20), selected = 5
           )
         ),
-        div(id = "promoter_number_div", class = "parameters_box",
+        div(id = "promoter_num_div", class = "parameters_box",
           selectInput(
-            inputId = ns("promoter_number"),
+            inputId = ns("promoter_num"),
             label = "Number of selected promoters",
             choices = c(2000, 3000, 4000, 5000, 10000),
             selected = 5000
           )
         ),
+
         div(id = "fimo_threshold_div", class = "parameters_box",
           selectInput(
             inputId = ns("fimo_threshold"),
             label = "Fimo threshold",
             choices = c(0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05),
             selected = 0.05
+          )
+        ),
+        div(id = "ic_threshold_div", class = "parameters_box",
+          selectInput(
+            inputId = ns("ic_threshold"),
+            label = "Information content threshold",
+            choices = c(2, 4, 8, 10, 16, 24, 32),
+            selected = 4
           )
         )
       )
@@ -56,83 +65,83 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
-      UPLOAD_DIR <- "result/indexing"
+      # UPLOAD_DIR <- "result/indexing"
 
       # self uploaded genome fasta  --------------------------------------------------
-      observeEvent(input$uploaded_fasta, {
+      observeEvent(input$fasta, {
 
-        req(input$uploaded_fasta)
+        req(input$fasta)
         # copy uploaded genome fasta to session folder for PMET to run in the back
-        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_fasta)
+        TempToLocal(UPLOAD_DIR, job_id, input$fasta)
 
         # indicators for file uploaded
-        if (!is.null(input$uploaded_fasta$datapath)) {
-          hideFeedback(inputId = "uploaded_fasta")
-          showFeedbackSuccess(inputId = "uploaded_fasta")
+        if (!is.null(input$fasta$datapath)) {
+          hideFeedback(inputId = "fasta")
+          showFeedbackSuccess(inputId = "fasta")
         } else {
-          hideFeedback(inputId = "uploaded_fasta")
-          showFeedbackDanger(inputId = "uploaded_fasta", text = "No motif")
+          hideFeedback(inputId = "fasta")
+          showFeedbackDanger(inputId = "fasta", text = "No motif")
         }
       }, ignoreInit = T)
 
       # self uploaded motif database  ------------------------------------------------
-      observeEvent(input$uploaded_meme, {
-        req(input$uploaded_meme)
+      observeEvent(input$meme, {
+        req(input$meme)
 
         # copy uploaded motif to session folder for PMET to run in the back
-        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_meme)
+        TempToLocal(UPLOAD_DIR, job_id, input$meme)
 
         # indicators for file uploaded
-        if (!is.null(input$uploaded_meme$datapath)) {
-          hideFeedback(inputId = "uploaded_meme")
-          showFeedbackSuccess(inputId = "uploaded_meme")
+        if (!is.null(input$meme$datapath)) {
+          hideFeedback(inputId = "meme")
+          showFeedbackSuccess(inputId = "meme")
         } else {
-          hideFeedback(inputId = "uploaded_meme")
-          showFeedbackDanger(inputId = "uploaded_meme", text = "No motif")
+          hideFeedback(inputId = "meme")
+          showFeedbackDanger(inputId = "meme", text = "No motif")
         }
       }, ignoreInit = T)
 
       # self genes uploaded -----------------------------------------------------------
-      observeEvent(input$gene_for_pmet, {
+      observeEvent(input$genes, {
 
-        req(input$gene_for_pmet)
+        req(input$genes)
         # copy uploaded genes to result folder for PMET to run in the back
-        TempToLocal("result", job_id, input$gene_for_pmet)
+        TempToLocal("result", job_id, input$genes)
 
         inputs <- reactiveValuesToList(input)
-        genes_status <- CheckGeneFile(input$gene_for_pmet$datapath, mode = "intervals")
+        genes_status <- CheckGeneFile(input$genes$datapath, mode = "intervals")
 
-        hideFeedback(inputId = "gene_for_pmet")
+        hideFeedback(inputId = "genes")
         switch(genes_status,
           "OK" = {
-            hideFeedback(inputId = "gene_for_pmet")
-            showFeedbackSuccess(inputId = "gene_for_pmet")
+            hideFeedback(inputId = "genes")
+            showFeedbackSuccess(inputId = "genes")
           },
           "NO_CONTENT" = {
-            hideFeedback(inputId = "gene_for_pmet")
-            showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
+            hideFeedback(inputId = "genes")
+            showFeedbackDanger(inputId = "genes", text = "No content in the file")
           },
           "WORNG_COLUMN_NUMBER" = {
-            hideFeedback(inputId = "gene_for_pmet")
-            showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
+            hideFeedback(inputId = "genes")
+            showFeedbackDanger( inputId = "genes", text = "Only cluster and interval columns are allowed")
           },
           "GENE_WRONG_FORMAT" = {
-            hideFeedback(inputId = "gene_for_pmet")
-            showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
+            hideFeedback(inputId = "genes")
+            showFeedbackDanger( inputId = "genes", text = "Wrong format of uploaded file")
           },
           "intervals_wrong_format" = {
-            hideFeedback(inputId = "gene_for_pmet")
-            showFeedbackDanger( inputId = "gene_for_pmet", text = "Genomic intervals pattern: chromosome:number-number.")
+            hideFeedback(inputId = "genes")
+            showFeedbackDanger( inputId = "genes", text = "Genomic intervals pattern: chromosome:number-number.")
           },
           "no_valid_genes" = {
-            hideFeedback(inputId = "gene_for_pmet")
-            showFeedbackDanger(inputId = "gene_for_pmet", text = "No valid genes available in the uploaded file")
+            hideFeedback(inputId = "genes")
+            showFeedbackDanger(inputId = "genes", text = "No valid genes available in the uploaded file")
           })
       }, ignoreInit = T)
 
-      output$demo_intervals_file_link <- downloadHandler(
+      output$demo_intervals_fa <- downloadHandler(
         filename = function() {
-          "intervals.fa"
+          "demo_intervals.fa"
         },
         content = function(file) {
           data <- readLines("data/demo_intervals/intervals.fa")
@@ -140,9 +149,9 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
         }
       )
 
-      output$demo_motif_db_link <- downloadHandler(
+      output$demo_meme <- downloadHandler(
         filename = function() {
-          "motif.meme"
+          "demo_motif.meme"
         },
         content = function(file) {
           data <- readLines("data/demo_intervals/motif.meme")
@@ -150,21 +159,21 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
         }
       )
 
-      output$demo_genes_file_link <- downloadHandler(
+      output$demo_genes <- downloadHandler(
         filename = function() {
-          "intervals.txt"
+          "demo_peaks.txt"
         },
         content = function(file) {
-          data <- readLines("data/demo_intervals/intervals.txt")
+          data <- readLines("data/demo_intervals/peaks.txt")
           writeLines(data, file)
         }
       )
 
       # workthrough tips of Run PMET ------------------------------------------------
       elements <- c(
-        "#uploaded_fasta_div",
-        "#uploaded_meme_div",
-        "#gene_for_pmet_div"
+        "#fasta_div",
+        "#meme_div",
+        "#peaks_div"
       )
       intors <- c(
         "Genome file",

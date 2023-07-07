@@ -25,16 +25,16 @@ ValidEmail <- function(x) {
 #' @return A list of file paths and user ID with the following components:
 #'   \describe{
 #'     \item{genes_path}{Path to the genes file.}
-#'     \item{pmetIndex_path}{Path to the PMET index file.}
+#'     \item{index_dir}{Path to the PMET index file.}
 #'     \item{user_id}{Unique user ID.}
-#'     \item{pmetPair_path}{Path to the PMET pair results folder.}
+#'     \item{pair_dir}{Path to the PMET pair results folder.}
 #'   }
 #'
 #' @examples
 #' library(stringr)
-#' inputs <- list(userEmail    = "2@gmail.com",
-#'               uploaded_meme = list( path = "xuesong", name = "jaspar.meme"),
-#'               gene_for_pmet = list( path = "xuesong", name = "crotex.txt"))
+#' inputs <- list(email    = "2@gmail.com",
+#'               meme = list( path = "xuesong", name = "jaspar.meme"),
+#'               genes = list( path = "xuesong", name = "crotex.txt"))
 #' mode <- "promoters"
 #' PmetPathsGenerator(inputs, mode)
 #'
@@ -44,10 +44,10 @@ ValidEmail <- function(x) {
 #' $genes_path
 #' [1] "result/2-gmail.com_2023Jul05_1331/crotex.txt"
 #'
-#' $pmetIndex_path
+#' $index_dir
 #' [1] "result/indexing/2-gmail.com_2023Jul05_1331"
 #'
-#' $pmetPair_path
+#' $pair_dir
 #' [1] "result/2-gmail.com_2023Jul05_1331"
 #'
 #' @keywords PMET analysis, file paths, user ID
@@ -55,23 +55,23 @@ ValidEmail <- function(x) {
 
 PmetPathsGenerator <- function(input = NULL, mode = NULL) {
 
-  user_id <- paste0(str_replace(input$userEmail, "@", "-"), "_",
+  user_id <- paste0(str_replace(input$email, "@", "-"), "_",
                     format(Sys.time(), "%Y%b%d_%H%M"))
 
   if (mode == "promoters_pre") {
-    species <- str_split(input$motif_db, "-")[[1]][1]
-    pmetIndex_path <- file.path("data/indexing", species, input$motif_db)
+    species <- str_split(input$premade, "-")[[1]][1]
+    index_dir <- file.path("data/indexing", species, input$premade)
   } else {
-    pmetIndex_path <- file.path("result/indexing", user_id)
+    index_dir <- file.path("result/indexing", user_id)
   }
-  pmetPair_path <- file.path("result", user_id)
+  pair_dir <- file.path("result", user_id)
 
-  genes_path <- file.path(pmetPair_path, input$gene_for_pmet$name)
+  genes_path <- file.path(pair_dir, input$genes$name)
 
   return(list(user_id        = user_id,
               genes_path     = genes_path,
-              pmetIndex_path = pmetIndex_path,
-              pmetPair_path  = pmetPair_path))
+              index_dir = index_dir,
+              pair_dir  = pair_dir))
 }
 
 

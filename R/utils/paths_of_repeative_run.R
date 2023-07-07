@@ -8,10 +8,10 @@
 # Parameters:
 # - input:                    An input object that contains input of shiny upload.
 # - temp_folder:              temp folder when user uploading.
-# - pmetPair_path:              folder used for storing uploaded genes and PMET result.
-# - pmetIndex_path:           folder used for storing PMET index files.
-# - p_pmetPair_path:     folder from the previous run (or STOP clicked), used to check for the existence of previous PMET result.
-# - p_pmetindex_path:  folder from the previous run (or STOP clicked), used to check for the existence of previous PMETindex reulst.
+# - pair_dir:              folder used for storing uploaded genes and PMET result.
+# - index_dir:           folder used for storing PMET index files.
+# - p_pair_dir:     folder from the previous run (or STOP clicked), used to check for the existence of previous PMET result.
+# - p_index_dir:  folder from the previous run (or STOP clicked), used to check for the existence of previous PMETindex reulst.
 # - flags:     A vector indicating whether there have been changes in the uploaded files.
 # - indexing:                A logical flag indicating whether PMET indexing performed or not (set by user, if upload own motifs).
 
@@ -38,11 +38,11 @@
 #     - If flags vector indicates changes, only pairing is needed.
 # - Returns pmet_config list containing the path configuration information as the result.
 PathsPmetRepeat <- function(input,
-                                        temp_folder,
-                                        previous_paths,
-                                        flags,
-                                        first_run,
-                                        mode) {
+                            temp_folder,
+                            previous_paths,
+                            flags,
+                            first_run,
+                            mode) {
 
 
   for (name in names(flags)) {
@@ -51,8 +51,8 @@ PathsPmetRepeat <- function(input,
   }
 
   pmet_config <- list(user_id                 = NULL,
-                      pmetPair_path           = NULL,
-                      pmetIndex_path          = NULL,
+                      pair_dir           = NULL,
+                      index_dir          = NULL,
                       genes_path              = NULL,
                       indexing_pairing_needed = NULL,
                       pairing_need            = NULL)
@@ -63,10 +63,10 @@ PathsPmetRepeat <- function(input,
 
   pmet_config$user_id <- pmet_paths$user_id
 
-  c_pmetPair_path  <- pmet_paths$pmetPair_path         # current
-  c_pmetIndex_path <- pmet_paths$pmetIndex_path
-  p_pmetPair_path  <- previous_paths["pmetPair_path" ] # previous
-  p_pmetindex_path <- previous_paths["pmetIndex_path"]
+  c_pair_dir  <- pmet_paths$pair_dir         # current
+  c_index_dir <- pmet_paths$index_dir
+  p_pair_dir  <- previous_paths["pair_dir" ] # previous
+  p_index_dir <- previous_paths["index_dir"]
 
   if (first_run) {
     if (mode == 1) {
@@ -76,99 +76,99 @@ PathsPmetRepeat <- function(input,
       pmet_config$indexing_pairing_needed <- TRUE
       pmet_config$pairing_need            <- FALSE
     }
-    pmet_config$pmetPair_path  <- c_pmetPair_path
-    pmet_config$pmetIndex_path <- c_pmetIndex_path
-    pmet_config$genes_path     <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
+    pmet_config$pair_dir  <- c_pair_dir
+    pmet_config$index_dir <- c_index_dir
+    pmet_config$genes_path     <- file.path(pmet_config$pair_dir, input$genes$name)
 
     # rename temp folder in first run of PMET
-    file.rename(file.path("result", temp_folder), pmet_config$pmetPair_path)
+    file.rename(file.path("result", temp_folder), pmet_config$pair_dir)
     if (mode != 1) {
-      file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$pmetIndex_path)
+      file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$index_dir)
     }
   } # if (first_run)
 
   if (!first_run) {
-    pairing_OK   <- file.exists(paste0(p_pmetPair_path   , "_FLAG"))
+    pairing_OK   <- file.exists(paste0(p_pair_dir   , "_FLAG"))
 
     if (mode == 1) {
       if ( sum(unlist(flags)) == 0 ) {
-        pmet_config$pmetPair_path  <- ifelse(pairing_OK, p_pmetPair_path, c_pmetPair_path)
-        pmet_config$pmetIndex_path <- p_pmetindex_path
-        pmet_config$genes_path     <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
+        pmet_config$pair_dir  <- ifelse(pairing_OK, p_pair_dir, c_pair_dir)
+        pmet_config$index_dir <- p_index_dir
+        pmet_config$genes_path     <- file.path(pmet_config$pair_dir, input$genes$name)
 
         if (!pairing_OK) {
-          dir.create(pmet_config$pmetPair_path, recursive = TRUE, showWarnings = FALSE)
-          file.copy(input$gene_for_pmet$datapath, pmet_config$pmetPair_path, overwrite = TRUE)
-          file.rename(file.path(pmet_config$pmetPair_path , "0.txt" ), pmet_config$genes_path)
+          dir.create(pmet_config$pair_dir, recursive = TRUE, showWarnings = FALSE)
+          file.copy(input$genes$datapath, pmet_config$pair_dir, overwrite = TRUE)
+          file.rename(file.path(pmet_config$pair_dir , "0.txt" ), pmet_config$genes_path)
         }
 
         pmet_config$indexing_pairing_needed  <- FALSE
         pmet_config$pairing_need        <- !pairing_OK
       } else {
-        pmet_config$pmetPair_path            <- c_pmetPair_path
-        pmet_config$pmetIndex_path           <- c_pmetIndex_path
+        pmet_config$pair_dir            <- c_pair_dir
+        pmet_config$index_dir           <- c_index_dir
         pmet_config$indexing_pairing_needed  <- FALSE
         pmet_config$pairing_need             <- TRUE
-        pmet_config$genes_path               <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
+        pmet_config$genes_path               <- file.path(pmet_config$pair_dir, input$genes$name)
 
-        file.rename(file.path("result", temp_folder), pmet_config$pmetPair_path)
+        file.rename(file.path("result", temp_folder), pmet_config$pair_dir)
       }
     }# if !indexing
     if (mode == 2 | mode == 3) {
       # if the previous run has completed of PMETindex, there will be a flag file generated
-      indexing_OK <- file.exists(paste0(p_pmetindex_path, "_FLAG"))
+      indexing_OK <- file.exists(paste0(p_index_dir, "_FLAG"))
 
       # after the previous run, the flag will be set to all zeros, meaning no upload changed
       if ( sum(unlist(flags)) == 0 ) {
-        pmet_config$pmetPair_path  <- ifelse(pairing_OK, p_pmetPair_path, c_pmetPair_path)
-        pmet_config$pmetIndex_path <- p_pmetindex_path
-        pmet_config$genes_path     <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
+        pmet_config$pair_dir  <- ifelse(pairing_OK, p_pair_dir, c_pair_dir)
+        pmet_config$index_dir <- p_index_dir
+        pmet_config$genes_path     <- file.path(pmet_config$pair_dir, input$genes$name)
 
         if (!pairing_OK) {
-          dir.create(pmet_config$pmetPair_path, recursive = TRUE, showWarnings = FALSE)
-          file.copy(input$gene_for_pmet$datapath, pmet_config$genes_path, overwrite = TRUE)
+          dir.create(pmet_config$pair_dir, recursive = TRUE, showWarnings = FALSE)
+          file.copy(input$genes$datapath, pmet_config$genes_path, overwrite = TRUE)
         }
         pmet_config$pairing_need            <- !pairing_OK && indexing_OK
         pmet_config$indexing_pairing_needed <- !pmet_config$pairing_need && !indexing_OK
 
 
-      } else if ( flags$gene_for_pmet == 1 & sum(unlist(flags)) == 1) {
-        pmet_config$pmetPair_path  <- c_pmetPair_path
-        pmet_config$pmetIndex_path <- ifelse(indexing_OK, p_pmetindex_path, c_pmetPair_path)
+      } else if ( flags$genes == 1 & sum(unlist(flags)) == 1) {
+        pmet_config$pair_dir  <- c_pair_dir
+        pmet_config$index_dir <- ifelse(indexing_OK, p_index_dir, c_pair_dir)
 
-        pmet_config$genes_path     <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
+        pmet_config$genes_path     <- file.path(pmet_config$pair_dir, input$genes$name)
 
         pmet_config$indexing_pairing_needed <- !indexing_OK
         pmet_config$pairing_need            <- indexing_OK
 
-        file.rename(file.path("result", temp_folder), pmet_config$pmetPair_path)
+        file.rename(file.path("result", temp_folder), pmet_config$pair_dir)
 
-        file.copy(input$gene_for_pmet$datapath, pmet_config$genes_path, overwrite = TRUE)
+        file.copy(input$genes$datapath, pmet_config$genes_path, overwrite = TRUE)
       } else {
         # user uploads new daat for PMET, create new folder for PMETindex and PMET
-        pmet_config$pmetPair_path            <- c_pmetPair_path
-        pmet_config$pmetIndex_path           <- c_pmetIndex_path
+        pmet_config$pair_dir            <- c_pair_dir
+        pmet_config$index_dir           <- c_index_dir
         pmet_config$indexing_pairing_needed  <- TRUE
         pmet_config$pairing_need             <- FALSE
-        pmet_config$genes_path               <- file.path(pmet_config$pmetPair_path, input$gene_for_pmet$name)
+        pmet_config$genes_path               <- file.path(pmet_config$pair_dir, input$genes$name)
 
         # copy uploaded files from var (temp) to local folders
-        if (flags$uploaded_meme == 0) {
-          TempToLocal(UPLOAD_DIR, temp_folder, input$uploaded_meme)
+        if (flags$meme == 0) {
+          TempToLocal(UPLOAD_DIR, temp_folder, input$meme)
         }
-        if (flags$uploaded_fasta == 0) {
-          TempToLocal(UPLOAD_DIR, temp_folder, input$uploaded_fasta)
+        if (flags$fasta == 0) {
+          TempToLocal(UPLOAD_DIR, temp_folder, input$fasta)
         }
-        if (flags$uploaded_annotation == 0) {
-          TempToLocal(UPLOAD_DIR, temp_folder, input$uploaded_annotation)
+        if (flags$gff3 == 0) {
+          TempToLocal(UPLOAD_DIR, temp_folder, input$gff3)
         }
-        if (flags$gene_for_pmet == 0) {
+        if (flags$genes == 0) {
           # # create local folders
           # dir.create(file.path("result", temp_folder), recursive = TRUE, showWarnings = FALSE)
-          TempToLocal("result", temp_folder, input$gene_for_pmet)
+          TempToLocal("result", temp_folder, input$genes)
         }
-        file.rename(file.path("result", temp_folder), pmet_config$pmetPair_path)
-        file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$pmetIndex_path)
+        file.rename(file.path("result", temp_folder), pmet_config$pair_dir)
+        file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$index_dir)
       }
     } # if (mode == 2)
   } # if (!first_run)

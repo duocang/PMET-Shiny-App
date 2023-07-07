@@ -21,7 +21,7 @@ ui <- fluidPage(
     ),
     # title = "PMET",
     windowTitle = "PMET",
-    title = div(img(src="figures/logo_small.png", style = "height: 60px;margin-left:-10px;margin-top:-18px")),
+    title = div(img(src="www/figures/logo_small.png", style = "height: 60px;margin-left:-10px;margin-top:-18px")),
     source("R/ui/tab_home.R"     , local = TRUE)$value,
     source("R/ui/tab_start.R"    , local = TRUE)$value,
     source("R/ui/tab_visualize.R", local = TRUE)$value,

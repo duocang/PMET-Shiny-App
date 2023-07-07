@@ -35,7 +35,7 @@ body {
   border-radius: 3px;
 }
 
-#userEmail {
+#email {
   margin-left: -2px;
   border-radius: 3px;
 }
@@ -51,14 +51,14 @@ body {
 }
 
 /* hight of progressbar of genes with text */
-#promoters_pre-gene_for_pmet_progress {
+#promoters_pre-genes_progress {
   height: 14px;
 }
-#promoters_pre-gene_for_pmet_progress>div {
+#promoters_pre-genes_progress>div {
   line-height: 15px;
 }
 
-#promoters_pre-skipped_genes_link {
+#promoters_pre-genes_not_found_link {
   float: right;
 }
 
@@ -69,19 +69,47 @@ body {
 
 
 /* parameters font size */
+#intervals-max_match-label {
+  font-size: 13px;
+  font-weight: normal;
+}
+#intervals-promoter_num-label{
+  font-size: 13px;
+  font-weight: normal;
+}
+#intervals-fimo_threshold-label{
+  font-size: 13px;
+  font-weight: normal;
+}
+#intervals-ic_threshold-label{
+  font-size: 13px;
+  font-weight: normal;
+}
+
+
+#promoters_pre-ic_threshold-label{
+  font-size: 13px;
+  font-weight: normal;
+}
+
+
 #promoters-promoter_length-label {
   font-size: 13px;
   font-weight: normal;
 }
-#promoters-max_motif_matches-label {
+#promoters-max_match-label {
   font-size: 13px;
   font-weight: normal;
 }
-#promoters-promoter_number-label{
+#promoters-promoter_num-label{
   font-size: 13px;
   font-weight: normal;
 }
 #promoters-fimo_threshold-label{
+  font-size: 13px;
+  font-weight: normal;
+}
+#promoters-ic_threshold-label{
   font-size: 13px;
   font-weight: normal;
 }

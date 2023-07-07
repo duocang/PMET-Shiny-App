@@ -1,9 +1,15 @@
 promoters_ui <- function(id, height = 800, width = 850) {
   ns <- NS(id)
+  tags$head(
+    tags$style(HTML("
+      .label-size {
+        font-size: 13px;
+      }
+    ")))
   # motif database
   div(
-    div(id = "uploaded_fasta_div", class = "one_upload",
-      fileInput(ns("uploaded_fasta"), "Upload genome file",
+    div(id = "fasta_div", class = "one_upload",
+      fileInput(ns("fasta"), "Upload genome file",
         multiple = FALSE,
         accept = c(".fasta", ".fa")
       ),
@@ -14,8 +20,8 @@ promoters_ui <- function(id, height = 800, width = 850) {
         "Example genome"
       )
     ),
-    div(id = "uploaded_annotation_div", class = "one_upload",
-        fileInput(ns("uploaded_annotation"), "Upload annotation file",
+    div(id = "gff3_div", class = "one_upload",
+        fileInput(ns("gff3"), "Upload annotation file",
           multiple = FALSE,
           accept = ".gff3"
         ),
@@ -24,18 +30,18 @@ promoters_ui <- function(id, height = 800, width = 850) {
           download = "example_annotation.gff3",
           "Example annotation"
         )
-    ), # end of uploaded_annotation_div
-    div(id = ns("uploaded_meme_div"), class = "one_upload",
-      fileInput(ns("uploaded_meme"), "Upload motif meme file",
+    ), # end of gff3_div
+    div(id = ns("meme_div"), class = "one_upload",
+      fileInput(ns("meme"), "Upload motif meme file",
         multiple = FALSE,
         accept = ".meme"
       ),
-      downloadLink(ns("demo_motif_db_link"), "Example motif DB")
+      downloadLink(ns("demo_meme"), "Example motif DB")
     ),
-    div(id = "gene_for_pmet_div", class = "one_upload",
-      fileInput(ns("gene_for_pmet"), "Clusters and genes", multiple = FALSE, accept = ".txt"),
+    div(id = "genes_div", class = "one_upload",
+      fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt"),
       # example gene list
-      downloadLink(ns("demo_genes_file_link"), "Example gene")
+      downloadLink(ns("demo_genes"), "Example gene")
     ),
     # parameters
     div(id = "parameters_div", class = "one_upload",
@@ -50,15 +56,15 @@ promoters_ui <- function(id, height = 800, width = 850) {
             selected = 1000
           )
         ),
-        div(id = "max_motif_matches_div", class = "parameters_box",
+        div(id = "max_match_div", class = "parameters_box",
           selectInput(
-            inputId = ns("max_motif_matches"), label = "Max motif matches",
+            inputId = ns("max_match"), label = "Max motif matches",
             choices = c(2, 3, 4, 5, 10, 15, 20), selected = 5
           )
         ),
-        div(id = "promoter_number_div", class = "parameters_box",
+        div(id = "promoter_num_div", class = "parameters_box",
           selectInput(
-            inputId = ns("promoter_number"),
+            inputId = ns("promoter_num"),
             label = "Number of selected promoters",
             choices = c(2000, 3000, 4000, 5000, 10000),
             selected = 5000
@@ -70,6 +76,14 @@ promoters_ui <- function(id, height = 800, width = 850) {
             label = "Fimo threshold",
             choices = c(0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05),
             selected = 0.05
+          )
+        ),
+        div(id = "ic_threshold_div", class = "parameters_box",
+          selectInput(
+            inputId = ns("ic_threshold"),
+            label = "Information content threshold",
+            choices = c(2, 4, 8, 10, 16, 24, 32),
+            selected = 4
           )
         )
       ),
@@ -99,96 +113,96 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
 
       UPLOAD_DIR <- "result/indexing"
       # self uploaded genome fasta  --------------------------------------------------
-      observeEvent(input$uploaded_fasta, {
-        req(input$uploaded_fasta)
+      observeEvent(input$fasta, {
+        req(input$fasta)
 
         # copy uploaded genome fasta to session folder for PMET to run in the back
-        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_fasta)
+        TempToLocal(UPLOAD_DIR, job_id, input$fasta)
 
         # indicators for file uploaded
-        hideFeedback(inputId = "uploaded_fasta")
-        if (!is.null(input$uploaded_fasta$datapath)) {
-          showFeedbackSuccess(inputId = "uploaded_fasta")
+        hideFeedback(inputId = "fasta")
+        if (!is.null(input$fasta$datapath)) {
+          showFeedbackSuccess(inputId = "fasta")
         } else {
-          showFeedbackDanger(inputId = "uploaded_fasta", text = "No motif")
+          showFeedbackDanger(inputId = "fasta", text = "No motif")
         }
       }, ignoreInit = T)
 
       # self uploaded annotation  ----------------------------------------------------
-      observeEvent(input$uploaded_annotation, {
-        req(input$uploaded_annotation)
+      observeEvent(input$gff3, {
+        req(input$gff3)
 
         # copy uploaded annotation to session folder for PMET to run in the back
-        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_annotation)
+        TempToLocal(UPLOAD_DIR, job_id, input$gff3)
 
         # indicators for file uploaded
-        hideFeedback(inputId = "uploaded_annotation")
-        if (!is.null(input$uploaded_annotation$datapath)) {
-          showFeedbackSuccess(inputId = "uploaded_annotation")
+        hideFeedback(inputId = "gff3")
+        if (!is.null(input$gff3$datapath)) {
+          showFeedbackSuccess(inputId = "gff3")
         } else {
-          showFeedbackDanger(inputId = "uploaded_annotation", text = "No annotation")
+          showFeedbackDanger(inputId = "gff3", text = "No annotation")
         }
       }, ignoreInit = T)
 
       # self uploaded motif database  ------------------------------------------------
-      observeEvent(input$uploaded_meme, {
-        req(inputId = "uploaded_meme")
+      observeEvent(input$meme, {
+        req(inputId = "meme")
 
         # copy uploaded motif to session folder for PMET to run in the back
-        TempToLocal(UPLOAD_DIR, job_id, input$uploaded_meme)
+        TempToLocal(UPLOAD_DIR, job_id, input$meme)
 
         # indicators for file uploaded
-        hideFeedback(inputId = "uploaded_meme")
-        if (!is.null(input$uploaded_meme$datapath)) {
-          showFeedbackSuccess(inputId = "uploaded_meme")
+        hideFeedback(inputId = "meme")
+        if (!is.null(input$meme$datapath)) {
+          showFeedbackSuccess(inputId = "meme")
         } else {
-          showFeedbackDanger(inputId = "uploaded_meme", text = "No motif")
+          showFeedbackDanger(inputId = "meme", text = "No motif")
         }
       }, ignoreInit = T)
 
       # self genes uploaded -----------------------------------------------------------
-      observeEvent(input$gene_for_pmet, {
-        req(inputId = "uploaded_gene_for_pmet")
+      observeEvent(input$genes, {
+        req(inputId = "uploaded_genes")
 
         # copy uploaded genes to result folder for PMET to run in the back
-        TempToLocal("result", job_id, input$gene_for_pmet)
+        TempToLocal("result", job_id, input$genes)
 
-        genes_status <- CheckGeneFile(input$gene_for_pmet$datapath, mode = "promoters")
-        hideFeedback(inputId = "gene_for_pmet")
+        genes_status <- CheckGeneFile(input$genes$datapath, mode = "promoters")
+        hideFeedback(inputId = "genes")
         switch(genes_status,
           "OK" = {
-            showFeedbackSuccess(inputId = "gene_for_pmet")
+            showFeedbackSuccess(inputId = "genes")
           },
           "NO_CONTENT" = {
-            showFeedbackDanger(inputId = "gene_for_pmet", text = "No content in the file")
+            showFeedbackDanger(inputId = "genes", text = "No content in the file")
           },
           "WORNG_COLUMN_NUMBER" = {
-            showFeedbackDanger( inputId = "gene_for_pmet", text = "Only cluster and interval columns are allowed")
+            showFeedbackDanger( inputId = "genes", text = "Only cluster and interval columns are allowed")
           },
           "GENE_WRONG_FORMAT" = {
-            showFeedbackDanger( inputId = "gene_for_pmet", text = "Wrong format of uploaded file")
+            showFeedbackDanger( inputId = "genes", text = "Wrong format of uploaded file")
           },
           "intervals_wrong_format" = {
-            showFeedbackDanger( inputId = "gene_for_pmet", text = "Genomic intervals pattern: chromosome:number-number.")
+            showFeedbackDanger( inputId = "genes", text = "Genomic intervals pattern: chromosome:number-number.")
           },
           "no_valid_genes" = {
-            showFeedbackDanger(inputId = "gene_for_pmet", text = "No valid genes available in the uploaded file")
+            showFeedbackDanger(inputId = "genes", text = "No valid genes available in the uploaded file")
           })
         }, ignoreInit = T)
 
       # Download example genes file for PMET ---------------------------------------
-      output$demo_genes_file_link <- downloadHandler(
+      output$demo_genes <- downloadHandler(
         filename = function() {
-          "example_genes.txt"
+          "demo_genes.txt"
         },
         content = function(file) {
           write.table(read.table("data/demo_promoters/example_genes.txt"), file, quote = FALSE, row.names = FALSE, col.names = FALSE)
         }
       )
 
-      output$demo_motif_db_link <- downloadHandler(
+      output$demo_meme <- downloadHandler(
         filename = function() {
-          "example_motif.meme"
+          "demo_motif.meme"
         },
         content = function(file) {
           data <- readLines("data/demo_promoters/example_motif.meme")
@@ -198,10 +212,10 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
 
       # workthrough tips of Run PMET ------------------------------------------------------
       elements <- c(
-        "#uploaded_fasta_div",
-        "#uploaded_annotation_div",
-        "#uploaded_meme_div",
-        "#gene_for_pmet_div",
+        "#fasta_div",
+        "#gff3_div",
+        "#meme_div",
+        "#genes_div",
         "#parameters_div"
       )
       intors <- c(

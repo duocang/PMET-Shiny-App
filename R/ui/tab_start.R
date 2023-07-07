@@ -19,14 +19,14 @@ tabPanel(
       ),
       uiOutput("mode_ui"),
       # personal info
-      div(id = "userEmail_div",
-        textInput("userEmail", "Email", value = ""),
+      div(id = "emai_div",
+        textInput("email", "Email", value = ""),
       ),
       div(class = "run_pmet_div",
         style = "margin-top:30px;display:flex;justify-content:center;align-items:center;margin-top:30px",
         shinyjs::hidden(
-          div(id = "run_pmet_button_div",
-            loadingButton("run_pmet_button",
+          div(id = "run_pmet_btn_div",
+            loadingButton("run_pmet_btn",
               label = "Run PMET",
               style = "width: 130px;color:#ffff; background-color:#fb8b05;"
             )

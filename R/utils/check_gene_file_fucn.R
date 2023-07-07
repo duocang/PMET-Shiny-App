@@ -1,7 +1,7 @@
 # Check the validity of a gene file
 # Parameters:
 #   - gene_file_path: Path to the gene file
-#   - motif_db: Motif database
+#   - premade: Motif database
 #   - mode: Sequence type mode ("intervals", "promoters_pre", "promoters")
 # Returns:
 #   - "NO_CONTENT": If the gene file is empty or the file path is not provided
@@ -11,7 +11,7 @@
 #   - "no_valid_genes": If no valid genes are available in the uploaded file
 #   - List(nrow(genes_not_found), nrow(genes_uploaded), genes_not_found): If there
 
-CheckGeneFile <- function(gene_file_path = NULL, mode = NULL, motif_db = NULL) {
+CheckGeneFile <- function(gene_file_path = NULL, mode = NULL, premade = NULL) {
 
   if (is.null(gene_file_path)) {
     return("NO_FILE")
@@ -49,8 +49,8 @@ CheckGeneFile <- function(gene_file_path = NULL, mode = NULL, motif_db = NULL) {
     "promoters_pre" = {
         # if motifs selected, check the uploaded genes with the gene list in our folder, named universe.txt
         genes_universe <- file.path("data/indexing",
-                                    str_split(motif_db, "-")[[1]][1],
-                                    motif_db, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
+                                    str_split(premade, "-")[[1]][1],
+                                    premade, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
 
         genes_present <-  dplyr::inner_join(genes_uploaded, genes_universe, by = "gene")
         genes_not_found <- setdiff(genes_uploaded, genes_present)
