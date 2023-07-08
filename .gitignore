@@ -1,33 +1,89 @@
-.Rproj.user
-.Rhistory
-.RData
-.DS_Store
-/data/*
-!/data/.gitkeep
-.vscode
-/result/*
-!/result/.gitkeep
-
-**/fimo/
-
-
-utils/PMETdev/src/indexing/bin/pmetindex
-utils/PMETdev/src/pmet/bin/pmet
-utils/PMETdev/scripts/*
+# ignore contents of fimo but keep fimo folder
+**/fimo/**
+!**/fimo/.gitkeep
 
 
 .prof
 .log
-.png
-.jpg
-.jpeg
+.exe
+.a
 
-*.prof
-utils/PMETdev/src/pmet/test/motif_output.txt
-*.log
-utils/PMETdev/src/pmetParallel/bin/pmetParallel
 PMETdev/scripts/pmetindex
 PMETdev/scripts/pmetParallel.exe
 PMETdev/scripts/pmetParallel_linux
 PMETdev/scripts/pmetParallel_mac
 PMETdev/src/pmetParallel/bin/pmetParallel
+
+
+
+### For R
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+
+
+# R Environment Variables
+.Renviron
+
+#### For C++
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+
+
+# General
+.DS_Store
+.vscode
+data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2018
+data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2022
+promoters_rough.fa
+data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-plant_cistrome_DB
