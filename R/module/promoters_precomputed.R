@@ -3,19 +3,7 @@ promoters_pre_ui <- function(id, height = 800, width = 850) {
   # motif database
   div(
     div(id = "premade_div", class = "one_upload",
-      selectInput(
-        inputId = ns("premade"), label = "Motif database",
-        choices = list(
-          `Arabidopsis thaliana` = list(
-            `Jaspar plants non redundant 2018` = "arabidopsis_thaliana-jaspar_plants_non_redundant_2018",
-            `Jaspar plants non redundant 2022` = "arabidopsis_thaliana-jaspar_plants_non_redundant_2022",
-            `Plant cistrome DB` = "arabidopsis_thaliana-plant_cistrome_DB"
-          ),
-          Maize = list(
-            `Jaspar plants non redundant 2018` = "maize-jaspar_plants_non_redundant_2018",
-            `Jaspar plants non redundant 2022` = "maize-jaspar_plants_non_redundant_2022")),
-      selected = "jaspar_plants_non_redundant_2018",
-      selectize = TRUE)
+      uiOutput(ns("premade_uiOutput"))
     ),
     div(id = "genes_div", class = "one_upload",
       fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt"),
@@ -46,6 +34,46 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
     id,
     function(input, output, session) {
       ns <- session$ns
+
+      output$premade_uiOutput <- renderUI({
+        species <- list.dirs("./data/indexing", recursive=F) %>%
+          sapply(function(i) {
+            str <- stringr::str_split_1(i, "/")[4] %>%
+              tolower() %>%
+              gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE) # capitablize first letter
+            return(str)
+          })
+
+        subfolders <- lapply(names(species), function(i) {
+          list.dirs(i, recursive = FALSE) 
+        }) %>% setNames(unname(species))
+
+        choices <- lapply(species, function(i) {
+          subfolders_i <- subfolders[[i]]
+          result <- list()
+          # "Arabidopsis Thaliana" ->  "arabidopsis_thaliana-"
+          ii <- stringr::str_replace_all(tolower(i), " ", "_") %>% paste0("-")
+          for (subfolder in subfolders_i) {
+            str <- stringr::str_split_1(subfolder, "/")[5] %>%
+              stringr::str_replace(ii, "") %>%
+              gsub("_", " ", .) %>%
+              gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE)
+
+            str <- gsub("-(.)", "-\\U\\1", str, perl = TRUE) %>%
+              gsub("Et Al", "et al\\.", .)
+
+            result[[str]] <- subfolder
+          }
+          return(result)
+        }) %>% setNames(unname(species))
+
+        selectInput(
+          inputId = ns("premade"), label = "Motif database",
+          choices = choices,
+          selected = "arabidopsis_thaliana-PBM",
+          selectize = TRUE
+        )
+      })
 
       genes_not_found  <- reactiveVal(NULL) # store genes not found for download handler
 

@@ -47,10 +47,8 @@ CheckGeneFile <- function(gene_file_path = NULL, mode = NULL, premade = NULL) {
       return("OK")
     },
     "promoters_pre" = {
-        # if motifs selected, check the uploaded genes with the gene list in our folder, named universe.txt
-        genes_universe <- file.path("data/indexing",
-                                    str_split(premade, "-")[[1]][1],
-                                    premade, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
+        # if motif DB selected, check the uploaded genes with the gene list in our folder, named universe.txt
+        genes_universe <- file.path(premade, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
 
         genes_present <-  dplyr::inner_join(genes_uploaded, genes_universe, by = "gene")
         genes_not_found <- setdiff(genes_uploaded, genes_present)

@@ -59,8 +59,7 @@ PmetPathsGenerator <- function(input = NULL, mode = NULL) {
                     format(Sys.time(), "%Y%b%d_%H%M"))
 
   if (mode == "promoters_pre") {
-    species <- str_split(input$premade, "-")[[1]][1]
-    index_dir <- file.path("data/indexing", species, input$premade)
+    index_dir = input$premade
   } else {
     index_dir <- file.path("result/indexing", user_id)
   }
