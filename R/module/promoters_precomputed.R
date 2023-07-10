@@ -36,40 +36,9 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
       ns <- session$ns
 
       output$premade_uiOutput <- renderUI({
-        species <- list.dirs("./data/indexing", recursive=F) %>%
-          sapply(function(i) {
-            str <- stringr::str_split_1(i, "/")[4] %>%
-              tolower() %>%
-              gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE) # capitablize first letter
-            return(str)
-          })
-
-        subfolders <- lapply(names(species), function(i) {
-          list.dirs(i, recursive = FALSE) 
-        }) %>% setNames(unname(species))
-
-        choices <- lapply(species, function(i) {
-          subfolders_i <- subfolders[[i]]
-          result <- list()
-          # "Arabidopsis Thaliana" ->  "arabidopsis_thaliana-"
-          ii <- stringr::str_replace_all(tolower(i), " ", "_") %>% paste0("-")
-          for (subfolder in subfolders_i) {
-            str <- stringr::str_split_1(subfolder, "/")[5] %>%
-              stringr::str_replace(ii, "") %>%
-              gsub("_", " ", .) %>%
-              gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE)
-
-            str <- gsub("-(.)", "-\\U\\1", str, perl = TRUE) %>%
-              gsub("Et Al", "et al\\.", .)
-
-            result[[str]] <- subfolder
-          }
-          return(result)
-        }) %>% setNames(unname(species))
-
         selectInput(
           inputId = ns("premade"), label = "Motif database",
-          choices = choices,
+          choices = CHOICES,
           selected = "arabidopsis_thaliana-PBM",
           selectize = TRUE
         )

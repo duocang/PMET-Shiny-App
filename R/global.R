@@ -1,7 +1,3 @@
-UPLOAD_DIR <- "result/indexing"
-NCPU       <- 6
-
-
 suppressMessages({
   # Used packages
   pacotes <- c(
@@ -70,3 +66,72 @@ suppressMessages({
 options(shiny.maxRequestSize = 30000 * 1024^2)
 plan(multisession)
 
+NCPU       <- 6
+
+# to detect the pre-computed motif-DB data
+# when new daata comes, there is no need to change code.
+species <- list.dirs("./data/indexing", recursive=F) %>%
+  sapply(function(i) {
+    str <- stringr::str_split_1(i, "/")[4] %>%
+      tolower() %>%
+      gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE) # capitablize first letter
+    return(str)
+  })
+# > species
+# ./data/indexing/arabidopsis_thaliana                ./data/indexing/maize
+#               "Arabidopsis Thaliana"                              "Maize"
+
+subfolders <- lapply(names(species), function(i) {
+  list.dirs(i, recursive = FALSE) 
+}) %>% setNames(unname(species))
+# > subfolders
+# $`Arabidopsis Thaliana`
+# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2018"
+# [2] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2022"
+# [3] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-motifs_from_franco-zorrilla_et_al_(2014)"
+# [4] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-plant_cistrome_DB"
+
+# $Maize
+# [1] "Data/indexing/maize/maize-jaspar Plants Non Redundant 2018"
+# [2] "Data/indexing/maize/maize-jaspar Plants Non Redundant 2022"
+
+CHOICES <- lapply(species, function(i) {
+  subfolders_i <- subfolders[[i]]
+  result <- list()
+  # "Arabidopsis Thaliana" ->  "arabidopsis_thaliana-"
+  ii <- stringr::str_replace_all(tolower(i), " ", "_") %>% paste0("-")
+  for (subfolder in subfolders_i) {
+    str <- stringr::str_split_1(subfolder, "/")[5] %>%
+      stringr::str_replace(ii, "") %>%
+      gsub("_", " ", .) %>%
+      gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE)
+
+    str <- gsub("-(.)", "-\\U\\1", str, perl = TRUE) %>%
+      gsub("Et Al", "et al\\.", .)
+
+    result[[str]] <- subfolder
+  }
+  return(result)
+}) %>% setNames(unname(species))
+
+# > CHOICES
+# $`Arabidopsis Thaliana`
+# $`Arabidopsis Thaliana`$`Jaspar Plants Non Redundant 2018`
+# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2018"
+
+# $`Arabidopsis Thaliana`$`Jaspar Plants Non Redundant 2022`
+# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2022"
+
+# $`Arabidopsis Thaliana`$`Motifs From Franco-Zorrilla et al. (2014)`
+# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-motifs_from_franco-zorrilla_et_al_(2014)"
+
+# $`Arabidopsis Thaliana`$`Plant Cistrome DB`
+# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-plant_cistrome_DB"
+
+
+# $Maize
+# $Maize$`Jaspar Plants Non Redundant 2018`
+# [1] "./data/indexing/maize/maize-jaspar_plants_non_redundant_2018"
+
+# $Maize$`Jaspar Plants Non Redundant 2022`
+# [1] "./data/indexing/maize/maize-jaspar_plants_non_redundant_2022"

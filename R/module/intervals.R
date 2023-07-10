@@ -65,14 +65,12 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
-      # UPLOAD_DIR <- "result/indexing"
-
       # self uploaded genome fasta  --------------------------------------------------
       observeEvent(input$fasta, {
 
         req(input$fasta)
         # copy uploaded genome fasta to session folder for PMET to run in the back
-        TempToLocal(UPLOAD_DIR, job_id, input$fasta)
+        TempToLocal("result/indexing", job_id, input$fasta)
 
         # indicators for file uploaded
         if (!is.null(input$fasta$datapath)) {
@@ -89,7 +87,7 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
         req(input$meme)
 
         # copy uploaded motif to session folder for PMET to run in the back
-        TempToLocal(UPLOAD_DIR, job_id, input$meme)
+        TempToLocal("result/indexing", job_id, input$meme)
 
         # indicators for file uploaded
         if (!is.null(input$meme$datapath)) {

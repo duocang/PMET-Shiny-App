@@ -20,7 +20,6 @@ myToastOptions <- list(
 
 # job_id is the name of folde to keep uploaded files from user
 # because some data needed by PMET is not accessible after shiny session is closed
-UPLOAD_DIR    <- "result/indexing"
 job_id        <- runif(1, 100, 999999999) %/% 1
 
 trig <- reactiveVal(FALSE)
@@ -140,7 +139,7 @@ observeEvent(input$run_pmet_btn, {
     file.rename(file.path("result", job_id), pmet_paths$pair_dir)
   } else {
     file.rename(file.path("result", job_id  ), pmet_paths$pair_dir)
-    file.rename(file.path(UPLOAD_DIR, job_id), pmet_paths$index_dir)
+    file.rename(file.path("result/indexing", job_id), pmet_paths$index_dir)
   }
   cli::cat_rule(sprintf("pmet task starts！"))
   # PMET job is runnig in the back

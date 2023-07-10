@@ -57,8 +57,6 @@ PathsPmetRepeat <- function(input,
                       indexing_pairing_needed = NULL,
                       pairing_need            = NULL)
 
-  UPLOAD_DIR <- "result/indexing"
-
   pmet_paths  <- paths_for_pmet_func(input, mode, first_run, temp_folder)
 
   pmet_config$user_id <- pmet_paths$user_id
@@ -83,7 +81,7 @@ PathsPmetRepeat <- function(input,
     # rename temp folder in first run of PMET
     file.rename(file.path("result", temp_folder), pmet_config$pair_dir)
     if (mode != 1) {
-      file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$index_dir)
+      file.rename(file.path("result/indexing", temp_folder), pmet_config$index_dir)
     }
   } # if (first_run)
 
@@ -154,13 +152,13 @@ PathsPmetRepeat <- function(input,
 
         # copy uploaded files from var (temp) to local folders
         if (flags$meme == 0) {
-          TempToLocal(UPLOAD_DIR, temp_folder, input$meme)
+          TempToLocal("result/indexing", temp_folder, input$meme)
         }
         if (flags$fasta == 0) {
-          TempToLocal(UPLOAD_DIR, temp_folder, input$fasta)
+          TempToLocal("result/indexing", temp_folder, input$fasta)
         }
         if (flags$gff3 == 0) {
-          TempToLocal(UPLOAD_DIR, temp_folder, input$gff3)
+          TempToLocal("result/indexing", temp_folder, input$gff3)
         }
         if (flags$genes == 0) {
           # # create local folders
@@ -168,7 +166,7 @@ PathsPmetRepeat <- function(input,
           TempToLocal("result", temp_folder, input$genes)
         }
         file.rename(file.path("result", temp_folder), pmet_config$pair_dir)
-        file.rename(file.path(UPLOAD_DIR, temp_folder), pmet_config$index_dir)
+        file.rename(file.path("result/indexing", temp_folder), pmet_config$index_dir)
       }
     } # if (mode == 2)
   } # if (!first_run)

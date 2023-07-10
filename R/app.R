@@ -21,7 +21,7 @@ ui <- fluidPage(
     ),
     # title = "PMET",
     windowTitle = "PMET",
-    title = div(img(src="www/figures/logo_small.png", style = "height: 60px;margin-left:-10px;margin-top:-18px")),
+    title = div(img(src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202307101253704.png", style = "height: 60px;margin-left:-10px;margin-top:-18px")),
     source("R/ui/tab_home.R"     , local = TRUE)$value,
     source("R/ui/tab_start.R"    , local = TRUE)$value,
     source("R/ui/tab_visualize.R", local = TRUE)$value,
@@ -36,4 +36,21 @@ server <- function(input, output, session) {
   source("R/server/tab_start.R"    , local = TRUE)$value
   source("R/server/tab_visualize.R", local = TRUE)$value
   source("R/server/tab_author.R"   , local = TRUE)$value
+
+  # observeEvent(input$navbar, {
+  #   # js_code <- paste0("console.log('Switched to tab: ", input$navbar, "');")
+  #   if (input$navbar == "Test_tabpanel") {
+  #     js_code <- '$("#fullpage").fullpage();'
+  #   } else {
+  #     js_code <-
+  #       '
+  #         new fullpage("#fullpage", {
+  #           anchors: ["page1", "page2", "page3", "page4"],
+  #           sectionsColor: ["yellow", "orange", "#C0C0C0", "#ADD8E6"],
+  #           licenseKey: "gplv3-license"
+  #         });
+  #       '
+  #   }
+  #   runjs(js_code)
+  # })
 }
