@@ -128,7 +128,12 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
 
   function DrawHeatmap(data, svgID, heatmapID, valMax = 0, valMin = 0, colorIndex = null, motifs = null) {
 
-    var margin = { top: 200, right: 10, bottom: 150, left: 200 },
+    var maxLength = motifs.reduce(function (max, str) {
+      return str.length > max ? str.length : max;
+    }, 0);
+    console.log(maxLength)
+    // Consider 1 `pt` to be approximately 0.75 `px`.
+    var margin = { top: 50, right: 0, bottom: maxLength * 8 , left: maxLength * 8 },
         cellSize = 12;
         col_number = motifs.length,
         row_number = motifs.length,
@@ -188,8 +193,11 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       .attr("class", function (d, i) { return "rowLabel mono r" + (i + 1) + " rowLabel-" + heatmapID; })
       .on("mouseover", function (d) { d3.select(this).classed("text-hover", true); })
       .on("mouseout", function (d) { d3.select(this).classed("text-hover", false); })
-      .on("click", function (d, i) {  rowSortOrder = !rowSortOrder; sortbylabel("r", i, rowSortOrder);
-                                      d3.select("#order").property("selectedIndex", 4).node().focus();; })
+      .on("click", function (d, i) {
+        // rowSortOrder = !rowSortOrder;
+        // sortbylabel("r", i, rowSortOrder);
+        // d3.select("#order").property("selectedIndex", 4).node().focus();
+      })
       ;
 
     var colLabels = svg.append("g")
@@ -199,24 +207,30 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       .enter()
       .append("text")
       .text(function (d) { return d; })
-      .attr("x", 0)
-      .attr("y", function (d, i) { return hccol.indexOf(i + 1) * cellSize; })
-      .style("text-anchor", "left")
+      .attr("x", function (d, i) { return -height-13;})
+      .attr("y", function (d, i) { return hccol.indexOf(i + 1) * cellSize+3; })
+      .style("text-anchor", "end")
       .attr("transform", "translate(" + cellSize / 2 + ",-6) rotate (-90)")
-      .attr("class", function (d, i) { return "colLabel mono c" + (i + 1) + " colLabel-" + heatmapID; })
-      .on("mouseover", function (d) { d3.select(this).classed("text-hover", true); })
-      .on("mouseout", function (d) { d3.select(this).classed("text-hover", false); })
-      .on("click", function (d, i) { colSortOrder = !colSortOrder; sortbylabel("c", i, colSortOrder);
-                                      d3.select("#order").property("selectedIndex", 4).node().focus();; })
+      .attr("class"  , function (d, i) { return "colLabel mono c" + (i + 1) + " colLabel-" + heatmapID; })
+      .on("mouseover", function (d   ) { d3.select(this).classed("text-hover", true); })
+      .on("mouseout" , function (d   ) { d3.select(this).classed("text-hover", false); })
+      .on("click"    , function (d, i) {
+        // console.log("x: " + 0 + "          y: " + (hccol.indexOf(i + 1) * cellSize) + "        label: " + d)
+        // colSortOrder = !colSortOrder;
+        // sortbylabel("c", i, colSortOrder);
+        // d3.select("#order").property("selectedIndex", 4).node().focus();;
+      })
       ;
+
+
 
     var heatMap = svg.append("g").attr("class", "g3")
       .selectAll(".cellg")
       .data(data, function (d) { return d.motif1 + ":" + d.motif2; })
       .enter()
       .append("rect")
-      .attr("x", function (d) { return hccol.indexOf(d.motif1) * cellSize; })
-      .attr("y", function (d) { return hcrow.indexOf(d.motif2) * cellSize; })
+      .attr("x",     function (d) { return hccol.indexOf(d.motif1) * cellSize; })
+      .attr("y",     function (d) { return hcrow.indexOf(d.motif2) * cellSize; })
       .attr("class", function (d) { return "cell cell-border cr" + (d.motif1) + " cc" + (d.motif2); })
       .attr("width", cellSize)
       .attr("height", cellSize)
@@ -244,13 +258,57 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
         }
       })
       .on("click", function(d) {
-        var rowtext=d3.select(".r"+(d.motif2-1));
-        if(rowtext.classed("text-selected")==false){
-            rowtext.classed("text-selected",true);
-        }else{
-            rowtext.classed("text-selected",false);
+        // Create a modal element
+        var modal = d3.select("body")
+          .append("div")
+          .attr("class", "modal")
+          .style("display", "block");
+
+        // Create a modal content container
+        var modalContent = modal.append("div")
+          .attr("class", "modal-content");
+
+        // Add a close button to the modal content container
+        modalContent.append("span")
+          .attr("class", "close")
+          .html("&times;")
+          .on("click", function() {
+            modal.remove();
+          });
+
+        // Add the data to the modal content container
+        modalContent.append("p")
+          .attr("class", "cluster-text")
+          .text("Cluster: " + d.cluster);
+        modalContent.append("p")
+          .html("Motif 1: <span class='bold-text'>" + d.motif1 + "</span>");
+        modalContent.append("p")
+          .html("Motif 2: <span class='bold-text'>" + d.motif2 + "</span>");
+        modalContent.append("p")
+          .text("Gene number: " + d.gene_num);
+
+        // Format genes data
+        var formattedGenes = d.genes.replace(/;/g, " ").trim();
+        var genesArray = formattedGenes.split(" ");
+        var genesPerLine = 5;
+        var genesText = "";
+        for (var i = 0; i < genesArray.length; i++) {
+          genesText += genesArray[i] + " ";
+          if ((i + 1) % genesPerLine === 0) {
+            genesText += "\n";
+          }
         }
+
+        modalContent.append("p")
+          .attr("class", "genes-text")
+          .text("Genes: ")
+          .append("pre")
+          .html(genesText.split('\n').map(function (line, index) {
+            var lineNumber = (index * genesPerLine) + 1;
+            return '<span class="line-number" data-line-number="' + lineNumber + '"></span>' + line;
+          }).join('\n'));
       })
+
       .on("mouseover", function (d) {
         //highlight text
         d3.select(this).classed("cell-hover", true);
@@ -259,14 +317,16 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
 
         //Update the tooltip position and value
         d3.select("#tooltip")
-          .style("left", (d3.event.pageX - 370) + "px")
-          .style("top" , (d3.event.pageY) + "px")
+          .style("left", (d3.event.pageX - 320) + "px")
+          .style("top" , (d3.event.pageY - 320) + "px")
           .select("#value")
           .html("<b>motif x</b>: "       + motifs[d.motif1 - 1] + "<br>" +
                 "<b>motif y</b>: "       + motifs[d.motif2 - 1] + "<br>" +
-                "<b>cluster</b>  :"      + d.cluster        + "<br>" +
-                "<b>-log10(p.adj)</b>: " + d.p_adj          + "<br>" +
-                "<b># genes</b>: "       + d.gene_num       + "<br>" //+  "<b>genes</b>:<br>" + "&nbsp;&nbsp;&nbsp;&nbsp;" + d.genes 
+                "<b>cluster</b>  :"      + d.cluster            + "<br>" +
+                "<b>-log10(p.adj)</b>: " + d.p_adj              + "<br>" +
+                "<b># genes</b>: "       + d.gene_num           + "<br>" +//+  "<b>genes</b>:<br>" + "&nbsp;&nbsp;&nbsp;&nbsp;" + d.genes
+                "<hr>" +
+                "Click for details"
           )
         if (d.p_adj !== null) {
           //Show the tooltip
@@ -293,8 +353,9 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       .attr("class", "legend");
 
     legend.append("rect")
-      .attr("x", function (d, i) { return 15 * i; })
-      .attr("y", height + (cellSize * 2))
+      .attr("x", function (d, i) { return 15 * i+30; })
+      // .attr("y", height + (cellSize * 2))
+      .attr("y", -15)
       .attr("width", 17)
       .attr("height", cellSize)
       .style("fill", function (d, i) { return myColor(legendNums[i]); });
@@ -302,9 +363,9 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     // add title for legend
     legend.append("text")
       .attr("width", 15)
-      .attr("x", 0)
-      .attr("y", height + (cellSize * 1.2))
-      .text("p-value")
+      .attr("x", 20)
+      .attr("y", -22)
+      .text("-log10(p-val)")
       .attr("font-family", "Consolas, courier")
       .attr("font-size", "12px")
       .attr("fill", "#aaa")
@@ -318,8 +379,8 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
         }
       })
       .attr("width", 15)
-      .attr("x", function (d, i) { return 15 * i; })
-      .attr("y", height + (cellSize * 4));
+      .attr("x", function (d, i) { return 29 * i; })
+      .attr("y", -5);
   }
 
 });

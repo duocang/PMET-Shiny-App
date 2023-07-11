@@ -2,7 +2,70 @@ tabPanel(
   title = "Analyze PMET",
   value = "heatmap_tabpanel",
   id    = "heatmap_tabpanel",
-  tags$head(tags$style(HTML(".shiny-output-error-validation{color: red;}"))),
+  tags$head(tags$style(HTML(
+    "
+      .shiny-output-error-validation{color: red;}
+
+      .modal {
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+      }
+
+      .bold-text {
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+
+      .cluster-text {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .genes-text {
+        font-size: 13px;
+        white-space: pre-wrap;
+      }
+      .line-number::before {
+        content: attr(data-line-number);
+        display: inline-block;
+        width: 2em;
+        text-align: right;
+        padding-right: 0.5em;
+        user-select: none;
+      }
+
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+    "
+  ))),
   sidebarLayout(
     sidebarPanel(
       width = 4,
