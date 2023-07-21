@@ -1,5 +1,5 @@
 tabPanel(
-  "Developers",
+  "Contributors",
   # p(a("Prof. Dr. Patrick Schäfer",
   #   href = "https://www.uni-giessen.de/de/fbz/fb09/institute/phyto/mitarbeiter/leitung/schaefer-p",
   #   target = "_blank"

@@ -47,20 +47,20 @@ CheckGeneFile <- function(gene_file_path = NULL, mode = NULL, premade = NULL) {
       return("OK")
     },
     "promoters_pre" = {
-        # if motif DB selected, check the uploaded genes with the gene list in our folder, named universe.txt
-        genes_universe <- file.path(premade, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
+      # if motif DB selected, check the uploaded genes with the gene list in our folder, named universe.txt
+      genes_universe <- file.path(premade, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
 
-        genes_present <-  dplyr::inner_join(genes_uploaded, genes_universe, by = "gene")
-        genes_not_found <- setdiff(genes_uploaded, genes_present)
+      genes_present <-  dplyr::inner_join(genes_uploaded, genes_universe, by = "gene")
+      genes_not_found <- setdiff(genes_uploaded, genes_present)
 
-        # no genes available in the uploaded file
-        if (nrow(genes_not_found) == nrow(genes_uploaded)) {
-          return("no_valid_genes")
-        } else if (nrow(genes_uploaded) != nrow(genes_present)) {
-          return(list(nrow(genes_not_found), nrow(genes_uploaded), genes_not_found))
-        } else {
-          return("OK")
-        }
+      # no genes available in the uploaded file
+      if (nrow(genes_not_found) == nrow(genes_uploaded)) {
+        return("no_valid_genes")
+      } else if (nrow(genes_uploaded) != nrow(genes_present)) {
+        return(list(nrow(genes_not_found), nrow(genes_uploaded), genes_not_found))
+      } else {
+        return("OK")
+      }
     },
     "promoters" = {
       return("OK")

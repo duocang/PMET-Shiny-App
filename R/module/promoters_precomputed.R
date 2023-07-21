@@ -1,54 +1,170 @@
 promoters_pre_ui <- function(id, height = 800, width = 850) {
+    tags$head(
+    )
   ns <- NS(id)
   # motif database
   div(
-    div(id = "premade_div", class = "one_upload",
-      uiOutput(ns("premade_uiOutput"))
+    div(id = "species_div", style = "margin-bottom: 10px;",
+      selectInput(ns("species"), label = "Species", NULL)
     ),
-    div(id = "genes_div", class = "one_upload",
-      fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt"),
+    div(id = "premade_div", style = "margin-bottom: 10px;",
+      selectInput(inputId = ns("premade"), label = "Motif database", NULL)
+    ),
+    div(id = ns("genes_div"), style = "margin-bottom: 10px;",
+      # uiOutput(ns("genes_uiOutput"))
+      shinyjs::disabled(
+        div(id= ns("gene_fileinput"),
+          fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt")
+        )
+      ),
       # example gene list
       downloadLink(ns("demo_genes"), "Example gene"),
       shinyjs::hidden(
-        actionLink(ns("genes_not_found_link"), "Genes not found", icon = icon("info-circle")))
-    ), # end of genes_div
-        # parameters
-    div(id = "parameters_div", class = "one_upload",
-      div("Parameters", class = "big_font"),
+        actionLink(ns("genes_not_found_link"), "Genes not found", icon = icon("info-circle"))
+      )
+    ),# end of genes_div
+    bsTooltip(id = ns("gene_fileinput"),
+              title = "Please select a species and a motif database",
+              placement = "top",
+              trigger = "hover",
+              options = list(delay = list(show = 500, hide = 100))),
+    # parameters
+    div(id = ns("parameters_div"), style = "margin-bottom: 10px;",
+      div("Parameters", style = "font-size: 16px; font-weight: bold;"),
       fluidRow(
-        div(id = "ic_threshold_div", class = "parameters_box",
-          selectInput(
-            inputId = ns("ic_threshold"),
-            label = "Number of selected promoters",
-            choices = c(2, 4, 8, 10, 16, 24, 32),
-            selected = 4
+        div(class = "selectInput_div",
+          class = "parameters_id", style = "padding-left:15px; padding-right:15px;",
+          div(id = "promoter_length_div",
+            shinyjs::disabled(
+              selectInput(
+                inputId = ns("promoter_length"),
+                label = "Promoter Length",
+                choices = c(500, 1000, 1500, 2000),
+                selected = 1000
+              )
+            )
+          ),
+          div(id = "max_match_div",
+            shinyjs::disabled(
+              selectInput(
+                inputId = ns("max_match"), label = "Max motif matches",
+                choices = c(2, 3, 4, 5, 10, 15, 20),
+                selected = 5
+              )
+            )
+          ),
+          div(id = "promoter_num_div",
+            shinyjs::disabled(
+              selectInput(
+                inputId = ns("promoter_num"),
+                label = "Number of selected promoters",
+                choices = c(2000, 3000, 4000, 5000, 10000),
+                selected = 5000
+              )
+            )
+          ),
+          div(id = "fimo_threshold_div",
+            shinyjs::disabled(
+              selectInput(
+                inputId = ns("fimo_threshold"),
+                label = "Fimo threshold",
+                choices = c(0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05),
+                selected = 0.05
+              )
+            )
+          ),
+          div(id = "ic_threshold_div",
+            shinyjs::disabled(
+              selectInput(
+                inputId = ns("ic_threshold"),
+                label = "Information content threshold",
+                choices = c(2, 4, 8, 10, 16, 24, 32),
+                selected = 4
+              )
+            )
           )
         ),
+        div(class = "radioButtons_div", style = "padding-left:15px; padding-right:15px;",
+          div(id = "utr5_div",
+            shinyjs::disabled(
+              radioButtons(
+                ns("utr5"), "5' UTR included?",
+                c("Yes" = "Yes", "  No" = "No"),
+                inline = TRUE
+              )
+            )
+          ),
+          div(id = "promoters_overlap_div",
+            shinyjs::disabled(
+              radioButtons(
+                ns("promoters_overlap"),
+                "Promoters' potential overlaps removed?",
+                c("Yes" = "AllowOverlap", "No" = "NoOverlap"),
+                inline = TRUE
+              )
+            )
+          )
+        )
       )
-    )
+    ) # parameters_div
   )
 }
 
-promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
+promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$ns
 
-      output$premade_uiOutput <- renderUI({
-        selectInput(
-          inputId = ns("premade"), label = "Motif database",
-          choices = CHOICES,
-          selected = "arabidopsis_thaliana-PBM",
-          selectize = TRUE
-        )
+      # by default , species left empty
+      species_list <- list(
+          species = list(
+            `Aarabidopsis thaliana`        = "arabidopsis_thaliana",
+            `Brachypodium distachyon`      = "brachypodium_distachyon",
+            `Brassica napus`               = "brassica_napus",
+            `Glycine max`                  = "glycine_max",
+            `Hordeum vulgare goldenpromise` = "hordeum_vulgare_goldenpromise",
+            `Triticum aestivum`           = "jtriticum_aestivum",
+            `Medicago truncatula`          = "medicago_truncatula",
+            `Oryza sativaIndica`           = "oryza_sativa_indica",
+            `Oryza sativaJaponica`         = "oryza_sativa_japonica",
+            `Solanum lycopersicum`         = "solanum_lycopersicum",
+            `Solanum tuberosum`            = "solanum_tuberosum",
+            `Zea mays`                     = "zea_mays"
+          )
+      )
+      # present selction options in species input field
+      observe({
+        req(navbar())
+        req(mode())
+
+        updateSelectInput(session, "species", choices = species_list, selected = species_list[length(species_list)])
       })
 
-      genes_not_found  <- reactiveVal(NULL) # store genes not found for download handler
+      observe({
+        req(navbar())
+        req(mode())
+        req(input$species)
+
+        if(input$species != "") {
+          # shinyjs::show("premade")
+          choices_list <- list("Motif Database" = MOTIF_DB[[input$species]])
+          updateSelectInput(session, "premade", choices = choices_list, selected = choices_list[length(choices_list)])
+        }
+      })
+
+      # eable gene upload
+      observe({
+        req(input$premade, input$species)
+        shinyjs::enable("gene_fileinput")
+        removeTooltip(session, ns("gene_fileinput"))
+      })
 
       # self genes uploaded -----------------------------------------------------------
+      genes_not_found  <- reactiveVal(NULL) # store genes not found for download handler
       observeEvent(input$genes, {
-        req(input$genes)
+
+        req(input$genes, input$genes != "", input$premade, input$species)
         # copy uploaded genes to result folder for PMET to run in the back
         TempToLocal("result", job_id, input[["genes"]])
 
@@ -96,7 +212,7 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
               modalButton("Cancel"))
           )) # end of showModal
         }
-      })
+      }, ignoreInit = T)
 
       # Download genes not found when button clicked -----------------------------------
       output$genes_not_found_down_btn <- downloadHandler(
@@ -130,7 +246,7 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
       )
       intro <- data.frame(element = elements, intro = intors)
 
-      observeEvent(trigger(), {
+      observeEvent(tutorial_trigger(), {
         if (mode() == "promoters_pre" & navbar() == "run_start") {
           introjs(session, options = list(steps = intro))
         }
@@ -139,3 +255,25 @@ promoters_pre_server <- function(id, job_id, trigger, mode, navbar) {
       list(input = input)
     })
 }
+
+
+      # selectInput(
+      #   inputId = ns("species"), label = "Species",
+      #   choices = my_list <- list(
+      #     `Aarabidopsis Thaliana`        = "arabidopsis_thaliana",
+      #     `Brachypodium Distachyon`      = "brachypodium_distachyon",
+      #     `Brassica Napus`               = "brassica_napus",
+      #     `Glycine Max`                  = "glycine_max",
+      #     `Hordeum VulgareGoldenpromise` = "hordeum_vulgare_goldenpromise",
+      #     `JtriticumA estivum`           = "jtriticum_aestivum",
+      #     `Medicago Truncatula`          = "medicago_truncatula",
+      #     `Oryza SativaIndica`           = "oryza_sativa_indica",
+      #     `Oryza SativaJaponica`         = "oryza_sativa_japonica",
+      #     `Solanum Lycopersicum`         = "solanum_lycopersicum",
+      #     `Solanum Tuberosum`            = "solanum_tuberosum",
+      #     `Zea Mays`                     = "zea_mays",
+      #     `Select a species`             = NULL
+      #   ),
+      #   selected = NULL,
+      #   selectize = TRUE
+      # )

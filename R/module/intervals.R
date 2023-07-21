@@ -2,36 +2,36 @@ intervals_ui <- function(id, height = 800, width = 850) {
   ns <- NS(id)
   # motif database
   div(
-    div(id = "fasta_div", class = "one_upload",
+    div(id = "fasta_div", style = "margin-bottom: 10px;",
       fileInput(ns("fasta"), "Upload genome file",
         multiple = FALSE,
         accept = c(".fasta", ".fa")
       ),
       downloadLink(ns("demo_intervals_fa"), "Example intervals collection")
     ), # end of fasta_div
-    div(div = "meme_div", class = "one_upload",
+    div(div = "meme_div", style = "margin-bottom: 10px;",
       fileInput(ns("meme"), "Upload motif meme file",
         multiple = FALSE,
         accept = ".meme"
       ),
       downloadLink(ns("demo_meme"), "Example motif DB")
     ),
-    div(id = "peaks_div", class = "one_upload",
+    div(id = "peaks_div", style = "margin-bottom: 10px;",
       fileInput(ns("genes"), "Clusters and intervals", multiple = FALSE, accept = ".txt"),
       # example gene list
       downloadLink(ns("demo_genes"), "Example peaks (intervals)")
     ),
     # parameters
-    div(id = "parameters_div", class = "one_upload",
-      div("Parameters", class = "big_font"),
+    div(id = "parameters_div", style = "margin-bottom: 10px;",
+      div("Parameters", style = "font-size: 16px; font-weight: bold;"),
       fluidRow(
-        div(id = "max_match_div", class = "parameters_box",
+        div(id = "max_match_div", class = "selectInput_div",
           selectInput(
             inputId = ns("max_match"), label = "Max motif matches",
             choices = c(2, 3, 4, 5, 10, 15, 20), selected = 5
           )
         ),
-        div(id = "promoter_num_div", class = "parameters_box",
+        div(id = "promoter_num_div", class = "selectInput_div",
           selectInput(
             inputId = ns("promoter_num"),
             label = "Number of selected promoters",
@@ -40,7 +40,7 @@ intervals_ui <- function(id, height = 800, width = 850) {
           )
         ),
 
-        div(id = "fimo_threshold_div", class = "parameters_box",
+        div(id = "fimo_threshold_div", class = "selectInput_div",
           selectInput(
             inputId = ns("fimo_threshold"),
             label = "Fimo threshold",
@@ -48,7 +48,7 @@ intervals_ui <- function(id, height = 800, width = 850) {
             selected = 0.05
           )
         ),
-        div(id = "ic_threshold_div", class = "parameters_box",
+        div(id = "ic_threshold_div", class = "selectInput_div",
           selectInput(
             inputId = ns("ic_threshold"),
             label = "Information content threshold",
@@ -102,7 +102,8 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
       # self genes uploaded -----------------------------------------------------------
       observeEvent(input$genes, {
 
-        req(input$genes)
+        req(input$genes, input$genes != "")
+
         # copy uploaded genes to result folder for PMET to run in the back
         TempToLocal("result", job_id, input$genes)
 

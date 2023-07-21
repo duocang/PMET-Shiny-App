@@ -1,3 +1,8 @@
+
+.tab-content {
+  padding-top: 80px;
+}
+
 body {
   min-width: 1200px;
 }
@@ -8,16 +13,13 @@ body {
 }
 
 .col-sm-4 {
-  width: 350px;
+  width: 380px;
 }
 
 .main {
   width: 100%;
 }
 
-.one_upload {
-  margin-bottom: 10px;
-}
 
 /* font style: labels of fileInput elements */
 .control-label {
@@ -62,11 +64,6 @@ body {
   float: right;
 }
 
-.big_font {
-  font-size: 16px;
-  font-weight: bold;
-}
-
 
 /* parameters font size */
 #intervals-max_match-label {
@@ -87,7 +84,31 @@ body {
 }
 
 
+#promoters_pre-promoter_length-label {
+  font-size: 13px;
+  font-weight: normal;
+}
+#promoters_pre-max_match-label {
+  font-size: 13px;
+  font-weight: normal;
+}
+#promoters_pre-promoter_num-label{
+  font-size: 13px;
+  font-weight: normal;
+}
+#promoters_pre-fimo_threshold-label{
+  font-size: 13px;
+  font-weight: normal;
+}
 #promoters_pre-ic_threshold-label{
+  font-size: 13px;
+  font-weight: normal;
+}
+#promoters_pre-utr5-label {
+  font-size: 13px;
+  font-weight: normal;
+}
+#promoters_pre-promoters_overlap-label{
   font-size: 13px;
   font-weight: normal;
 }
@@ -122,7 +143,7 @@ body {
   font-weight: normal;
 }
 
-.parameters_box {
+.selectInput_div {
   padding-left: 15px;
   padding-right: 20px;
 }
@@ -240,4 +261,44 @@ text.text-hover {
   .github-corner .octo-arm {
     animation: octocat-wave 560ms ease-in-out;
   }
+}
+
+
+
+/* fileinput in one line */
+.selectInput_div .shiny-input-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.selectInput_div .shiny-input-container label {
+  margin-right: 10px;
+}
+.selectInput_div .shiny-input-container div {
+  width: 80px;
+  margin-bottom: 0px;
+}
+.selectInput_div .shiny-input-container .selectize-control {
+  width: 100%;
+}
+.selectInput_div .shiny-input-container .selectize-input {
+  height: 30px;
+}
+
+.radioButtons_div .shiny-input-radiogroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.radioButtons_div .shiny-input-radiogroup label.control-label {
+  margin-right: 10px;
+}
+.radioButtons_div .shiny-input-radiogroup .shiny-options-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.radioButtons_div .shiny-input-radiogroup .shiny-options-group .radio-inline {
+  min-width: 60px; /* 你可以根据需要调整这个值 */
 }

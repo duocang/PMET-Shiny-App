@@ -17,6 +17,7 @@ suppressMessages({
     "purrr",              # functional programming and iterating over data structures.
     "reshape2",           # transforming and restructuring data in R.
     "rintrojs",           # creating interactive and guided tours in Shiny applications.
+    "rjson",              # converts R object into JSON objects and vice-versa.
     "scales",             # controlling the scaling of data in R graphics.
     "shiny",              # building interactive web applications in R.
     "shinyBS",            # adding additional Bootstrap functionality to Shiny applications.
@@ -66,72 +67,29 @@ suppressMessages({
 options(shiny.maxRequestSize = 30000 * 1024^2)
 plan(multisession)
 
-NCPU       <- 6
+NCPU <- 6
 
 # to detect the pre-computed motif-DB data
 # when new daata comes, there is no need to change code.
 species <- list.dirs("./data/indexing", recursive=F) %>%
   sapply(function(i) {
     str <- stringr::str_split_1(i, "/")[4] %>%
-      tolower() %>%
-      gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE) # capitablize first letter
+      tolower() #%>% gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE) # capitablize first letter
     return(str)
   })
 # > species
-# ./data/indexing/arabidopsis_thaliana                ./data/indexing/maize
-#               "Arabidopsis Thaliana"                              "Maize"
+# ./data/indexing/arabidopsis_thaliana         ./data/indexing/mais
+#               "arabidopsis_thaliana"                       "mais"
 
-subfolders <- lapply(names(species), function(i) {
-  list.dirs(i, recursive = FALSE) 
-}) %>% setNames(unname(species))
-# > subfolders
-# $`Arabidopsis Thaliana`
-# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2018"
-# [2] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2022"
-# [3] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-motifs_from_franco-zorrilla_et_al_(2014)"
-# [4] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-plant_cistrome_DB"
-
-# $Maize
-# [1] "Data/indexing/maize/maize-jaspar Plants Non Redundant 2018"
-# [2] "Data/indexing/maize/maize-jaspar Plants Non Redundant 2022"
-
-CHOICES <- lapply(species, function(i) {
-  subfolders_i <- subfolders[[i]]
+MOTIF_DB <- lapply(names(species), function(speci) {
+  motif_dbs <- list.dirs(speci, recursive = FALSE, full.names = F) %>% unname()
+  list_names <- gsub("_", " ", motif_dbs) %>% tools::toTitleCase()
   result <- list()
-  # "Arabidopsis Thaliana" ->  "arabidopsis_thaliana-"
-  ii <- stringr::str_replace_all(tolower(i), " ", "_") %>% paste0("-")
-  for (subfolder in subfolders_i) {
-    str <- stringr::str_split_1(subfolder, "/")[5] %>%
-      stringr::str_replace(ii, "") %>%
-      gsub("_", " ", .) %>%
-      gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE)
-
-    str <- gsub("-(.)", "-\\U\\1", str, perl = TRUE) %>%
-      gsub("Et Al", "et al\\.", .)
-
-    result[[str]] <- subfolder
+  for (i in seq(length(motif_dbs))) {
+    result[[ list_names[i] ]] <- file.path(speci , motif_dbs[i])
   }
+
   return(result)
-}) %>% setNames(unname(species))
+  }) %>% setNames(unname(species))
 
-# > CHOICES
-# $`Arabidopsis Thaliana`
-# $`Arabidopsis Thaliana`$`Jaspar Plants Non Redundant 2018`
-# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2018"
-
-# $`Arabidopsis Thaliana`$`Jaspar Plants Non Redundant 2022`
-# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2022"
-
-# $`Arabidopsis Thaliana`$`Motifs From Franco-Zorrilla et al. (2014)`
-# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-motifs_from_franco-zorrilla_et_al_(2014)"
-
-# $`Arabidopsis Thaliana`$`Plant Cistrome DB`
-# [1] "./data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-plant_cistrome_DB"
-
-
-# $Maize
-# $Maize$`Jaspar Plants Non Redundant 2018`
-# [1] "./data/indexing/maize/maize-jaspar_plants_non_redundant_2018"
-
-# $Maize$`Jaspar Plants Non Redundant 2022`
-# [1] "./data/indexing/maize/maize-jaspar_plants_non_redundant_2022"
+MOTF_DB_META <- fromJSON(file = "data/motif_db_meta.json")

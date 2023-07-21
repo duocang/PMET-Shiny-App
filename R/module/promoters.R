@@ -8,7 +8,7 @@ promoters_ui <- function(id, height = 800, width = 850) {
     ")))
   # motif database
   div(
-    div(id = "fasta_div", class = "one_upload",
+    div(id = "fasta_div", style = "margin-bottom: 10px;",
       fileInput(ns("fasta"), "Upload genome file",
         multiple = FALSE,
         accept = c(".fasta", ".fa")
@@ -20,7 +20,7 @@ promoters_ui <- function(id, height = 800, width = 850) {
         "Example genome"
       )
     ),
-    div(id = "gff3_div", class = "one_upload",
+    div(id = "gff3_div", style = "margin-bottom: 10px;",
         fileInput(ns("gff3"), "Upload annotation file",
           multiple = FALSE,
           accept = ".gff3"
@@ -31,78 +31,80 @@ promoters_ui <- function(id, height = 800, width = 850) {
           "Example annotation"
         )
     ), # end of gff3_div
-    div(id = ns("meme_div"), class = "one_upload",
+    div(id = ns("meme_div"), style = "margin-bottom: 10px;",
       fileInput(ns("meme"), "Upload motif meme file",
         multiple = FALSE,
         accept = ".meme"
       ),
       downloadLink(ns("demo_meme"), "Example motif DB")
     ),
-    div(id = "genes_div", class = "one_upload",
+    div(id = "genes_div", style = "margin-bottom: 10px;",
       fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt"),
-      # example gene list
       downloadLink(ns("demo_genes"), "Example gene")
     ),
     # parameters
-    div(id = "parameters_div", class = "one_upload",
-      div("Parameters", class = "big_font"),
+    div(id = "parameters_div", style = "margin-bottom: 10px;",
+      div("Parameters", style = "font-size: 16px; font-weight: bold;"),
       fluidRow(
-        class = "parameters_id",
-        div(id = "promoter_length_div", class = "parameters_box",
-          selectInput(
-            inputId = ns("promoter_length"),
-            label = "Promoter Length",
-            choices = c(500, 1000, 1500, 2000),
-            selected = 1000
+        div(class = "selectInput_div",
+          div(id = "promoter_length_div",
+            selectInput(
+              inputId = ns("promoter_length"),
+              label = "Promoter Length",
+              choices = c(500, 1000, 1500, 2000),
+              selected = 1000
+            )
+          ),
+          div(id = "max_match_div",
+            selectInput(
+              inputId = ns("max_match"), label = "Max motif matches",
+              choices = c(2, 3, 4, 5, 10, 15, 20), selected = 5
+            )
+          ),
+          div(id = "promoter_num_div",
+            selectInput(
+              inputId = ns("promoter_num"),
+              label = "Number of selected promoters",
+              choices = c(2000, 3000, 4000, 5000, 10000),
+              selected = 5000
+            )
+          ),
+          div(id = "fimo_threshold_div",
+            selectInput(
+              inputId = ns("fimo_threshold"),
+              label = "Fimo threshold",
+              choices = c(0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05),
+              selected = 0.05
+            )
+          ),
+          div(id = "ic_threshold_div",
+            selectInput(
+              inputId = ns("ic_threshold"),
+              label = "Information content threshold",
+              choices = c(2, 4, 8, 10, 16, 24, 32),
+              selected = 4
+            )
           )
         ),
-        div(id = "max_match_div", class = "parameters_box",
-          selectInput(
-            inputId = ns("max_match"), label = "Max motif matches",
-            choices = c(2, 3, 4, 5, 10, 15, 20), selected = 5
-          )
-        ),
-        div(id = "promoter_num_div", class = "parameters_box",
-          selectInput(
-            inputId = ns("promoter_num"),
-            label = "Number of selected promoters",
-            choices = c(2000, 3000, 4000, 5000, 10000),
-            selected = 5000
-          )
-        ),
-        div(id = "fimo_threshold_div", class = "parameters_box",
-          selectInput(
-            inputId = ns("fimo_threshold"),
-            label = "Fimo threshold",
-            choices = c(0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.05),
-            selected = 0.05
-          )
-        ),
-        div(id = "ic_threshold_div", class = "parameters_box",
-          selectInput(
-            inputId = ns("ic_threshold"),
-            label = "Information content threshold",
-            choices = c(2, 4, 8, 10, 16, 24, 32),
-            selected = 4
+        div(class = "radioButtons_div", style = "padding-left:15px; padding-right:15px;",
+          div(id = "utr5_div",
+            radioButtons(
+              ns("utr5"), "5' UTR included?",
+              c("Yes" = "Yes", "No" = "No"),
+              inline = TRUE
+            )
+          ),
+          div(id = "promoters_overlap_div",
+            radioButtons(
+              ns("promoters_overlap"),
+              "Promoters' potential overlaps removed?",
+              c("Yes" = "AllowOverlap", "No" = "NoOverlap"),
+              inline = TRUE
+            )
           )
         )
-      ),
-      div(id = "utr5_div", class = "parameters_box",
-        radioButtons(
-          ns("utr5"), "5' UTR included?",
-          c("Yes" = "Yes", "No" = "No"),
-          inline = TRUE
-        )
-      ),
-      div(id = "promoters_overlap_div", class = "parameters_box",
-        radioButtons(
-          ns("promoters_overlap"),
-          "Promoters' potential overlaps removed?",
-          c("Yes" = "AllowOverlap", "No" = "NoOverlap"),
-          inline = TRUE
-        )
-      )
-    )
+      ) # end of fluidRow
+    ) # end of div parameters
   )
 }
 
@@ -160,7 +162,7 @@ promoters_server <- function(id, job_id, trigger, mode, navbar) {
 
       # self genes uploaded -----------------------------------------------------------
       observeEvent(input$genes, {
-        req(inputId = "uploaded_genes")
+        req(input$genes, input$genes != "")
 
         # copy uploaded genes to result folder for PMET to run in the back
         TempToLocal("result", job_id, input$genes)

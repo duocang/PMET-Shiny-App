@@ -1,5 +1,5 @@
 tabPanel(
-  title = "Analyze PMET",
+  title = "Visualize results",
   value = "heatmap_tabpanel",
   id    = "heatmap_tabpanel",
   tags$head(tags$style(HTML(

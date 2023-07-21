@@ -60,6 +60,7 @@ observeEvent(input$email, {
 # 2. gene file is a file with 2 columns
 # 3. valid email is provided
 observe({
+  req(input$email)
   # when input changed
   # hide spinner (indicator for job running)
   # hide run and download buttions
@@ -71,6 +72,8 @@ observe({
   # check file input and gene file
   files_ready <- switch(input$mode,
     "promoters_pre" = {
+      req(input$`promoters_pre-genes`)
+      req(input$`promoters_pre-genes` != "")
       gene_file_status <-  CheckGeneFile( input$`promoters_pre-genes`$datapath,
                                           "promoters_pre",
                                           premade = input$`promoters_pre-premade`)
@@ -78,6 +81,7 @@ observe({
       all(gene_file_status == "OK") | (length(gene_file_status) == 3)
     },
     "promoters" = {
+      req(input$`promoters-genes`)
       inputs <- list(
         input$`promoters-fasta`, input$`promoters-gff3`,
         input$`promoters-meme` , input$`promoters-genes`)
@@ -87,6 +91,7 @@ observe({
       files_upload_status &&  gene_file_status == "OK"
     },
     "intervals" = {
+      req(input$`intervals`)
       inputs              <- list( input$`fasta`, input$`meme`, input$`genes`)
       files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
       gene_file_status    <- CheckGeneFile(input$`intervals-genes`$datapath, "intervals")
@@ -94,7 +99,7 @@ observe({
       files_upload_status &&  gene_file_status == "OK"
     }
   )
-
+  # show run buttion if all files uploaded and email valid
   if (files_ready && ValidEmail(input$email)) {
     shinyjs::show("run_pmet_btn_div")
   } else {
@@ -199,28 +204,81 @@ observeEvent(input$run_pmet_btn, {
   }) # end of future
 })
 
-output$image <- renderImage({
-  style = "margin-left: 0px;"
-  workflow_path <- switch(input$mode,
-    "promoters_pre" = {
-      height = 800
-      style = "margin-left: 400px;"
-      "www/figures/pmet_heterotypic.png"
-    },
-    "promoters" = {
-      height = 800
-      "www/figures/PMET_workflow_promoters_PMET_PMETindex.png"
-    },
-    "intervals" = {
-      height = 800
-      "www/figures/PMET_workflow_intervals_PMET_PMETindex.png"
-    }
-  )
+# output$image <- renderImage({
+#   style = "margin-left: 0px;"
+#   workflow_path <- switch(input$mode,
+#     "promoters_pre" = {
+#       height = 650
+#       style = "margin-left: 400px;"
+#       "www/figures/pmet_heterotypic.png"
+#     },
+#     "promoters" = {
+#       height = 650
+#       "www/figures/PMET_workflow_promoters_PMET_PMETindex.png"
+#     },
+#     "intervals" = {
+#       height = 650
+#       "www/figures/PMET_workflow_intervals_PMET_PMETindex.png"
+#     }
+#   )
 
-  list(
-    src         = workflow_path,
-    contentType = "image/png",
-    height       = height,
-    style       = style
-  )
-}, deleteFile=FALSE)
+#   list(
+#     src         = workflow_path,
+#     contentType = "image/png",
+#     height       = height,
+#     style       = style
+#   )
+# }, deleteFile=FALSE)
+
+observeEvent(input$`promoters_pre-species`, {
+  req(input$`promoters_pre-species`, input$`promoters_pre-species`!="")
+  shinyjs::show("txt_species")
+  shinyjs::show("txt_genome")
+  shinyjs::show("txt_annotation")
+  output$txt_species <- renderUI({
+    HTML(paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Species</span><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>  <span style="color: blue; font-size: 19px;">',
+                stringr::str_split_1(input$`promoters_pre-species`, "_") %>% paste0(collapse = " ") %>% tools::toTitleCase(),
+                '</span></p>'))
+  })
+
+  link_text <- MOTF_DB_META[[input$`promoters_pre-species`]][["genome_name"]]
+  link_url  <- MOTF_DB_META[[input$`promoters_pre-species`]][["genome_link"]]
+  html_link <- paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Genome</span> <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span> <a href="', link_url, '" target="_blank">', link_text, '</a></p>')
+
+  output$txt_genome <- renderUI({
+    HTML(html_link)
+  })
+}, ignoreInit = TRUE)
+
+observeEvent(input$`promoters_pre-species`, {
+  req(input$`promoters_pre-species`, input$`promoters_pre-species`!="")
+
+  link_text <- MOTF_DB_META[[input$`promoters_pre-species`]][["annotation_name"]]
+  link_url  <- MOTF_DB_META[[input$`promoters_pre-species`]][["annotation_link"]]
+  html_link <- paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Annotation:</span><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>  <a href="', link_url, '" target="_blank">', link_text, '</a></p>')
+  output$txt_annotation <- renderUI({HTML(html_link)})
+}, ignoreInit = TRUE)
+
+
+observeEvent(input$`promoters_pre-premade`, {
+  req(input$`promoters_pre-premade`)
+  shinyjs::show("txt_motif_db")
+  link_text <- basename(input$`promoters_pre-premade`) %>% str_split_1("_") %>% paste0(collapse = " ") %>% tools::toTitleCase()
+  link_url  <- MOTF_DB_META[[input$`promoters_pre-species`]][["motif_db"]][[basename(input$`promoters_pre-premade`)]]
+
+  html_link <- paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Motif</span><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>  <a href="', link_url, '" target="_blank">', link_text, '</a></p>')
+  output$txt_motif_db <- renderUI({HTML(html_link)})
+
+}, ignoreInit = TRUE)
+
+# hide pre-computed properties when switching
+observeEvent(input$mode, {
+  shinyjs::hide("txt_species")
+  shinyjs::hide("txt_genome")
+  shinyjs::hide("txt_annotation")
+  shinyjs::hide("txt_motif_db")
+  reset("txt_species")
+  reset("txt_genome")
+  reset("txt_annotation")
+  reset("txt_motif_db")
+})
