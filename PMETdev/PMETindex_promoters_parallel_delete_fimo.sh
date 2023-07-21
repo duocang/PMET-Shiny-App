@@ -102,27 +102,16 @@ while getopts ":r:i:o:n:k:p:f:g:v:u:t:c:x:g:e:l:" options; do
 done
 
 
-# rm -rf $indexingOutputDir/binomial_thresholds.txt
-# rm -rf $indexingOutputDir/fimo
-# rm -rf $indexingOutputDir/rimohits
-# rm -rf $indexingOutputDir/IC.txt
-# rm -rf $indexingOutputDir/pmetindex.log
-# rm -rf $indexingOutputDir/promoter_length_deleted.txt
-# rm -rf $indexingOutputDir/promoter_lengths_all.txt
-# rm -rf $indexingOutputDir/promoter_lengths.txt
-# rm -rf $indexingOutputDir/promoters_before_filter.bed
-# rm -rf $indexingOutputDir/universe.txt
-
-
 shift $((OPTIND - 1))
 genomefile=$1
 gff3file=$2
 memefile=$3
 gene_input_file=$4
-
-mkdir -p $indexingOutputDir
 universefile=$indexingOutputDir/universe.txt
 bedfile=$indexingOutputDir/genelines.bed
+
+mkdir -p $indexingOutputDir
+
 
 # start off by filtering the .gff3 to gene lines only
 start=$SECONDS
@@ -134,28 +123,37 @@ $pmetroot/gff3sort/gff3sort.pl $gff3file > ${gff3file}temp
 
 # ----------------------------------- promoters.bed ------------------------------------
 # extract annotation only for gene, no mran, exon etc.
-if [[ ! -f "$universefile"  ||  ! -f "$bedfile" ]]; then
-    if [[ "$(uname)" == "Linux" ]]; then
-        grep -P '\tgene\t' ${gff3file}temp > $indexingOutputDir/genelines.gff3
-    elif [[ "$(uname)" == "Darwin" ]]; then
-        grep '\tgene\t' ${gff3file}temp > $indexingOutputDir/genelines.gff3
-    else
-        echo "Unsupported operating system."
-    fi
-	# grep -P '\tgene\t' ${gff3file}temp > $indexingOutputDir/genelines.gff3
-
-	# parse up the .bed for promoter extraction, 'gene_id'
-    # the python script takes the genelines.gff3 file and makes a genelines.bed out of it
-	python3 $pmetroot/parse_genelines.py $gff3id $indexingOutputDir/genelines.gff3 $bedfile
-	rm $indexingOutputDir/genelines.gff3
-
-	# list of all genes found
-	cut -f 4 $bedfile > $universefile
+if [[ "$(uname)" == "Linux" ]]; then
+    grep -P '\tgene\t' ${gff3file}temp > $indexingOutputDir/genelines.gff3
+elif [[ "$(uname)" == "Darwin" ]]; then
+    grep '\tgene\t' ${gff3file}temp > $indexingOutputDir/genelines.gff3
+else
+    echo "Unsupported operating system."
 fi
+# grep -P '\tgene\t' ${gff3file}temp > $indexingOutputDir/genelines.gff3
+
+# parse up the .bed for promoter extraction, 'gene_id'
+# the python script takes the genelines.gff3 file and makes a genelines.bed out of it
+python3 $pmetroot/parse_genelines.py $gff3id $indexingOutputDir/genelines.gff3 $bedfile
+rm $indexingOutputDir/genelines.gff3
+
+# 在BED文件格式中，无论是正链（+）还是负链（-），起始位置总是小于终止位置。
+# 这是因为起始和终止位置是指定基因或基因组特性在基因组上的物理位置，而不是表达或翻译的方向。
+# starting site < stopped site in bed file
+invalidRows=$(awk '$2 >= $3' $bedfile)
+if [[ -n "$invalidRows" ]]; then
+    echo "$invalidRows" > $outputdir/invalid_genelines.bed
+fi
+# awk '$2 >= $3' $bedfile > $outputdir/invalid_genelines.bed
+awk '$2 <  $3' $bedfile > temp.bed && mv temp.bed $bedfile
+
+# list of all genes found
+cut -f 4 $bedfile > $universefile
 
 ### Make bedgenome.genome and genome_stripped.fa
 echo "Creating genome file...";
 
+# ------------------------------------ extract genome --------------------------------------
 # strip the potential FASTA line breaks. creates genome_stripped.fa
 # python3 $pmetroot/strip_newlines.py $genomefile $indexingOutputDir/genome_stripped_py.fa
 awk '/^>/ { if (NR!=1) print ""; printf "%s\n",$0; next;} \
@@ -320,8 +318,7 @@ runFimoIndexing () {
 export -f runFimoIndexing
 
 find $indexingOutputDir/memefiles -name \*.txt \
-    | parallel \
-        --jobs=$threads \
+    | parallel  --jobs=$threads \
         "runFimoIndexing {} $indexingOutputDir $fimothresh $pmetroot $maxk $topn"
 
 numfiles=$(ls -l $indexingOutputDir/memefiles/*.txt | wc -l)
