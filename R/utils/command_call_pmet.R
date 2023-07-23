@@ -14,7 +14,7 @@ ComdRunPmet <- function(input,
   switch(model,
     "promoters_pre" = {
       bash_pmet <- paste(
-        "nohup PMETdev/PMET_only_promoters.sh ",
+        "nohup PMETdev/promoters_only_pair.sh ",
         "-d", index_dir,
         "-g", file.path(pair_dir, "0.txt"),
         "-i", input$ic_threshold,
@@ -22,11 +22,11 @@ ComdRunPmet <- function(input,
         "-o", pair_dir,
         "-e", recipient,
         "-l", result_link, " &")
-      system("chmod +x PMETdev/PMET_only_promoters.sh")
+      system("chmod +x PMETdev/promoters_only_pair.sh")
     },
     "promoters" = {
       bash_pmet <- paste(
-        "nohup PMETdev/PMETindex_promoters_parallel_delete_fimo.sh ",
+        "nohup PMETdev/promoters_index_pair.sh ",
         "-r ", "PMETdev/scripts ",
         "-i gene_id=",
         "-o", index_dir,
@@ -46,11 +46,11 @@ ComdRunPmet <- function(input,
         file.path(index_dir, "0.gff3"),
         file.path(index_dir, "0.meme"), "&")
       system("chmod +x PMETdev/scripts/gff3sort/gff3sort.pl")
-      system("chmod +x PMETdev/PMETindex_promoters_parallel_delete_fimo.sh")
+      system("chmod +x PMETdev/promoters_index_pair.sh")
     },
     "intervals" = {
       bash_pmet <- paste(
-        "nohup PMETdev/PMETindex_intervals_parallel_delete_fimo.sh ",
+        "nohup PMETdev/intervals_index_pair.sh ",
         "-r ", "PMETdev/scripts ",
         "-o", index_dir,
         "-n", input$promoter_num,
@@ -64,7 +64,7 @@ ComdRunPmet <- function(input,
         "-l", result_link,
         file.path(index_dir, paste0("0.", tools::file_ext(input$fasta$name))),
         file.path(index_dir, "0.meme"), "&")
-      system("chmod +x PMETdev/PMETindex_intervals_parallel_delete_fimo.sh")
+      system("chmod +x PMETdev/intervals_index_pair.sh")
     })
 
     print(bash_pmet)

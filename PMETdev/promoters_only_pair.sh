@@ -49,7 +49,6 @@ done
 
 mkdir -p $outputdir
 
-# 定义输入文件路径
 universe_file=$pmetindex/universe.txt
 gene_file=$genefile
 

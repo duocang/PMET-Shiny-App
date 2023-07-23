@@ -87,3 +87,10 @@ data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redund
 data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-jaspar_plants_non_redundant_2022
 promoters_rough.fa
 data/indexing/arabidopsis_thaliana/arabidopsis_thaliana-plant_cistrome_DB
+data/indexing/mais
+result/indexing/test
+data/indexing/arabidopsis_thaliana/plant_cistrome_DB
+data/indexing/arabidopsis_thaliana/jaspar_plants_non_redundant_2018
+data/diff_genes
+result/indexing/test1
+result
