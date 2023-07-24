@@ -40,7 +40,7 @@ promoters_ui <- function(id, height = 800, width = 850) {
     ),
     div(id = "genes_div", style = "margin-bottom: 10px;",
       fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt"),
-      downloadLink(ns("demo_genes"), "Example gene")
+      downloadLink(ns("demo_genes"), "Example gene for Arabidopsis thaliana")
     ),
     # parameters
     div(id = "parameters_div", style = "margin-bottom: 10px;",

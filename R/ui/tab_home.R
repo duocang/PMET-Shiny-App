@@ -127,7 +127,7 @@ tabPanel(
       /* Set font size of p to 15px */
       .text_div p {
         text-align: justify;
-        font-size: 16px;
+        font-size: 20px;
         width: 700px;
       }
 
@@ -201,12 +201,11 @@ tabPanel(
         h2(""),
         h2(""),
         div(class = "text_div",
-          p("PMET is a powerful tool designed to assist researchers in analyzing
-            the interactions between transcription factors (TFs) and gene expression.
-            By studying the combinations of homotypic and heterotypic motifs within
-            transcription regulatory modules, PMET provides a comprehensive framework
-            for analyzing and understanding the functional implications and regulatory
-            dynamics associated with motif interactions in gene expression.")
+          p("PMET is a powerful tool designed to assist researchers in identifying the interactions
+            of transcription factors (TFs) to regulate gene network. By studying the combinations
+            of homotypic and heterotypic motifs within transcription regulatory modules, PMET
+            provides a comprehensive framework for analyzing and understanding the functional
+            implications and regulatory dynamics associated with motif interactions in gene expression.")
         ),
         div(class = "text_div",
           p("PMET is designed to address the limitations of traditional
@@ -223,23 +222,19 @@ tabPanel(
       div(class = "center",
         h2("How to Use PMET"),
         h2(""),
-        h4("Run job"),
-        div(
+        h4("Run job", style = "font-weight: bold;"),
+        div(style = "text-align: left;font-size: 20px;",
           p("Using PMET is intuitive and straightforward. Simply follow these steps:"),
-            HTML("
-              <ol>
-                <li>Select PMET Running Mode: PMET provides three running modes...</li>
-                <li>Upload Gene File: Upload your gene file to PMET...</li>
-                <li>Set Parameters: Adjust parameters as needed...</li>
-              </ol>"
-          ),
+          p("1. Select PMET Running Mode: PMET provides three running modes..."),
+          p("2. Upload Gene File: Upload your gene file to PMET..."),
+          p("3. Set Parameters: Adjust parameters as needed..."),
           p("After completing the steps above, you can initiate PMET for analysis.")
         ),
-        h5("Visualization"),
-        div(
+        h4("Visualization", style = "font-weight: bold;"),
+        div(style = "text-align: left;width: 640px;font-size: 20px;",
           p("PMET also offers visualization tools to analyze the distribution of paired
-              motifs on genes. It's often found that genes in different clusters exhibit
-              enrichment for specific motif-pairs.")
+            motifs on genes. It is often found that genes in different clusters exhibit
+            enrichment for specific motif-pairs.")
         )
       )
     ),

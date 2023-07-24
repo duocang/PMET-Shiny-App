@@ -18,9 +18,9 @@ promoters_pre_ui <- function(id, height = 800, width = 850) {
         )
       ),
       # example gene list
-      downloadLink(ns("demo_genes"), "Example gene"),
+      downloadLink(ns("demo_genes"), "Example gene for Arabidopsis thaliana"),
       shinyjs::hidden(
-        actionLink(ns("genes_not_found_link"), "Genes not found", icon = icon("info-circle"))
+        actionLink(ns("genes_not_found_link"), "Genes not found", icon = icon("info-circle"), style = "color: #F89406;font-weight: bold; font-size: 14px;")
       )
     ),# end of genes_div
     bsTooltip(id = ns("gene_fileinput"),
@@ -119,18 +119,26 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
       # by default , species left empty
       species_list <- list(
           species = list(
-            `Aarabidopsis thaliana`        = "arabidopsis_thaliana",
-            `Brachypodium distachyon`      = "brachypodium_distachyon",
-            `Brassica napus`               = "brassica_napus",
-            `Glycine max`                  = "glycine_max",
-            `Hordeum vulgare goldenpromise` = "hordeum_vulgare_goldenpromise",
-            `Triticum aestivum`           = "jtriticum_aestivum",
-            `Medicago truncatula`          = "medicago_truncatula",
-            `Oryza sativaIndica`           = "oryza_sativa_indica",
-            `Oryza sativaJaponica`         = "oryza_sativa_japonica",
-            `Solanum lycopersicum`         = "solanum_lycopersicum",
-            `Solanum tuberosum`            = "solanum_tuberosum",
-            `Zea mays`                     = "zea_mays"
+            `Aarabidopsis thaliana`               = "arabidopsis_thaliana",
+            `Brachypodium distachyon`             = "brachypodium_distachyon",
+            `Brassica napus`                      = "brassica_napus",
+            `Glycine max`                         = "glycine_max",
+            `Hordeum vulgare`                     = "hordeum_vulgare",
+            `Hordeum vulgare goldenpromise`       = "hordeum_vulgare_goldenpromise",
+            `Hordeum vulgare (R1)`                = "hordeum_vulgare_r1",
+            `Triticum aestivum`                   = "jtriticum_aestivum",
+            `Medicago truncatula`                 = "medicago_truncatula",
+            `Oryza sativa indica (9311)`          = "oryza_sativa_indica_9311",
+            `Oryza sativa indica (IR8)`           = "oryza_sativa_indica_IR8",
+            `Oryza sativa indica (MH63)`          = "oryza_sativa_indica_mh63",
+            `Oryza sativa indica (ZS97)`          = "oryza_sativa_indica_zs97",
+            `Oryza sativa japonica`               = "oryza_sativa_japonica",
+            `Oryza sativa japonica (v7.1)`        = "oryza_sativa_japonica_v7_1",
+            `Oryza sativa japonica (Kitaake)`     = "oryza_sativa_japonica_kitaake",
+            `Oryza sativa japonica (Nipponbare)`  = "oryza_sativa_japonica_nipponbare",
+            `Solanum lycopersicum`                = "solanum_lycopersicum",
+            `Solanum tuberosum`                   = "solanum_tuberosum",
+            `Zea mays`                            = "zea_mays"
           )
       )
       # present selction options in species input field

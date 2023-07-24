@@ -235,15 +235,24 @@ observeEvent(input$`promoters_pre-species`, {
   shinyjs::show("txt_species")
   shinyjs::show("txt_genome")
   shinyjs::show("txt_annotation")
+
+  print(input$`promoters_pre-species`)
   output$txt_species <- renderUI({
-    HTML(paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Species</span><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>  <span style="color: blue; font-size: 19px;">',
-                stringr::str_split_1(input$`promoters_pre-species`, "_") %>% paste0(collapse = " ") %>% tools::toTitleCase(),
-                '</span></p>'))
+    HTML(paste0('<p>
+                  <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Species</span>
+                  <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>
+                  <span style="color:#5698c3; font-size: 19px;">',input$`promoters_pre-species` %>% str_replace_all("_", " ") %>% {paste0(toupper(substr(., 1, 1)), tolower(substr(., 2, nchar(.))))}, '</span>
+                </p>'))
   })
 
   link_text <- MOTF_DB_META[[input$`promoters_pre-species`]][["genome_name"]]
   link_url  <- MOTF_DB_META[[input$`promoters_pre-species`]][["genome_link"]]
-  html_link <- paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Genome</span> <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span> <a href="', link_url, '" target="_blank">', link_text, '</a></p>')
+
+  html_link <- paste0('<p>
+                        <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Genome</span>
+                        <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>
+                        <a style="font-size: 18px; color:#5698c3;text-decoration: underline;" href="', link_url, '" target="_blank">', link_text, '</a>
+                      </p>')
 
   output$txt_genome <- renderUI({
     HTML(html_link)
@@ -255,7 +264,27 @@ observeEvent(input$`promoters_pre-species`, {
 
   link_text <- MOTF_DB_META[[input$`promoters_pre-species`]][["annotation_name"]]
   link_url  <- MOTF_DB_META[[input$`promoters_pre-species`]][["annotation_link"]]
-  html_link <- paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Annotation:</span><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>  <a href="', link_url, '" target="_blank">', link_text, '</a></p>')
+
+  genes     <- read.table(file.path("data/indexing", input$`promoters_pre-species`, "universe.txt" ) )[, 1]
+  num_genes <- length(genes)
+  genes     <- head(genes)
+
+  genes_html <- paste0("<div style='margin-left:130px;'>
+                          <p style='margin: 0; line-height: 1;'>", paste(genes, collapse="</p>
+                          <p style='margin: 0; line-height: 1;'>"), "</p>
+                          <p style='margin: 0; line-height: 0.5;font-weight: bold; font-size: 16px;'>. </p>
+                          <p style='margin: 0; line-height: 0.5;font-weight: bold; font-size: 16px;'>. </p>
+                          <p style='margin: 0; line-height: 0.5;font-weight: bold; font-size: 16px;'>. </p>
+                          <p></p>
+                          <p style='line-height: 1.5; font-weight: bold; font-size: 16px; color:#666666;'>Number of genes in genome: ", num_genes, "</p>
+                        </div>")
+  html_link <- paste0('
+                      <p>
+                        <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Annotation</span>
+                        <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">: </span>
+                        <a style="font-size: 18px; color:#5698c3;text-decoration: underline;" href="', link_url, '" target="_blank">', link_text, '</a>
+                      </p>',
+                      genes_html)
   output$txt_annotation <- renderUI({HTML(html_link)})
 }, ignoreInit = TRUE)
 
@@ -263,10 +292,37 @@ observeEvent(input$`promoters_pre-species`, {
 observeEvent(input$`promoters_pre-premade`, {
   req(input$`promoters_pre-premade`)
   shinyjs::show("txt_motif_db")
+
+  num_motif_names <- file.path(input$`promoters_pre-premade`, "fimohits") %>%
+          list.files(pattern = "*.txt", full.names = TRUE) %>%
+          length()
+  motif_names <- file.path(input$`promoters_pre-premade`, "fimohits") %>%
+          list.files(pattern = "*.txt", full.names = TRUE) %>%
+                    sample(5) %>%
+                    tools::file_path_sans_ext() %>%
+                    basename()
+  motif_names_html <- paste0("
+                        <div style='margin-left:130px;'>
+                          <p style='margin: 0; line-height: 1;'>", paste(motif_names, collapse="</p>
+                          <p style='margin: 0; line-height: 1;'>"), "</p>
+                          <p style='margin: 0; line-height: 0.5;font-weight: bold; font-size: 16px;'>. </p>
+                          <p style='margin: 0; line-height: 0.5;font-weight: bold; font-size: 16px;'>. </p>
+                          <p style='margin: 0; line-height: 0.5;font-weight: bold; font-size: 16px;'>. </p>
+                          <p></p>
+                          <p style='line-height: 1.5; font-weight: bold; font-size: 16px; color:#666666;'>Number of motifs: ", num_motif_names,
+                          "</p>
+                        </div>")
+
   link_text <- basename(input$`promoters_pre-premade`) %>% str_split_1("_") %>% paste0(collapse = " ") %>% tools::toTitleCase()
   link_url  <- MOTF_DB_META[[input$`promoters_pre-species`]][["motif_db"]][[basename(input$`promoters_pre-premade`)]]
 
-  html_link <- paste0('<p><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Motif</span><span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>  <a href="', link_url, '" target="_blank">', link_text, '</a></p>')
+  html_link <- paste0('
+                      <p>
+                        <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 110px;">Motif database</span>
+                        <span style="font-weight: bold; font-size: 18px; display: inline-block; width: 10px; text-align: right;">:</span>
+                        <a style="font-size: 18px; color:#5698c3;text-decoration: underline;" href="', link_url, '" target="_blank">', link_text, '</a>
+                      </p>',
+                      motif_names_html)
   output$txt_motif_db <- renderUI({HTML(html_link)})
 
 }, ignoreInit = TRUE)
