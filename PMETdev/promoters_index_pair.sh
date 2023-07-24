@@ -135,7 +135,7 @@ fi
 
 # -------------------------------------------------------------------------------------------
 # 3. extract chromosome , start, end, gene ('gene_id' for input) ...
-echo "Extracting chromosome, start, end, gene ..."
+echo "3. Extracting chromosome, start, end, gene ..."
 python3 $pmetroot/parse_genelines.py $gff3id $indexingOutputDir/genelines.gff3 $bedfile
 
 # -------------------------------------------------------------------------------------------
@@ -157,6 +157,7 @@ cut -f 4 $bedfile > $universefile
 
 # -------------------------------------------------------------------------------------------
 # 6. strip the potential FASTA line breaks. creates genome_stripped.fa
+echo "6. Removing potential FASTA line breaks"
 awk '/^>/ { if (NR!=1) print ""; printf "%s\n",$0; next;} \
     { printf "%s",$0;} \
     END { print ""; }'  $genomefile > $indexingOutputDir/genome_stripped.fa
@@ -175,6 +176,7 @@ start=$SECONDS
 
 # -------------------------------------------------------------------------------------------
 # 8. create promoters' coordinates from annotation
+echo "8. Creating promoters' coordinates from annotation"
 # 在bedtools中，flank是一个命令行工具，用于在BED格式的基因组坐标文件中对每个区域进行扩展或缩短。
 # 当遇到负链（negative strand）时，在区域的右侧进行扩展或缩短，而不是左侧。
 bedtools flank \
@@ -210,6 +212,7 @@ fi
 
 # -------------------------------------------------------------------------------------------
 # 12. promoter lenfths from promoters.bed
+echo "12. Promoter lengths from promoters.bed"
 # python3 $pmetroot/parse_promoter_lengths.py \
 #     $indexingOutputDir/promoters.bed \
 #     $indexingOutputDir/promoter_lengths.txt
@@ -290,6 +293,7 @@ fasta-get-markov $indexingOutputDir/promoters.fa > $indexingOutputDir/promoters.
 
 # -------------------------------------------------------------------------------------------
 # 20. individual motif files from user's meme file
+echo "Spliting .meme file into individual meme files"
 [ ! -d $indexingOutputDir/memefiles ] && mkdir $indexingOutputDir/memefiles
 python3 $pmetroot/parse_memefile.py $memefile $indexingOutputDir/memefiles/
 
@@ -304,6 +308,7 @@ python3 $pmetroot/calculateICfrommeme_IC_to_csv.py \
 [ ! -d $indexingOutputDir/fimo     ] && mkdir $indexingOutputDir/fimo
 [ ! -d $indexingOutputDir/fimohits ] && mkdir $indexingOutputDir/fimohits
 
+echo "Running FIMO and PMET index"
 runFimoIndexing () {
     memefile=$1
     indexingOutputDir=$2
