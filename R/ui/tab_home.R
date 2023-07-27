@@ -128,7 +128,7 @@ tabPanel(
       .text_div p {
         text-align: justify;
         font-size: 20px;
-        width: 700px;
+        width: 800px;
       }
 
       #scroll-arrow {
@@ -221,17 +221,19 @@ tabPanel(
     div(id = "page3", class = "pages",
       div(class = "center",
         h2("How to Use PMET"),
-        h2(""),
-        h4("Run job", style = "font-weight: bold;"),
-        div(style = "text-align: left;font-size: 20px;",
-          p("Using PMET is intuitive and straightforward. Simply follow these steps:"),
-          p("1. Select PMET Running Mode: PMET provides three running modes..."),
+        div(class = "text_div",
+          p("Essentially all you need to run PMET for your biological process of interest is a set of genomic regulatory sequences. These could be promoters of differentially expressed genes, differentially open chromatin regions, regions identified from DNA methylation assay, or regions identified using other techniques. ")
+        ),
+        h5("Run job", style = "font-weight: bold;"),
+        div(style = "text-align: left;font-size: 15px;",
+          # p("Using PMET is intuitive and straightforward. Simply follow these steps:"),
+          p("1. Select PMET Running Mode: PMET provides three running modes depending on your mode of retrieval of sequences."),
           p("2. Upload Gene File: Upload your gene file to PMET..."),
-          p("3. Set Parameters: Adjust parameters as needed..."),
+          p("3. Set Parameters: Adjust documented PMET parameters or use the default settings."),
           p("After completing the steps above, you can initiate PMET for analysis.")
         ),
-        h4("Visualization", style = "font-weight: bold;"),
-        div(style = "text-align: left;width: 640px;font-size: 20px;",
+        h5("Visualization", style = "font-weight: bold;"),
+        div(style = "text-align: left;width: 800px;font-size: 15px;",
           p("PMET also offers visualization tools to analyze the distribution of paired
             motifs on genes. It is often found that genes in different clusters exhibit
             enrichment for specific motif-pairs.")

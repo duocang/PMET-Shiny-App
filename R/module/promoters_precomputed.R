@@ -117,30 +117,33 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
       ns <- session$ns
 
       # by default , species left empty
-      species_list <- list(
-          species = list(
-            `Aarabidopsis thaliana`               = "arabidopsis_thaliana",
-            `Brachypodium distachyon`             = "brachypodium_distachyon",
-            `Brassica napus`                      = "brassica_napus",
-            `Glycine max`                         = "glycine_max",
-            `Hordeum vulgare`                     = "hordeum_vulgare",
-            `Hordeum vulgare goldenpromise`       = "hordeum_vulgare_goldenpromise",
-            `Hordeum vulgare (R1)`                = "hordeum_vulgare_r1",
-            `Triticum aestivum`                   = "jtriticum_aestivum",
-            `Medicago truncatula`                 = "medicago_truncatula",
-            `Oryza sativa indica (9311)`          = "oryza_sativa_indica_9311",
-            `Oryza sativa indica (IR8)`           = "oryza_sativa_indica_IR8",
-            `Oryza sativa indica (MH63)`          = "oryza_sativa_indica_mh63",
-            `Oryza sativa indica (ZS97)`          = "oryza_sativa_indica_zs97",
-            `Oryza sativa japonica`               = "oryza_sativa_japonica",
-            `Oryza sativa japonica (v7.1)`        = "oryza_sativa_japonica_v7_1",
-            `Oryza sativa japonica (Kitaake)`     = "oryza_sativa_japonica_kitaake",
-            `Oryza sativa japonica (Nipponbare)`  = "oryza_sativa_japonica_nipponbare",
-            `Solanum lycopersicum`                = "solanum_lycopersicum",
-            `Solanum tuberosum`                   = "solanum_tuberosum",
-            `Zea mays`                            = "zea_mays"
-          )
-      )
+      # species_list <- list(
+      #     species = list(
+      #       `Aarabidopsis thaliana`               = "Arabidopsis_thaliana",
+      #       `Brachypodium distachyon`             = "Brachypodium_distachyon",
+      #       `Brassica napus`                      = "Brassica_napus",
+      #       `Glycine max`                         = "Glycine_max",
+      #       `Hordeum vulgare`                     = "Hordeum_vulgare",
+      #       `Hordeum vulgare goldenpromise`       = "Hordeum_vulgare_goldenpromise",
+      #       `Hordeum vulgare (Morex V3)`          = "Hordeum_vulgare_Morex_V3",
+      #       `Hordeum vulgare (R1)`                = "Hordeum_vulgare_R1",
+      #       `Hordeum vulgare (v082214v1)`         = "Hordeum_vulgare_v082214v1",
+      #       `Medicago truncatula`                 = "Medicago_truncatula",
+      #       `Oryza sativa indica (9311)`          = "Oryza_sativa_indica_9311",
+      #       `Oryza sativa indica (IR8)`           = "Oryza_sativa_indica_IR8",
+      #       `Oryza sativa indica (MH63)`          = "Oryza_sativa_indica_MH63",
+      #       `Oryza sativa indica (ZS97)`          = "Oryza_sativa_indica_ZS97",
+      #       `Oryza sativa japonica (Ensembl)`     = "Oryza_sativa_japonica_Ensembl",
+      #       `Oryza sativa japonica (Kitaake)`     = "Oryza_sativa_japonica_Kitaake",
+      #       `Oryza sativa japonica (Nipponbare)`  = "Oryza_sativa_japonica_Nipponbare",
+      #       `Oryza sativa japonica (v7.1)`        = "Oryza_sativa_japonica_V7.1",
+      #       `Solanum lycopersicum`                = "Solanum_lycopersicum",
+      #       `Solanum tuberosum`                   = "Solanum_tuberosum",
+      #       `Triticum aestivum`                   = "Triticum_aestivum",
+      #       `Zea mays`                            = "Zea_mays"
+      #     )
+      # )
+      species_list <- SPECIES_LIST
       # present selction options in species input field
       observe({
         req(navbar())
@@ -156,6 +159,7 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
 
         if(input$species != "") {
           # shinyjs::show("premade")
+
           choices_list <- list("Motif Database" = MOTIF_DB[[input$species]])
           updateSelectInput(session, "premade", choices = choices_list, selected = choices_list[length(choices_list)])
         }
@@ -263,25 +267,3 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
       list(input = input)
     })
 }
-
-
-      # selectInput(
-      #   inputId = ns("species"), label = "Species",
-      #   choices = my_list <- list(
-      #     `Aarabidopsis Thaliana`        = "arabidopsis_thaliana",
-      #     `Brachypodium Distachyon`      = "brachypodium_distachyon",
-      #     `Brassica Napus`               = "brassica_napus",
-      #     `Glycine Max`                  = "glycine_max",
-      #     `Hordeum VulgareGoldenpromise` = "hordeum_vulgare_goldenpromise",
-      #     `JtriticumA estivum`           = "jtriticum_aestivum",
-      #     `Medicago Truncatula`          = "medicago_truncatula",
-      #     `Oryza SativaIndica`           = "oryza_sativa_indica",
-      #     `Oryza SativaJaponica`         = "oryza_sativa_japonica",
-      #     `Solanum Lycopersicum`         = "solanum_lycopersicum",
-      #     `Solanum Tuberosum`            = "solanum_tuberosum",
-      #     `Zea Mays`                     = "zea_mays",
-      #     `Select a species`             = NULL
-      #   ),
-      #   selected = NULL,
-      #   selectize = TRUE
-      # )

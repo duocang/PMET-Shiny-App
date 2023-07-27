@@ -73,23 +73,33 @@ NCPU <- 6
 # when new daata comes, there is no need to change code.
 species <- list.dirs("./data/indexing", recursive=F) %>%
   sapply(function(i) {
-    str <- stringr::str_split_1(i, "/")[4] %>%
-      tolower() #%>% gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE) # capitablize first letter
+    str <- stringr::str_split_1(i, "/")[4] # %>% tolower() #%>% gsub("(^|\\s)([a-z])", "\\1\\U\\2", ., perl = TRUE) # capitablize first letter
     return(str)
   })
 # > species
 # ./data/indexing/arabidopsis_thaliana         ./data/indexing/mais
 #               "arabidopsis_thaliana"                       "mais"
 
-MOTIF_DB <- lapply(names(species), function(speci) {
-  motif_dbs <- list.dirs(speci, recursive = FALSE, full.names = F) %>% unname()
-  list_names <- gsub("_", " ", motif_dbs) %>% tools::toTitleCase()
+MOTIF_DB <- lapply(species, function(speci) {
+
+  motif_dbs <- file.path("data/indexing", speci) %>%
+    list.dirs(recursive = FALSE, full.names = F)
+  list_names <- gsub("_", " ", motif_dbs) #%>% tools::toTitleCase()
   result <- list()
   for (i in seq(length(motif_dbs))) {
-    result[[ list_names[i] ]] <- file.path(speci , motif_dbs[i])
+    result[[ list_names[i] ]] <- file.path("data/indexing", speci , motif_dbs[i])
   }
 
   return(result)
-  }) %>% setNames(unname(species))
+}) %>% setNames(unname(species))
+
+
+SPECIES_LIST <- list()
+
+for (speci in species) {
+  temp <- gsub("_", " ", speci)
+  SPECIES_LIST[[temp]] <- speci
+}
+SPECIES_LIST <- list(species = SPECIES_LIST) # to show nothing first of fileInput box
 
 MOTF_DB_META <- fromJSON(file = "data/motif_db_meta.json")

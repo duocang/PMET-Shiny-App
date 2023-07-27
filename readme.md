@@ -203,15 +203,16 @@ packages <- c(
   "glue",                 # string interpolation and formatting
   "jsonify",              # JSON data processing and transformation
   "kableExtra",           # creation of nice tables and adding formatting
-  "mailR",
+  "mailR",                # Interface to Apache Commons Email to send emails from R
   "openxlsx",             # reading and writing Excel files
   "promises",             # deferred evaluation and asynchronous programming
   "reshape2",             # data reshaping and transformation
   "rintrojs",             # interactive tour integration
   "RinteRface/fullPage",  # Create full page scrollable web pages with Shiny and R Markdown
+  "rjson",                # Converts R object into JSON objects and vice-versa
   "shiny",                # creation of interactive web applications
   "shinyBS",              # Bootstrap styling
-  "shinybusy",          # Automated (or not) busy indicator for Shiny apps & other progress / notifications tools
+  "shinybusy",            # Automated (or not) busy indicator for Shiny apps & other progress / notifications tools
   "shinydashboard",       # creation of dashboard-style Shiny apps
   "shinyFeedback",        # user feedback integration
   "shinycssloaders",      # loading animation integration
