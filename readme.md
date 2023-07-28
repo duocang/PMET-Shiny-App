@@ -28,11 +28,12 @@ This is a Shiny app developed for PMET.
 
 ## Pre-computed PMET indexing data
 Given that the PMET indexing calculation takes a very long time, we have already performed pre-calculation for some plants and several common plant transcription factor databases.
-```
+```shell
 data/indexing
-|-- Arabidopsis_thaliana
-│   |-- CIS-BP2
+|-- Arabidopsis_thaliana                      # species
+│   |-- CIS-BP2                               # motif database
 │   |-- Franco-Zorrilla_et_al_2014
+│   |-- Jaspar_plants_non_redundant_2022
 │   |-- PlantTFDB
 │   `-- universe.txt
 |-- Brachypodium_distachyon
@@ -60,8 +61,8 @@ data/indexing
 
 In the future, if there are more plants or new databases to be added to the shiny app, we just need to copy the new indexing results to the indexing directory. the PMET shiny app will automatically recognize the new additions without the need to change the code.
 
-
-## Install GNU Parallel
+## tools needed
+### Install GNU Parallel
 
 GNU Parallel helps PMET index (FIMO and PMET index) to run in parallel mode.
 
@@ -76,7 +77,7 @@ Put GNU Parallel silent:
  parallel --citation
 ```
 
-## Install The MEME Suite (FIMO and fasta-get-markov)
+### Install The MEME Suite (FIMO and fasta-get-markov)
 
 ```bash
 # cd a folder you want to put the software
@@ -97,7 +98,7 @@ Add following into bash profile file.
 export PATH=$HOME/meme/bin:$HOME/meme/libexec/meme-5.5.2:$PATH
 ```
 
-## Install samtools
+### Install samtools
 
 Install from conda or mamba:
 
@@ -123,7 +124,7 @@ make install
 export PATH=$HOME/samtools/bin:$PATH
 ```
 
-## Install bedtools
+### Install bedtools
 
 It is recommended to install bedtools via apt/yum or conda.
 
@@ -152,7 +153,7 @@ cd bedtools2
 make
 ```
 
-## Python libraries
+### Python libraries
 
 ```bash
 pip install numpy
@@ -197,19 +198,53 @@ server {
 
 **Download function based on nginx**
 
-After PMET calculation is completed, Shiny will generate a download button that is specifically for the PMET result archive. This functionality can be found in `utils/command_call_pmet.R` line 115.
+After PMET calculation is completed, Shiny will generate a download button that is specifically for the PMET result archive. This functionality can be found in `utils/command_call_pmet.R` line 12.
 
 ```R
 result_link <- paste0("http://127.0.0.1:84/result/", paste0(pmetPair_path_name, ".zip"))
 ```
 
-### CPU
+## CPU
 
-Currently, PMET uses 4 CPU cores by default. If you have abundant computing resources, you can modify the -t parameter in `utils/command_call_pmet.R`. It seems that 4 CPU cores should be sufficient for the performance.
+Currently, PMET uses 6 CPU cores by default. If you have abundant computing resources, you can modify this parameter in `R/global.R`. It seems that 6 CPU cores should be sufficient for the performance.
 
-<img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181500980.png" style="zoom: 50%;" />
+```bash
+# set CPU cores
+NCPU <- 6
+```
 
-## R packages
+<!-- <img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181500980.png" style="zoom: 50%;" /> -->
+
+
+## Send emails
+Given that the calculation of PMET takes a long time, we will send an email to notify the user after the PMET calculation is completed.
+
+### Send email function based on R
+
+We use the `send.mail` function from `mailR` package.
+
+```r
+send.mail(
+  from = sender,
+  to = recipient,
+  subject = subject,
+  body = body,
+  smtp = list(
+    host.name = "v095996.kasserver.com",
+    port = 587,
+    user.name = "",
+    passwd = "",
+    ssl = TRUE
+  ),
+  authenticate = TRUE,
+  send = TRUE,
+  # attach.files = emailFile,
+  encoding = "utf-8"
+)
+```
+
+
+## R packages needed
 
 To avoid any inconvenience, I will provide you with the required R packages here.
 
@@ -304,7 +339,7 @@ if (length(failed_packages) > 0) {
 }
 ```
 
-## PMET index and PMET
+## PMET index and pair compile
 
 Both are writen in C++, source code can be found in `PMETdev/src/indexing` and `PMETdev/src/pmetParallel`.
 
