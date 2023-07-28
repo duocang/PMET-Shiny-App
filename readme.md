@@ -20,6 +20,7 @@ This is a Shiny app developed for PMET.
 │   └── utils      # R functions
 ├── app.R          # start shiny app
 ├── data           # demo data for PMETindex and PMET
+│   ├── indexing   # prepared pmet indexing
 ├── readme.md
 ├── www            # JS with D3 for heatmap, used in tab_visualize.R
 └── result         # result of Shiny app
@@ -29,32 +30,32 @@ This is a Shiny app developed for PMET.
 Given that the PMET indexing calculation takes a very long time, we have already performed pre-calculation for some plants and several common plant transcription factor databases.
 ```
 data/indexing
-  |-- Arabidopsis_thaliana
-      |-- CIS-BP2
-      |-- Franco-Zorrilla_et_al_2014
-      |-- PlantTFDB
-      `-- universe.txt
-  |-- Brachypodium_distachyon
-  |-- Brassica_napus
-  |-- Glycine_max
-  |-- Hordeum_vulgare
-  |-- Hordeum_vulgare_Morex_V3
-  |-- Hordeum_vulgare_R1
-  |-- Hordeum_vulgare_goldenpromise
-  |-- Hordeum_vulgare_v082214v1
-  |-- Medicago_truncatula
-  |-- Oryza_sativa_indica_9311
-  |-- Oryza_sativa_indica_IR8
-  |-- Oryza_sativa_indica_MH63
-  |-- Oryza_sativa_indica_ZS97
-  |-- Oryza_sativa_japonica_Ensembl
-  |-- Oryza_sativa_japonica_Kitaake
-  |-- Oryza_sativa_japonica_Nipponbare
-  |-- Oryza_sativa_japonica_V7.1
-  |-- Solanum_lycopersicum
-  |-- Solanum_tuberosum
-  |-- Triticum_aestivum
-  `-- Zea_mays
+|-- Arabidopsis_thaliana
+│   |-- CIS-BP2
+│   |-- Franco-Zorrilla_et_al_2014
+│   |-- PlantTFDB
+│   `-- universe.txt
+|-- Brachypodium_distachyon
+|-- Brassica_napus
+|-- Glycine_max
+|-- Hordeum_vulgare
+|-- Hordeum_vulgare_Morex_V3
+|-- Hordeum_vulgare_R1
+|-- Hordeum_vulgare_goldenpromise
+|-- Hordeum_vulgare_v082214v1
+|-- Medicago_truncatula
+|-- Oryza_sativa_indica_9311
+|-- Oryza_sativa_indica_IR8
+|-- Oryza_sativa_indica_MH63
+|-- Oryza_sativa_indica_ZS97
+|-- Oryza_sativa_japonica_Ensembl
+|-- Oryza_sativa_japonica_Kitaake
+|-- Oryza_sativa_japonica_Nipponbare
+|-- Oryza_sativa_japonica_V7.1
+|-- Solanum_lycopersicum
+|-- Solanum_tuberosum
+|-- Triticum_aestivum
+`-- Zea_mays
 ```
 
 In the future, if there are more plants or new databases to be added to the shiny app, we just need to copy the new indexing results to the indexing directory. the PMET shiny app will automatically recognize the new additions without the need to change the code.
