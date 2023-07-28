@@ -136,7 +136,16 @@ fi
 # -------------------------------------------------------------------------------------------
 # 3. extract chromosome , start, end, gene ('gene_id' for input) ...
 echo "3. Extracting chromosome, start, end, gene ..."
-python3 $pmetroot/parse_genelines.py $gff3id $indexingOutputDir/genelines.gff3 $bedfile
+# 使用grep查找字符串 check if gene_id is present
+grep -q "$gff3id" $indexingOutputDir/genelines.gff3
+
+# 检查状态码 check presence
+if [ $? -eq 0 ]; then
+    python3 $pmetroot/parse_genelines.py $gff3id $indexingOutputDir/genelines.gff3 $bedfile
+else
+    gff3id='ID='
+    python3 $pmetroot/parse_genelines.py $gff3id $indexingOutputDir/genelines.gff3 $bedfile
+fi
 
 # -------------------------------------------------------------------------------------------
 # 4. filter invalid genes: start should be smaller than end
@@ -285,11 +294,6 @@ awk 'BEGIN{OFS="\t"} NR==FNR{a[NR]=$4; next} /^>/{$0=">"a[++i]} 1' \
 # -------------------------------------------------------------------------------------------
 # 19. promoters.bg from promoters.fa
 fasta-get-markov $indexingOutputDir/promoters.fa > $indexingOutputDir/promoters.bg
-
-# duration=$(( SECONDS - start ))
-# echo $duration" secs"
-# start=$SECONDS
-# echo "Processing motifs...";
 
 # -------------------------------------------------------------------------------------------
 # 20. individual motif files from user's meme file
