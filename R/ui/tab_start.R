@@ -9,7 +9,7 @@ tabPanel(
       width = 4,
       # promoters
       div(id = "mode_div",
-        div("Choose type of input sequences:",
+        div("Choose type of input sequences",
           class = "control-label",
           style = "display:inline-block",
           id = "pmet_tooltip",

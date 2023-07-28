@@ -227,9 +227,9 @@ tabPanel(
         h5("Run job", style = "font-weight: bold;"),
         div(style = "text-align: left;font-size: 15px;",
           # p("Using PMET is intuitive and straightforward. Simply follow these steps:"),
-          p("1. Select PMET Running Mode: PMET provides three running modes depending on your mode of retrieval of sequences."),
-          p("2. Upload Gene File: Upload your gene file to PMET..."),
-          p("3. Set Parameters: Adjust documented PMET parameters or use the default settings."),
+          p(strong("1. Select PMET running mode: "), "PMET provides three running modes depending on your mode of retrieval of sequences."),
+          p(strong("2. Upload target sequences with clusters: "), "Upload sequences ID chosen in specific clusters for regulatory."),
+          p(strong("3. Set parameters: "), "Adjust documented PMET parameters or use the default settings."),
           p("After completing the steps above, you can initiate PMET for analysis.")
         ),
         h5("Visualization", style = "font-weight: bold;"),
@@ -245,7 +245,7 @@ tabPanel(
         h2("Functionality of PMET"),
         h2(""),
         div(class = "text_div",
-          p(strong("Homotypic Clustering: "),"PMET can identify clusters
+          p(strong("Homotypic Clustering: "), "PMET can identify clusters
                     of homotypic motifs within the genome based on the motif
                     data provided by the user. This analysis helps uncover
                     the significance and functionality of motifs in gene regulation.")
@@ -262,7 +262,7 @@ tabPanel(
       div(class = "center",
         h1(""),
         h1(""),
-        h3("Workflow of PMET compution"),
+        h3("Workflow of PMET computation"),
         div(#style = "display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100%;",
           img(id="workflow",
               src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202307202339573.png",

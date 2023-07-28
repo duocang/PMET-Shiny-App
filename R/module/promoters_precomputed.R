@@ -30,7 +30,20 @@ promoters_pre_ui <- function(id, height = 800, width = 850) {
               options = list(delay = list(show = 500, hide = 100))),
     # parameters
     div(id = ns("parameters_div"), style = "margin-bottom: 10px;",
-      div("Parameters", style = "font-size: 16px; font-weight: bold;"),
+      div(
+        id = "promoters_pre_tooltip",
+        "Parameters",
+        style = "font-size: 16px; font-weight: bold;display:inline-block;",
+        tags$i(class = "fas fa-question-circle", style = "margin-left: 5px"),
+        bsTooltip(
+            "promoters_pre_tooltip",
+            paste0(
+              "Default parameters for FIMO and PMET"
+            ),
+              placement = "right",
+              options = list(container = "body", html = TRUE, width = "600px")
+          )
+      ),
       fluidRow(
         div(class = "selectInput_div",
           class = "parameters_id", style = "padding-left:15px; padding-right:15px;",
