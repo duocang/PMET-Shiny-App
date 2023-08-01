@@ -1,8 +1,8 @@
 {
     "Arabidopsis_thaliana": {
-        "genome_name"      : "Arabidopsis_thaliana.TAIR10.dna.toplevel.fa.gz",
+        "genome_name"      : "Arabidopsis_thaliana.TAIR10.dna.toplevel.fa",
+        "annotation_name"  : "Arabidopsis_thaliana.TAIR10.56.gff3",
         "genome_link"      : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/arabidopsis_thaliana/dna/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa.gz",
-        "annotation_name"  : "Arabidopsis_thaliana.TAIR10.56.gff3.gz",
         "annotation_link"  : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/arabidopsis_thaliana/Arabidopsis_thaliana.TAIR10.56.gff3.gz",
         "description"      : "Arabidopsis thaliana is a small flowering plant that is widely used as a model organism in plant biology. Arabidopsis is a member of the mustard (Brassicaceae) family, which includes cultivated species such as cabbage and radish. Arabidopsis is not of major agronomic significance, but its small genome size and ease of cultivation offer important advantages for basic research in genetics and molecular biology. Arabidopsis thaliana has a genome size of ~135 Mb, and a haploid chromosome number of five.",
         "motif_db": {
@@ -15,9 +15,9 @@
         }
     },
     "Brachypodium_distachyon": {
-        "genome_name"     : "Brachypodium_distachyon.Brachypodium_distachyon_v3.0.dna.toplevel.fa.gz",
+        "genome_name"     : "Brachypodium_distachyon.Brachypodium_distachyon_v3.0.dna.toplevel.fa",
+        "annotation_name" : "Brachypodium_distachyon.Brachypodium_distachyon_v3.0.56.gff3",
         "genome_link"     : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/brachypodium_distachyon/dna/Brachypodium_distachyon.Brachypodium_distachyon_v3.0.dna.toplevel.fa.gz",
-        "annotation_name" : "Brachypodium_distachyon.Brachypodium_distachyon_v3.0.56.gff3.gz",
         "annotation_link" : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/brachypodium_distachyon/Brachypodium_distachyon.Brachypodium_distachyon_v3.0.56.gff3.gz",
         "description"     : "Brachypodium distachyon, like Arabidopsis thaliana, has several features that recommend it as a model plant for functional genomic studies, especially in the grasses. It has a small, diploid genome (~355 Mb), small physical size, a short life-cycle and few growth requirements. Brachypodium is related to the major cereal grain species but is understood to be more closely related to the Triticeae (wheat and barley) than to the other cereals.",
         "motif_db": {
@@ -30,9 +30,9 @@
         }
     },
     "Brassica_napus": {
-        "genome_name": "Brassica_napus.AST_PRJEB5043_v1.56.gff3.gz",
+        "genome_name": "Brassica_napus.AST_PRJEB5043_v1.56.gff3",
+        "annotation_name": "Brachypodium_distachyon.Brachypodium_distachyon_v3.0.56.gff3",
         "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/brassica_napus/Brassica_napus.AST_PRJEB5043_v1.56.gff3.gz",
-        "annotation_name": "Brachypodium_distachyon.Brachypodium_distachyon_v3.0.56.gff3.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/brachypodium_distachyon/Brachypodium_distachyon.Brachypodium_distachyon_v3.0.56.gff3.gz",
         "description": "Oilseed rape (Brassica napus) was formed ~7,500 years ago by hybridisation between B. rapa and B. oleracea, followed by chromosome doubling, a process known as allopolyploidy. Together with more ancient polyploidsations, this conferred an aggregate 72-fold genome multiplication since the origin of angiosperms and high gene content. Cultivation began in Europe during the Middle Ages and spread worldwide. Diversifying selection gave rise to oilseed rape, swede, fodder rape, and kale morphotypes grown for oil, fodder and food.",
         "motif_db": {
@@ -45,9 +45,9 @@
         }
     },
     "Glycine_max": {
-        "genome_name"     : "Glycine_max.Glycine_max_v2.1.dna.toplevel.fa.gz",
+        "genome_name"     : "Glycine_max.Glycine_max_v2.1.dna.toplevel.fa",
+        "annotation_name" : "Glycine_max.Glycine_max_v2.1.56.gff3",
         "genome_link"     : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/glycine_max/dna/Glycine_max.Glycine_max_v2.1.dna.toplevel.fa.gz",
-        "annotation_name" : "Glycine_max.Glycine_max_v2.1.56.gff3.gz",
         "annotation_link" : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/glycine_max/Glycine_max.Glycine_max_v2.1.56.gff3.gz",
         "description"     : "Glycine max (soybean) is a crop legume that globally constitutes one of the most important sources of animal feed protein and cooking oil. Having originated in East Asia soy is now cultivated world-wide with greatest production in the U.S. Though only a minor proportion of the crop is eaten directly by humans, soybean is a valuable source of protein, containing all essential amino acids, and frequently used as a dietary substitute for meat. Like other legumes, soybean is able to fix atmospheric nitrogen by engaging in a symbiotic relationship with microbial organisms. The complete sequence of the soybean genome not only impacts research and breeding of this crop, but also serves as a reference for genomics research in other legumes. Representing the order Fabales within the eudicot taxonomy, the sequence will also advance research in comparative phylogenomics. As a paleopolyploid, the soybean genome shows evidence of two ancient whole genome duplications, one early in the legume lineage and a second more recent event specific to the soybean lineage. The soybean genome has 20 chromosomes and an estimated size of 1,115 Mb.",
         "motif_db": {
@@ -60,9 +60,9 @@
         }
     },
     "Hordeum_vulgare": {
-        "genome_name"     : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.dna.toplevel.fa.gz",
+        "genome_name"     : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.dna.toplevel.fa",
+        "annotation_name" : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.56.gff3",
         "genome_link"     : "https://phytozome-next.jgi.doe.gov/info/Hvulgare_r1",
-        "annotation_name" : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.56.gff3.gz",
         "annotation_link" : "https://phytozome-next.jgi.doe.gov/info/Hvulgare_r1",
         "description"     : "Selected barley cultivars relevant for genomics and breeding will be displayed in Ensembl.Golden Promise is a 2-row spring type historical variety which was used extensively for malting and whisky production. In recent years, the main research interest has come from being the most efficient genotype for genetic transformation in barley. A contiguous reference assembly was produced by integrating Illumina paired-end reads, long mate-pair reads, Dovetail Chicago in vitro proximity ligation libraries and chromosome conformation capture sequencing (Hi-C), as described in http://dx.doi.org/10.1534/g3.119.401010. Tritex gene annotation was generated by association as described in https://doi.org/10.6084/m9.figshare.9705125.v3.TRITEX is actually the reference cultivar Morex with an updated assembly, as described at https://doi.org/10.1186/s13059-019-1899-5. Gene annotation was taken from https://doi.org/10.5447/ipk/2019/8. For clarity it is shown as a separate strain while the Morex V3 assembly is not published.",
         "motif_db": {
@@ -75,9 +75,9 @@
         }
     },
     "Hordeum_vulgare_Morex_V3": {
-        "genome_name"     : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.dna.toplevel.fa.gz",
+        "genome_name"     : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.dna.toplevel.fa",
+        "annotation_name" : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.56.gff3",
         "genome_link"     : "https://phytozome-next.jgi.doe.gov/info/Hvulgare_r1",
-        "annotation_name" : "Hordeum_vulgare.MorexV3_pseudomolecules_assembly.56.gff3.gz",
         "annotation_link" : "https://phytozome-next.jgi.doe.gov/info/Hvulgare_r1",
         "description"     : "Selected barley cultivars relevant for genomics and breeding will be displayed in Ensembl.Golden Promise is a 2-row spring type historical variety which was used extensively for malting and whisky production. In recent years, the main research interest has come from being the most efficient genotype for genetic transformation in barley. A contiguous reference assembly was produced by integrating Illumina paired-end reads, long mate-pair reads, Dovetail Chicago in vitro proximity ligation libraries and chromosome conformation capture sequencing (Hi-C), as described in http://dx.doi.org/10.1534/g3.119.401010. Tritex gene annotation was generated by association as described in https://doi.org/10.6084/m9.figshare.9705125.v3.TRITEX is actually the reference cultivar Morex with an updated assembly, as described at https://doi.org/10.1186/s13059-019-1899-5. Gene annotation was taken from https://doi.org/10.5447/ipk/2019/8. For clarity it is shown as a separate strain while the Morex V3 assembly is not published.",
         "motif_db": {
@@ -91,8 +91,8 @@
     },
     "Hordeum_vulgare_R1": {
         "genome_name": "Hvulgare_462_r1.fa",
-        "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/hordeum_vulgare/dna/Hordeum_vulgare.MorexV3_pseudomolecules_assembly.dna.toplevel.fa.gz",
         "annotation_name": "Hvulgare_462_r1.gene.gff3",
+        "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/hordeum_vulgare/dna/Hordeum_vulgare.MorexV3_pseudomolecules_assembly.dna.toplevel.fa.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/hordeum_vulgare/Hordeum_vulgare.MorexV3_pseudomolecules_assembly.56.gff3.gz",
         "description": "Cultivated barley, Hordeum vulgare ssp. vulgare L., is globally among the four most important cereal crops. It has a 5 Gbp genome and a haploid chromosome number of 7. Barley belongs to the tribe Triticeae, member of the family Poaceae and is closely related to other cereal crop species bread wheat, durum wheat, emmer wheat, einkorn wheat, spelt wheat, Triticale and rye. Most of barley is produced as animal feed (seeds or as forage crop) and a minor part is used for food including malt for beer brewing. Barley is globally grown and well adapted to a wide variety of climatic conditions and geographical latitudes and altitudes.",
         "motif_db": {
@@ -105,9 +105,9 @@
         }
     },
     "Hordeum_vulgare_goldenpromise": {
-        "genome_name": "Hordeum_vulgare_goldenpromise.GPv1.dna.toplevel.fa.gz",
+        "genome_name": "Hordeum_vulgare_goldenpromise.GPv1.dna.toplevel.fa",
+        "annotation_name": "Hordeum_vulgare_goldenpromise.GPv1.56.gff3",
         "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/hordeum_vulgare_goldenpromise/dna/Hordeum_vulgare_goldenpromise.GPv1.dna.toplevel.fa.gz",
-        "annotation_name": "Hordeum_vulgare_goldenpromise.GPv1.56.gff3.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/hordeum_vulgare_goldenpromise/Hordeum_vulgare_goldenpromise.GPv1.56.gff3.gz",
         "description": "Selected barley cultivars relevant for genomics and breeding will be displayed in Ensembl.Golden Promise is a 2-row spring type historical variety which was used extensively for malting and whisky production. In recent years, the main research interest has come from being the most efficient genotype for genetic transformation in barley. A contiguous reference assembly was produced by integrating Illumina paired-end reads, long mate-pair reads, Dovetail Chicago in vitro proximity ligation libraries and chromosome conformation capture sequencing (Hi-C), as described in http://dx.doi.org/10.1534/g3.119.401010. Tritex gene annotation was generated by association as described in https://doi.org/10.6084/m9.figshare.9705125.v3.TRITEX is actually the reference cultivar Morex with an updated assembly, as described at https://doi.org/10.1186/s13059-019-1899-5. Gene annotation was taken from https://doi.org/10.5447/ipk/2019/8. For clarity it is shown as a separate strain while the Morex V3 assembly is not published.",
         "motif_db": {
@@ -119,9 +119,9 @@
         }
     },
     "Hordeum_vulgare_v082214v1": {
-        "genome_name": "Hordeum_vulgare.ASM32608v1.dna.toplevel.fa.gz",
+        "genome_name": "Hordeum_vulgare.ASM32608v1.dna.toplevel.fa",
         "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-31/fasta/hordeum_vulgare/dna/Hordeum_vulgare.ASM32608v1.dna.toplevel.fa.gz",
-        "annotation_name": "Hordeum_vulgare.082214v1.31.gff3.gz",
+        "annotation_name": "Hordeum_vulgare.082214v1.31.gff3",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-31/gff3/hordeum_vulgare/Hordeum_vulgare.082214v1.31.gff3.gz",
         "description": "Selected barley cultivars relevant for genomics and breeding will be displayed in Ensembl.Golden Promise is a 2-row spring type historical variety which was used extensively for malting and whisky production. In recent years, the main research interest has come from being the most efficient genotype for genetic transformation in barley. A contiguous reference assembly was produced by integrating Illumina paired-end reads, long mate-pair reads, Dovetail Chicago in vitro proximity ligation libraries and chromosome conformation capture sequencing (Hi-C), as described in http://dx.doi.org/10.1534/g3.119.401010. Tritex gene annotation was generated by association as described in https://doi.org/10.6084/m9.figshare.9705125.v3.TRITEX is actually the reference cultivar Morex with an updated assembly, as described at https://doi.org/10.1186/s13059-019-1899-5. Gene annotation was taken from https://doi.org/10.5447/ipk/2019/8. For clarity it is shown as a separate strain while the Morex V3 assembly is not published.",
         "motif_db": {
@@ -135,8 +135,8 @@
     },
 
     "Medicago_truncatula": {
-        "genome_name"     : "Medicago_truncatula.MedtrA17_4.0.dna.toplevel.fa.gz",
-        "annotation_name" : "Medicago_truncatula.MedtrA17_4.0.57.gff3.gz",
+        "genome_name"     : "Medicago_truncatula.MedtrA17_4.0.dna.toplevel.fa",
+        "annotation_name" : "Medicago_truncatula.MedtrA17_4.0.57.gff3",
         "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/fasta/medicago_truncatula/dna/Medicago_truncatula.MedtrA17_4.0.dna.toplevel.fa.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/gff3/medicago_truncatula/Medicago_truncatula.MedtrA17_4.0.57.gff3.gz",
         "description": "Medicago truncatula (Barrel Medic) is a small annual legume native to the Mediterranean region. As other legumes, it forms symbioses with nitrogen-fixing rhizobia and arbuscular mycorrhizal fungi. This species has been chosen as a model organism for legume biology because it has a small diploid genome, is self-fertile, has a rapid generation time and prolific seed production, and is amenable to genetic transformation. M. truncatula is a close relative of alfalfa (Medicago sativa), a widely cultivated crop with limited genomics tools and complex autotetraploid genetics. As such, the M. truncatula genome sequence provides significant opportunities to expand alfalfa's genomic toolbox. The complete reference sequence displayed here is the 4.0 assembly update published in 2014. The nuclear genome has eight chromosomes.",
@@ -150,8 +150,8 @@
         }
     },
     "Oryza_sativa_indica_9311": {
-        "genome_name"     : "Oryza_indica.ASM465v1.dna.toplevel.fa.gz",
-        "annotation_name" : "Oryza_indica.ASM465v1.57.gff3.g",
+        "genome_name"     : "Oryza_indica.ASM465v1.dna.toplevel.fa",
+        "annotation_name" : "Oryza_indica.ASM465v1.57.gff3",
         "genome_link"     : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/fasta/oryza_indica/dna/Oryza_indica.ASM465v1.dna.toplevel.fa.gz",
         "annotation_link" : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/gff3/oryza_indica/Oryza_indica.ASM465v1.57.gff3.gz",
         "description"     : "Oryza sativa Indica is one of the two most commonly cultivated sub-species of rice (along with O. sativa Japonica) and is the most widely grown in the hot climates of Southern Asia. The genome of Indica is very similar to that of Japonica, which is generally restricted to temperate climes such as Japan.",
@@ -210,8 +210,8 @@
         }
     },
     "Oryza_sativa_japonica_Ensembl": {
-        "genome_name"     : "Oryza_sativa.IRGSP-1.0.dna.toplevel.fa.gz",
-        "annotation_name" : "Oryza_sativa.IRGSP-1.0.56.gff3.gz",
+        "genome_name"     : "Oryza_sativa.IRGSP-1.0.dna.toplevel.fa",
+        "annotation_name" : "Oryza_sativa.IRGSP-1.0.56.gff3",
         "genome_link"     : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/oryza_sativa/dna/Oryza_sativa.IRGSP-1.0.dna.toplevel.fa.gz",
         "annotation_link" : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/gff3/oryza_sativa/Oryza_sativa.IRGSP-1.0.56.gff3.gz",
         "description"     : "Oryza sativa Japonica (rice) is the staple food for 2.5 billion people. It is the grain with the second highest worldwide production after Zea mays. In addition to its agronomic importance, rice is an important model species for monocot plants and cereals such as maize, wheat, barley and sorghum. O. sativa has a compact diploid genome of approximately 500 Mb (n=12) compared with the multi-gigabase genomes of maize, wheat and barley.",
@@ -225,8 +225,8 @@
         }
     },
     "oryza_sativa_japonica_ensembl": {
-        "genome_name"      : "Oryza_sativa.IRGSP-1.0.dna.toplevel.fa.gz",
-        "annotation_name"  : "Oryza_sativa.IRGSP-1.0.57.gff3.gz",
+        "genome_name"      : "Oryza_sativa.IRGSP-1.0.dna.toplevel.fa",
+        "annotation_name"  : "Oryza_sativa.IRGSP-1.0.57.gff3",
         "genome_link"      : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/fasta/oryza_sativa/dna/Oryza_sativa.IRGSP-1.0.dna.toplevel.fa.gz",
         "annotation_link"  : "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/gff3/oryza_sativa/Oryza_sativa.IRGSP-1.0.57.gff3.gz",
         "description"      : "Oryza sativa Japonica (rice) is the staple food for 2.5 billion people. It is the grain with the second highest worldwide production after Zea mays. In addition to its agronomic importance, rice is an important model species for monocot plants and cereals such as maize, wheat, barley and sorghum. O. sativa has a compact diploid genome of approximately 500 Mb (n=12) compared with the multi-gigabase genomes of maize, wheat and barley.",
@@ -285,6 +285,8 @@
         }
     },
     "Solanum_lycopersicum": {
+        "genome_name"      : "Solanum_lycopersicum.SL3.0.dna.toplevel.fa",
+        "annotation_name"  : "Solanum_lycopersicum.SL3.0.57.gff3",
         "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/fasta/solanum_lycopersicum/dna/Solanum_lycopersicum.SL3.0.dna.toplevel.fa.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/gff3/solanum_lycopersicum/Solanum_lycopersicum.SL3.0.57.gff3.gz",
         "description": "Solanum lycopersicum (tomato) is an important crop part that is a member of the nightshade family, Solanaceae, which includes a variety of agricultural crop plants (e.g. potato, pepper, eggplant, and tobacco). The tomato originated in the Andean region of South America, was grown by Aztecs in Mesoamerica, and spread to Europe by early Spanish explorers. Today, hundreds of varieties are grown throughout the world, with the largest producers being China and the United States. In addition to its value as a food, the tomato has served as an important model system for the study of fruit ripening, plant-pathogen interactions, and molecular genetic mapping. The nuclear genome contains 12 chromosomes and the current assembly is ~828 Mb in size.",
@@ -298,6 +300,8 @@
         }
     },
     "Solanum_tuberosum": {
+        "genome_name"      : "Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa",
+        "annotation_name"  : "Solanum_tuberosum.SolTub_3.0.57.gff3",
         "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/fasta/solanum_tuberosum/dna/Solanum_tuberosum.SolTub_3.0.dna.toplevel.fa.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/gff3/solanum_tuberosum/Solanum_tuberosum.SolTub_3.0.57.gff3.gz",
         "description": "No information available",
@@ -311,6 +315,8 @@
         }
     },
     "Triticum_aestivum": {
+        "genome_name"      : "Triticum_aestivum.IWGSC.dna.toplevel.fa",
+        "annotation_name"  : "Triticum_aestivum.IWGSC.57.gff3",
         "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/fasta/triticum_aestivum/dna/Triticum_aestivum.IWGSC.dna.toplevel.fa.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/gff3/triticum_aestivum/Triticum_aestivum.IWGSC.57.gff3.gz",
         "description": "Triticum aestivum (bread wheat) is a major global cereal grain essential to human nutrition. Wheat was one of the first cereals to be domesticated, originating in the fertile crescent around 7000 years ago. Bread wheat is hexaploid, with a genome size estimated at ~17 Gb, composed of three closely-related and independently maintained genomes that are the result of a series of naturally occurring hybridisation events. The ancestral progenitor genomes are considered to be Triticum urartu (the A-genome donor) and an unknown grass thought to be related to Aegilops speltoides (the B-genome donor). This first hybridisation event produced tetraploid emmer wheat (AABB, T. dicoccoides) which hybridized again with Aegilops tauschii (the D-genome donor) to produce modern bread wheat.",
@@ -324,7 +330,9 @@
         }
     },
     "Zea_mays": {
-        "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/fasta/zea_mays/dna/Zea_mays.Zm-B73-REFERENCE-NAM-5.0.dna.toplevel.fa.gz",
+        "genome_name"      : "Zea_mays.Zm-B73-REFERENCE-NAM-5.0.dna.toplevel.fa",
+        "annotation_name"  : "Zea_mays.Zm-B73-REFERENCE-NAM-5.0.57.gff3",
+        "genome_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-56/fasta/zea_mays/dna/Zea_mays.Zm-B73-REFERENCE-NAM-5.0.dna.toplevel.fa.gz",
         "annotation_link": "https://ftp.ensemblgenomes.ebi.ac.uk/pub/plants/release-57/gff3/zea_mays/Zea_mays.Zm-B73-REFERENCE-NAM-5.0.57.gff3.gz",
         "description": "Maize or Zea mays had the highest world-wide production of all grain crops in 2019. Although a food staple in many regions of the world, most is used for animal feed and ethanol fuel. Maize was domesticated from wild teosinte in Central America and its cultivation spread throughout the Americas by Pre-Columbian civilisations. In addition to its economic value, maize is an important model organism for studies in plant genetics, physiology, and development. It has a large genome of about 2.4 gigabases with a haploid chromosome number of 10 (2n=2x=20) [2-4]. Maize is distinguished from other grasses in that its genome arose from an ancient tetraploidy event unique to its lineage. This sequence corresponds to inbred line B73.",
         "motif_db": {
