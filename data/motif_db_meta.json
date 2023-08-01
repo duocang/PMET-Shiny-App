@@ -23,6 +23,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -36,6 +38,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -49,6 +53,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -62,6 +68,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -75,6 +83,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -88,6 +98,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -100,7 +112,8 @@
         "description": "Selected barley cultivars relevant for genomics and breeding will be displayed in Ensembl.Golden Promise is a 2-row spring type historical variety which was used extensively for malting and whisky production. In recent years, the main research interest has come from being the most efficient genotype for genetic transformation in barley. A contiguous reference assembly was produced by integrating Illumina paired-end reads, long mate-pair reads, Dovetail Chicago in vitro proximity ligation libraries and chromosome conformation capture sequencing (Hi-C), as described in http://dx.doi.org/10.1534/g3.119.401010. Tritex gene annotation was generated by association as described in https://doi.org/10.6084/m9.figshare.9705125.v3.TRITEX is actually the reference cultivar Morex with an updated assembly, as described at https://doi.org/10.1186/s13059-019-1899-5. Gene annotation was taken from https://doi.org/10.5447/ipk/2019/8. For clarity it is shown as a separate strain while the Morex V3 assembly is not published.",
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
-            "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -114,6 +127,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -128,6 +143,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -141,6 +158,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -154,6 +173,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -167,6 +188,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -180,6 +203,9 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
+            "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
     },
@@ -192,6 +218,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -205,6 +233,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -218,6 +248,9 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
+            "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
     },
@@ -230,6 +263,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -243,6 +278,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -254,6 +291,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -265,6 +304,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -276,6 +317,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
@@ -287,6 +330,8 @@
         "motif_db": {
             "CIS-BP2"                         : "http://cisbp.ccbr.utoronto.ca/bulk.php",
             "plantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://cistrome.org/db/#/",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
             "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
