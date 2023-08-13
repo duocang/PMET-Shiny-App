@@ -121,45 +121,51 @@ bool motifComparison::motifInstancesOverlap(motif &motif1, motif &motif2, motifI
     }
 }
 
-bool motifComparison::geometricBinomialTest(const std::vector<bool> &motifLocationsToKeep, const std::string &gene, int promoterLength, motif &mt)
-{
-    // Test for one motif in one promoter
-    // motifLocations contain p-values. Use if motifLocationsToKeep is true
-
-    // returtn smallest value for this motif in this promoter
+/**
+ * Perform geometric binomial test for a specific motif in a gene's promoter.
+ *
+ * @param motifLocationsToKeep A reference to a vector of bools indicating whether to keep specific motif locations (p-values).
+ * @param gene A reference to a string representing the name of the gene.
+ * @param promoterLength An integer representing the length of the gene's promoter.
+ * @param mt A reference to a motif object representing the motif to be tested.
+ *
+ * @return True if the lowest score obtained from the geometric binomial test is less than or equal to the motif's threshold, otherwise False.
+ */
+bool motifComparison::geometricBinomialTest(const std::vector<bool>& motifLocationsToKeep, const std::string& gene, int promoterLength, motif& mt) {
+    // Count the number of motif locations to keep.
     long numpVals = std::count(motifLocationsToKeep.begin(), motifLocationsToKeep.end(), true);
+
+    // Reserve space to store the p-values of the kept motif instances.
     std::vector<double> pVals;
     pVals.reserve(numpVals);
 
+    // Calculate the total number of possible locations where the motif could occur in the promoter.
     long possibleLocations = 2 * (promoterLength - mt.getLength() + 1);
 
-    for (int i = 0; i < motifLocationsToKeep.size(); i++)
-    {
-        if (motifLocationsToKeep[i])
-        {
-
+    // Retrieve the p-values of the kept motif instances.
+    for (int i = 0; i < motifLocationsToKeep.size(); i++) {
+        if (motifLocationsToKeep[i]) {
+            // Get the motif instance and its p-value.
             motifInstance mInst = mt.getInstance(gene, i);
             pVals.push_back(mInst.getPValue());
         }
     }
 
-    // motif instances have already been sorted and so pVsls will be in ascending order
-    // calculate geomtric mean of all included p-vals
-
+    // Calculate the geometric mean of all kept p-values.
     double lowestScore = std::numeric_limits<double>::max();
-
-    for (std::vector<double>::iterator i = pVals.begin(); i < pVals.end(); i++)
-    {
-        // calculate geomtric mean of all  p-vals up to this one
+    for (std::vector<double>::iterator i = pVals.begin(); i < pVals.end(); i++) {
+        // Calculate the geometric mean of all p-values up to this one.
         double gm = geometricMean(pVals.begin(), i + 1);
-
+        // Perform geometric binomial test for each p-value.
         double binomP = 1 - binomialCDF((i + 1 - pVals.begin()), possibleLocations, gm);
-
+        // Record the lowest score among all tested p-values.
         lowestScore = (binomP < lowestScore) ? binomP : lowestScore;
     }
 
+    // Check if the lowest score passes the threshold of the motif.
     return lowestScore <= mt.getThreshold();
 }
+
 
 double motifComparison::geometricMean(std::vector<double>::iterator first, std::vector<double>::iterator last)
 {
