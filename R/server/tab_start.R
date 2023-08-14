@@ -74,8 +74,13 @@ observe({
     "promoters_pre" = {
       req(input$`promoters_pre-genes`)
       req(input$`promoters_pre-genes` != "")
-      # if gene file exists, meaning it is a newly uploaded file for new PMET job
-      req(file.exists(input$`promoters_pre-genes`$datapath))
+
+      # Because after the previous round of PMET job, the value of `promoters_pre-genes`
+      # did not change. This means that even if no new gene file is uploaded,
+      # `promoters_pre-genes` can still go through req.
+      # So we determine whether the user has actually uploaded the file for a new PMET job
+      # by checking if the gene file exists.
+      # Because after each completion of a PMET job, we manually delete the gene file.
       req(input$`promoters_pre-premade`)
 
 
@@ -201,8 +206,7 @@ observeEvent(input$run_pmet_btn, {
     # 3. Reset---------------------------------------------------------------------
 
     # reset buttion
-    #   a. reset loadingButton (RUN PMET) to its active state after PMET DONE
-    #   b. hide STOP button
+    #   reset loadingButton (RUN PMET) to its active state after PMET DONE
     resetLoadingButton("run_pmet_btn")
     shinyjs::enable("run_pmet_btn")
     # when job is finished, disable the RUN buttion to avoid second run
@@ -224,10 +228,12 @@ observeEvent(input$run_pmet_btn, {
     }
 
     # 5. Delete uploaded gene file
-    # PMET RUN button relys on a newly-uploaded and valid gene file after each PMET job.
+    # The PMET RUN button should disappear after the previous PMET job is completed and
+    # set the fileInput of genne file to NUL, to ensure that a new gene file is uploaded
+    # before showing the PMET RUN button again.
     # But it is not easy to set input$input$`promoters_pre-genes` to NULL. So, we decide
-    # to delete temp gene file from previous PMET job and check the status of gene file
-    # to show PMET run button.
+    # to delete temp gene file from previous PMET job and check the existence of gene file
+    # to show PMET run button in the future PMET job.
     file.remove(input$`promoters_pre-genes`$datapath)
   }) # end of future
 })
