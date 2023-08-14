@@ -3,7 +3,7 @@ intervals_ui <- function(id, height = 800, width = 850) {
   # motif database
   div(
     div(id = "fasta_div", style = "margin-bottom: 10px;",
-      fileInput(ns("fasta"), "Upload genome file",
+      fileInput(ns("fasta"), "Upload genomic intervals file",
         multiple = FALSE,
         accept = c(".fasta", ".fa")
       ),

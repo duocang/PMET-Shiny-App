@@ -83,16 +83,20 @@ observe({
     "promoters" = {
       req(input$`promoters-genes`)
       inputs <- list(
-        input$`promoters-fasta`, input$`promoters-gff3`,
-        input$`promoters-meme` , input$`promoters-genes`)
+        input$`promoters-fasta`,
+        input$`promoters-gff3`,
+        input$`promoters-meme` ,
+        input$`promoters-genes`)
       files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
       gene_file_status    <- CheckGeneFile(input$`promoters-genes`$datapath, "promoters")
 
       files_upload_status &&  gene_file_status == "OK"
     },
     "intervals" = {
-      req(input$`intervals`)
-      inputs              <- list( input$`fasta`, input$`meme`, input$`genes`)
+      req(input$`intervals-genes`)
+      inputs              <- list(input$`intervals-fasta`,
+                                  input$`intervals-meme`,
+                                  input$`intervals-genes`)
       files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
       gene_file_status    <- CheckGeneFile(input$`intervals-genes`$datapath, "intervals")
 
