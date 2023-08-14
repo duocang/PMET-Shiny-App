@@ -81,6 +81,7 @@ observe({
       # So we determine whether the user has actually uploaded the file for a new PMET job
       # by checking if the gene file exists.
       # Because after each completion of a PMET job, we manually delete the gene file.
+      req(file.exists(input$`promoters_pre-genes`$datapath))
       req(input$`promoters_pre-premade`)
 
 
