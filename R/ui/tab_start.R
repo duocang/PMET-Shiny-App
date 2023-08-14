@@ -51,7 +51,6 @@ tabPanel(
       )
     ),
     mainPanel(
-      # div(id = "workflow_mode", imageOutput("image"))
       uiOutput("txt_species"),
       uiOutput("txt_genome"),
       uiOutput("txt_annotation"),

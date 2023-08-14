@@ -188,7 +188,7 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
       # self genes uploaded -----------------------------------------------------------
       genes_not_found  <- reactiveVal(NULL) # store genes not found for download handler
       observeEvent(input$genes, {
-
+        req(input$premade)
         req(input$genes, input$genes != "", input$premade, input$species)
         # copy uploaded genes to result folder for PMET to run in the back
         TempToLocal("result", job_id, input[["genes"]])

@@ -74,6 +74,11 @@ observe({
     "promoters_pre" = {
       req(input$`promoters_pre-genes`)
       req(input$`promoters_pre-genes` != "")
+      # if gene file exists, meaning it is a newly uploaded file for new PMET job
+      req(file.exists(input$`promoters_pre-genes`$datapath))
+      req(input$`promoters_pre-premade`)
+
+
       gene_file_status <-  CheckGeneFile( input$`promoters_pre-genes`$datapath,
                                           "promoters_pre",
                                           premade = input$`promoters_pre-premade`)
@@ -117,8 +122,6 @@ observe({
 notifi_pmet_ids <-  character(0)
 observeEvent(input$run_pmet_btn, {
   show_spinner()
-  # show_modal_spinner()
-  # notify_success("Well done!")
   report_success(
     title = "PMET will take long time to complete.",
     text ="You are safe to close this page and result will be send via email.",
@@ -159,25 +162,7 @@ observeEvent(input$run_pmet_btn, {
                 pmet_paths$genes_path,
                 mode)
   }) %...>% (function(result_link) {
-    # remove notification
-    if (length(notifi_pmet_ids) > 0) {
-      removeNotification(notifi_pmet_ids[1])
-    }
-    notifi_pmet_ids <<- notifi_pmet_ids[-1]
-
-    # remove the indicator of pmete running (shinybusy)
-    hide_spinner()
-
-    cli::cat_rule(sprintf("pmet done!"))
-    Sys.sleep(0.5)
-    # 1. reset loadingButton (RUN PMET) to its active state after PMET DONE
-    # 2. hide STOP button
-    resetLoadingButton("run_pmet_btn")
-    shinyjs::enable("run_pmet_btn")
-    # when job is finished, disable the RUN buttion to avoid second run
-    shinyjs::hide("run_pmet_btn_div")
-
-    # download button for ngxin file
+    # 1. Download button for ngxin file -----------------------------------------
     shinyjs::show("pmet_result_download_btn") # hide download button
     output$pmet_result_download_ui <- renderUI({
       actionButton(
@@ -192,47 +177,61 @@ observeEvent(input$run_pmet_btn, {
     # automatically scroll to the spot of download button
     runjs('document.getElementById("run_pmet_div").scrollIntoView();')
 
+    # 2. Notitication -----------------------------------------------------------
+    # Download reminder (automatically disappears after 120 seconds)
     showToast(
       "success",
       "The result is ready to be downloaded!",
       .options = myToastOptions
     )
 
-    # reset all input files and parameters
+    # remove notification of PMET running
+    if (length(notifi_pmet_ids) > 0) {
+      removeNotification(notifi_pmet_ids[1])
+    }
+    notifi_pmet_ids <<- notifi_pmet_ids[-1]
+
+    # remove the indicator of pmete running (shinybusy)
+    hide_spinner()
+
+    # terminal message
+    cli::cat_rule(sprintf("pmet done!"))
+    Sys.sleep(0.5)
+
+    # 3. Reset---------------------------------------------------------------------
+
+    # reset buttion
+    #   a. reset loadingButton (RUN PMET) to its active state after PMET DONE
+    #   b. hide STOP button
+    resetLoadingButton("run_pmet_btn")
+    shinyjs::enable("run_pmet_btn")
+    # when job is finished, disable the RUN buttion to avoid second run
+    shinyjs::hide("run_pmet_btn_div")
+
+    # reset all and parameters and input files
     for (i in c("fasta", "gff3", "meme", "genes",
+                # "species", "premade",
                 "promoter_length", "max_match", "promoter_num", "ic_threshold",
                 "fimo_threshold", "utr5", "promoters_overlap")) {
       shinyjs::reset(paste0(input$mode, "-", i))
       hideFeedback(paste0(input$mode, "-", i))
     }
+
+    # 4. Hide UI elements -------------------------------------------------------------
+    # hide gene not find link
+    if (input$mode == "promoters_pre") {
+      shinyjs::hide("promoters_pre-genes_not_found_link")
+    }
+
+    # 5. Delete uploaded gene file
+    # PMET RUN button relys on a newly-uploaded and valid gene file after each PMET job.
+    # But it is not easy to set input$input$`promoters_pre-genes` to NULL. So, we decide
+    # to delete temp gene file from previous PMET job and check the status of gene file
+    # to show PMET run button.
+    file.remove(input$`promoters_pre-genes`$datapath)
   }) # end of future
 })
 
-# output$image <- renderImage({
-#   style = "margin-left: 0px;"
-#   workflow_path <- switch(input$mode,
-#     "promoters_pre" = {
-#       height = 650
-#       style = "margin-left: 400px;"
-#       "www/figures/pmet_heterotypic.png"
-#     },
-#     "promoters" = {
-#       height = 650
-#       "www/figures/PMET_workflow_promoters_PMET_PMETindex.png"
-#     },
-#     "intervals" = {
-#       height = 650
-#       "www/figures/PMET_workflow_intervals_PMET_PMETindex.png"
-#     }
-#   )
-
-#   list(
-#     src         = workflow_path,
-#     contentType = "image/png",
-#     height       = height,
-#     style       = style
-#   )
-# }, deleteFile=FALSE)
 
 # info of species
 observeEvent(input$`promoters_pre-species`, {
@@ -241,7 +240,6 @@ observeEvent(input$`promoters_pre-species`, {
   shinyjs::show("txt_genome")
   shinyjs::show("txt_annotation")
 
-  print(input$`promoters_pre-species`)
   output$txt_species <- renderUI({
     HTML(paste0('
       <p>
@@ -269,7 +267,6 @@ observeEvent(input$`promoters_pre-species`, {
 # annotation
 observeEvent(input$`promoters_pre-species`, {
   req(input$`promoters_pre-species`, input$`promoters_pre-species`!="")
-
   link_text <- MOTF_DB_META[[input$`promoters_pre-species`]][["annotation_name"]]
   link_url  <- MOTF_DB_META[[input$`promoters_pre-species`]][["annotation_link"]]
 
@@ -341,8 +338,4 @@ observeEvent(input$mode, {
   shinyjs::hide("txt_genome")
   shinyjs::hide("txt_annotation")
   shinyjs::hide("txt_motif_db")
-  reset("txt_species")
-  reset("txt_genome")
-  reset("txt_annotation")
-  reset("txt_motif_db")
 })
