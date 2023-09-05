@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>MCAST - MEME Suite</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/memesuite_icon.ico">
+    <link rel="icon" type="image/png" href="images/memesuite_icon.png">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <script src="js/menu.js"></script>
+    <script src="js/shared-doc.js"></script>
+    <script src="js/citation.js"></script>
+  </head>
+  <body>
+    <div class="memesuitelogo">
+      <h1>The MEME Suite</h1>
+      <h2>Motif-based sequence analysis tools</h2>
+    </div>
+    <div class="prog_logo">
+      <img src="images/mcast_icon.png" alt="MCAST Logo">
+      <h1>MCAST</h1>
+      <h2>Motif Cluster Alignment and Search Tool</h2>
+    </div>
+
+    <div style='display:inline' id='man_web_button'>
+      <p> <button onclick="toggle_man_display()">View Web Version</button> </p>
+    </div>
+
+    <div style='display:none' id='man_cmd_button'>
+      <p> <button onclick="toggle_man_display()">View Command-Line Version</button> </p>
+    </div>
+
+    <div style='display:inline' id='man_usage'>
+      <div class="usage">
+        <h3>Usage:</h3>
+	<code>mcast [options] &lt;motif file&gt; &lt;sequence file&gt;</code>
+      </div>
+    </div>
+
+    <h3>Description</h3>
+    <div class="indent">
+      <span class="man blurb" data-id="mcast"></span>
+    </div>
+
+    <!-- Command Line Version Doc -->
+    <div style='display:inline' id='man_cmd'>
+
+      <div class="indent">
+        <p></p>
+	<p>MCAST computes statistical confidence estimates by generating
+	at least 100 random sequences that have GC-contents spanning the
+	same range as the discovered matches (plus 500bp on either side of each cluster).
+	After all matches have been found in your input sequences, MCAST
+        generates the random sequences and scores them using the same
+	algorithm as for the input sequences. MCAST bins the scores of the matches
+	found in the random sequences according the GC-content
+	of the random sequence.  For each match in the input sequences,
+        MCAST determines its GC-content, and looks up the mean random score 
+        in the appropriate GC-bin.  MCAST then uses this mean score 
+	to estimate the <i>p</i>-value of the match, which is then
+	used to compute its <i>E</i>- and <i>q</i>-value.
+        <b>Note:</b> This binning approach is different from the approach
+	described in the orginal MCAST paper mentioned below because MCAST no
+	longer assumes that there is a linear relationship between
+	match GC-content and match score.</p>
+
+	<p>When computing statistical confidence estimates, MCAST must retain
+	the matches in memory until the final distribution of scores can be
+	estimated. This means that the scanning of genome sized datasets has the
+	potential to exhaust all available memory. To avoid this problem, MCAST
+	uses reservoir sampling of the match scores, and limits the number of
+	matches that are kept in memory. The default number of matches kept in
+	memory is 100,000, but this value can be adjusted via the
+	<span class="popt">--max-stored-scores</span> option. If the maximum
+	number of stored matches is reached, then MCAST will drop the least
+	significant half of the matches. This behavior may result in matches
+	missing from the MCAST output, even though they would have satisfied
+	the user-specified <i>p</i>-value or <i>q</i>-value threshold.</p>
+
+	<p>MCAST can make use of position-specific priors (PSPs) to improve its
+	identification of true motif occurrences. To take advantage of PSPs in
+	MCAST you use must provide two command line options. The
+	<span class="popt">--psp</span> option is used to set the name of a
+	file containing the PSP,
+	and the
+	<span class="popt">--prior-dist</span> option is used to set the name of
+	a file containing the binned distribution of the PSP.</p>
+
+	<p>
+	The PSP can be provided in
+	<a href="psp-format.html">MEME PSP file format</a>,
+	or in 
+	<a href="http://genome.ucsc.edu/goldenPath/help/wiggle.html">wiggle format</a>.
+	The <a href="psp-format.html">MEME PSP file format</a> requires that a
+	PSP be included for every position in the sequence to be scanned.
+	This format is usually only practical for relatively small sequence
+	databases.
+	The
+	<a href="http://genome.ucsc.edu/goldenPath/help/wiggle.html">wiggle format</a>
+	accommodates sequence segments with missing PSP.
+	When no PSP is available for a given position, MCAST will use the median PSP from the PSP
+	distribution file.
+	The
+	<a href="http://genome.ucsc.edu/goldenPath/help/wiggle.html">wiggle format</a>
+	will work with large sequence databases, including full genomes.
+        MCAST also uses the median PSP value in scoring all positions in the random
+	sequences it generates for computing statistical confidence estimates.
+        </p>
+
+	<p>
+	The PSP and PSP distribution files can be generated from raw scores using the 
+	<a href="create-priors.html"><code>create-priors</code></a> utility available
+	when you download and install the MEME Suite on your own computer.
+
+	<p style="margin-bottom:0" id="cite">A full description of the algorithm may be found in:<br></p>
+        <script>print_citation("cite", "MCAST");</script>
+      </div>
+
+      <h3>Input</h3>
+      <div class="indent">
+        <h4><span class='popt'>&lt;motif file&gt;</h4>
+	<div class="indent">
+	  <p>The name of a file containing DNA motifs in <a href="meme-format.html">MEME format</a>.
+	  Outputs from MEME, STREME and DREME are supported, as well as Minimal MEME
+	  Format. You can also input DNA motifs in TRANSFAC format if you 
+	  specify the <code>--transfac</code> option.  You can convert many other motif formats to MEME format
+	  using <a href="overview.html#motif_conversion_utilities">conversion scripts</a>
+	  available with the MEME Suite.
+	  <b>Note: </b>All motifs must have width at least 2.</p>
+	</div>
+
+        <h4><span class='popt'>&lt;sequence file&gt;</h4>
+	<div class="indent">
+	  <p>The name of a file of DNA sequences in
+	  <a href="fasta-format.html">FASTA</a> format.</p>
+	</div>
+      </div>
+
+      <h3>Output</h3>
+      <div class="indent">
+	<p style="margin-bottom:0">MCAST will create a directory named
+	<code>mcast_out</code> (the name of this directory can be overridden via the
+	<span class="popt">--o</span> or <span class="popt">--oc</span> options)
+	The directory will contain:</p>
+	<ul>
+	  <li><a href=examples/mcast_example_output_files/mcast.html><code>mcast.html</code></a> -
+	    an HTML file that provides the results in a human-readable format</li>
+	  <li><a href=examples/mcast_example_output_files/mcast.tsv><code>mcast.tsv</code></a> - 
+	    a TSV (tab-separated values) file that provides
+	    the results in a format suitable for parsing by scripts and viewing with Excel</li>
+	  <li><a href=examples/mcast_example_output_files/mcast.gff><code>mcast.gff</code></a> -
+	    a <a href="http://gmod.org/wiki/GFF3">GFF3 format</a> file that provides the results
+	    in a format suitable for display in the UCSC genome browser
+	  <li><a href=examples/mcast_example_output_files/cisml.xml><code>cisml.xml</code></a> -
+	    that provides the results in the <a href="http://zlab.bu.edu/~phaverty/SupplementalData/CisML">CisML</a> 
+	    schema</li>
+	  <li><a href=examples/mcast_example_output_files/mcast.xml><code>mcast.xml</code></a> -
+	    that describes the inputs to MCAST in XML format and references
+	    the CISML file <a href=examples/mcast_example_output_files/cisml.xml><code>cisml.xml</code></a></li>
+	</ul>
+        <p>
+          <b>Note:</b> See this detailed description of the <a href=mcast-output-format.html>MCAST output formats</a>
+          for more information.
+        </p>
+      </div>
+      <h3>Options</h3>
+      <div class="indent">
+	<table class="options">
+	  <thead>
+	    <tr>
+	      <th>Option</th>
+	      <th>Parameter</th>
+	      <th>Description</th>
+	      <th>Default Behavior</th>
+	    </tr>
+	  </thead>
+
+	  <tbody>
+	    <tr>
+	      <th colspan="4">Output</th>
+	    </tr>
+	    <script>
+	      wropt("all-o", {"ddash": true, "dir": "mcast_out"});
+	      wropt("all-oc", {"ddash": true, "dir": "mcast_out"});
+              wropt("all-text", {"ddash": true, "tsv": true});
+	    </script>
+	    </script>
+	  </tbody>
+
+	  <tbody>
+	    <tr>
+	      <th colspan="4">Motifs</th>
+	    </tr>
+	    <tr>
+	      <td class="popt">--transfac</td><td><span class="popt"></span></td>
+	      <td>MCAST will assume that the motif file is in 
+		<a href="transfac-format.html">TRANSFAC matrix format</a>.
+	      <td>MCAST assumes the motif file is in
+		<a href="meme-format.html">MEME format</a>.
+	      </td>
+	    </tr>
+	    <tr>
+	      <td class="popt">--max-total-width</td><td><span class="pdat">max</span></td>
+	      <td>Limit the combined width of all the input motifs to no more than 
+		<span class="pdat">max</span> columns.  This can be set to prevent
+		jobs from exceeding the available memory.  The memory requirements
+		of MCAST are quadratic in the combined widths of the motifs, and
+		can reach 5Gb when the combined width is greater than 8000 columns.</td>
+	      <td>MCAST does not limit the combined width of all motifs.</td>
+            </tr>
+          </body>
+
+	  <tbody>
+	    <tr>
+	      <th colspan="4">Sequences</th>
+	    </tr>
+	    <tr>
+	      <td class="popt">--hardmask</td><td></td>
+	      <td>
+		Nucleotides in lower case will be converted to the wildcard 'N'.
+		This prevents these positions from being considered in motif matches.
+		This is useful when the input sequence file has been soft-masked
+		for tandem repeats.
+		Without hard masking, MCAST may assign sequence segments containing tandem
+		repeats a highly significant score.
+	      </td>
+	      <td>Nucleotides in lower case are converted to upper case.</td>
+	    </tr>
+            <script>
+              wropt("all-pgc", {"ddash": true});
+            </script>
+          </body>
+
+	  <tbody>
+	    <tr>
+	      <th colspan="4">Background Model and Priors</th>
+	    </tr>
+            <script>
+              wropt("all-bg", {"ddash": true, "bfile": true, "dna_only": true, "sym": true});
+              wropt("all-psp", {"ddash": true});
+              wropt("all-pdist", {"ddash": true});
+              wropt("all-psp_alpha", {"ddash": true});
+            </script>
+	  </tbody>
+
+	  <tbody>
+	    <tr>
+	      <th colspan="4">Hidden Markov Model</th>
+	    </tr>
+	    <tr>
+	      <td class="popt">--motif-pthresh</td><td><span class="pdat">pthresh</span></td>
+	      <td>The maximum <i>p</i>-value for a motif site to be considered a hit and to
+	      be included in a match.<br>
+	      <b>Note: </b>Small values of <span class="pdat">pthresh</span>
+              may prevent MCAST from computing <i>E</i>-values.<br>
+              <b>Note: </b>This value also sets the scale for calculating pscores for motif hits. 
+	      The pscore for a hit with <i>p</i>-value <span class="pdat">p</span> is
+	      <div class="indent">
+		S = -log<sub>2</sub>(<span class="pdat">p</span>/<span class="pdat">pthresh</span>),
+	      </div>
+	      </td>
+	      <td>The maximum <i>p</i>-value for a hit is 0.0005.</td>
+	    </tr>
+	    <tr>
+	      <td class="popt">--max-gap</td><td><span class="pdat">max gap</span></td>
+	      <td>The value of <span class="pdat">max gap</span> specifies the
+	      longest distance allowed between two hits in a match. Hits
+	      separated by more than <span class="pdat">max gap</span> will be
+	      placed in different matches.<br>
+	      <b>Note: </b>Large values of <span class="pdat">max gap</span>
+	      may prevent MCAST from computing <i>E</i>-values.</td>
+	      <td>The maximum gap is set to 50.</td>
+	    </tr>
+	  </tbody>
+
+	  <tbody>
+	    <tr>
+	      <th colspan="4">Scoring</th>
+	    </tr>
+	    <tr>
+	      <td class="popt">--output-ethresh</td><td><span class="pdat">out <i>E</i>-value</span></td>
+	      <td>The <i>E</i>-value threshold for displaying search results. If
+	      the <i>E</I>-value of a match is greater than this value, then the
+	      match will not be printed. If any combination of
+	      <span class="popt">--output-ethresh</span>,
+	      <span class="popt">--output-pthresh</span>, or
+	      <span class="popt">--output-qthresh</span> is given, whichever
+	      option occurs last on the command-line will determine the
+	      effective output filter. </td>
+	      <td>The <i>E</i>-value threshold is 10.</td>
+	    </tr>
+	    <tr>
+	      <td class="popt">--output-pthresh</td><td><span class="pdat">out <i>p</i>-value</span></td>
+	      <td>The <i>p</i>-value threshold for displaying search results. If
+	      the <i>p</i>-value of a match is greater than this value, then the
+	      match will not be printed. If any combination of
+	      <span class="popt">--output-ethresh</span>,
+	      <span class="popt">--output-pthresh</span>, or
+	      <span class="popt">--output-qthresh</span> is given, whichever
+	      option occurs last on the command-line will determine the
+	      effective output filter.</td>
+	      <td>The <i>E</i>-value is used as the threshold. See 
+	      <span class="popt">--output-ethresh</span> option.</td>
+	    </tr>
+	    <tr>
+	      <td class="popt">--output-qthresh</td><td><span class="pdat">out <i>q</i>-value</span></td>
+	      <td>The <i>q</i>-value threshold for displaying search results. If
+	      the <i>q</i>-value of a match is greater than this value, then the
+	      match will not be printed. If any combination of
+	      <span class="popt">--output-ethresh</span>,
+	      <span class="popt">--output-pthresh</span>, or
+	      <span class="popt">--output-qthresh</span> is given, whichever
+	      option occurs last on the command-line will determine the
+	      effective output filter.</td>
+	      <td>The <i>E</i>-value is used as the threshold. See 
+	      <span class="popt">--output-ethresh</span> option.</td>
+	    </tr>
+	    <tr>
+	      <td class="popt">--max-stored-scores</td><td><span class="pdat">max</span></td>
+	      <td>Set the maximum number of scores that will be stored.
+	      Keeping a complete list of scores may exceed available memory.
+	      Once the number of stored scores reaches the maximum allowed,
+	      the least significant 50% of scores will be dropped.
+	      In this case, the list of reported motifs may be incomplete and 
+	      the <i>q</i>-value calculation will be approximate.</td>
+	      <td>The maximum number of stored matches is 100,000.</td>
+	    </tr>
+	    <tr>
+	      <td class="popt">--seed</td><td></td>
+	      <td>MCAST uses this seed in the generation of the random sequences
+		that it uses to estimate the <i>p</i>-, <i>E</i>- and <i>q</i>-values
+		of the discovered matches.</td>
+	      <td>0</td>
+	    </tr>
+          </tbody>
+
+          <tbody>
+	    <tr>
+	      <th colspan="4">Misc</th>
+	    </tr>
+	    <script>
+              wropt("all-version", {"ddash": true});
+              wropt("all-verbosity", {"ddash": true});
+            </script>
+	  </tbody>
+	</table>
+      </div>
+
+    <h3>Citing</h3>
+    <div class=indent id="citation"><script>print_citation("citation", "MCAST");</script></div>
+
+    <script src="js/manual.js"></script>
+
+  </body>
+</html>

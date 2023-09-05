@@ -1,0 +1,22 @@
+#
+# fasta-dinucleotide-shuffle
+#
+
+# Set reference file depending on the type of python being used.
+my $reference = 'common/Klf1-200-100-shuffled.py@PYTHON_TYPE@.fa';
+
+&test('fasta-dinucleotide-shuffle1', '',
+  'fasta-dinucleotide-shuffle', '',
+  [
+    '-f', 'common/Klf1-200-100.fa',
+    '-t', 
+    '-dinuc'
+  ],
+  [
+    {
+      output => '-', 
+      reference => $reference,
+      type => 'text'
+    }
+  ],
+  'results/fasta-dinucleotide-shuffle1', 'scripts');

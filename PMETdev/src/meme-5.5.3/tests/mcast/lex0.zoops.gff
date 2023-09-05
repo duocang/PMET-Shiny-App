@@ -1,0 +1,15 @@
+##gff-version 3
+muc-operon	MCAST	transcriptional_cis_regulatory_region	49	68	-4.34e-300	.	.	ID=cluster-14;pvalue=nan;evalue=nan;qvalue=nan
+lexA	MCAST	transcriptional_cis_regulatory_region	14	95	-4.34e-300	.	.	ID=cluster-13;pvalue=nan;evalue=nan;qvalue=nan
+colicin-a	MCAST	transcriptional_cis_regulatory_region	34	53	-4.34e-300	.	.	ID=cluster-12;pvalue=nan;evalue=nan;qvalue=nan
+reca	MCAST	transcriptional_cis_regulatory_region	71	90	-4.34e-300	.	.	ID=cluster-5;pvalue=nan;evalue=nan;qvalue=nan
+recn	MCAST	transcriptional_cis_regulatory_region	71	130	-4.34e-300	.	.	ID=cluster-6;pvalue=nan;evalue=nan;qvalue=nan
+colicin-e1	MCAST	transcriptional_cis_regulatory_region	97	116	-4.34e-300	.	.	ID=cluster-2;pvalue=nan;evalue=nan;qvalue=nan
+umu-operon	MCAST	transcriptional_cis_regulatory_region	91	110	-4.34e-300	.	.	ID=cluster-8;pvalue=nan;evalue=nan;qvalue=nan
+colicin-ia	MCAST	transcriptional_cis_regulatory_region	99	118	-4.34e-300	.	.	ID=cluster-3;pvalue=nan;evalue=nan;qvalue=nan
+colicin-ib	MCAST	transcriptional_cis_regulatory_region	99	118	-4.34e-300	.	.	ID=cluster-4;pvalue=nan;evalue=nan;qvalue=nan
+uvrd	MCAST	transcriptional_cis_regulatory_region	102	121	-4.34e-300	.	.	ID=cluster-11;pvalue=nan;evalue=nan;qvalue=nan
+cloacin-df13	MCAST	transcriptional_cis_regulatory_region	97	116	-4.34e-300	.	.	ID=cluster-1;pvalue=nan;evalue=nan;qvalue=nan
+uvra	MCAST	transcriptional_cis_regulatory_region	60	79	-4.34e-300	.	.	ID=cluster-9;pvalue=nan;evalue=nan;qvalue=nan
+uvrb	MCAST	transcriptional_cis_regulatory_region	71	90	-4.34e-300	.	.	ID=cluster-10;pvalue=nan;evalue=nan;qvalue=nan
+sula	MCAST	transcriptional_cis_regulatory_region	85	104	-4.34e-300	.	.	ID=cluster-7;pvalue=nan;evalue=nan;qvalue=nan

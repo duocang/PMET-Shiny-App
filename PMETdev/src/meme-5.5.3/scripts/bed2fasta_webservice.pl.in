@@ -1,0 +1,75 @@
+#!@WHICHPERL@
+=head1 NAME
+
+bed2fasta_webservice - Convert a BED file to FASTA
+
+=head1 SYNOPSIS
+
+bed2fasta_webservice [options] <bed filename> <genome filename> <output file name>
+
+=cut
+
+use strict;
+use warnings;
+# load standard perl libraries
+use File::Basename qw(fileparse);
+use File::Copy qw(copy);
+use Getopt::Long qw(:config permute auto_help);
+use Pod::Usage;
+# load custom perl libraries
+use lib qw(@PERLLIBDIR@);
+use StatusPage qw(arg_checks opt_uploaded opt_db opt_safe);
+# constants
+my $bin_dir = '@LIBEXECDIR@';
+my $fasta_db_dir = '@MEMEDB@/fasta_databases';
+# required parameters
+my $bed_filename;
+my $genome_filename;
+my $output_filename = "output.fa";
+#status page
+my $status = new StatusPage('BED2FASTA', \@ARGV);
+$status->add_message('Parsing arguments');
+# parse options
+my @arg_errors = ();
+my $opts_ok = do {
+  local $SIG{__WARN__} = sub { my ($msg) = @_; chomp($msg); push(@arg_errors, $msg); };
+  GetOptions(
+    '<>' => arg_checks(
+      opt_uploaded(\$bed_filename),
+      opt_db(\$genome_filename, $fasta_db_dir, 'db')
+    )
+  );
+};
+# add additional error messages for missing sequences and motifs
+push(@arg_errors, "No BED filename provided.") unless $bed_filename;
+push(@arg_errors, "No genome filename provided.") unless $genome_filename;
+# display the error messages both to the status page and stdout
+foreach my $arg_error (@arg_errors) {
+  print STDERR $arg_error, "\n";
+  $status->add_message($arg_error);
+}
+$opts_ok = 0 if (scalar(@arg_errors) > 0);
+# setup status page
+$status->add_file('bed', $bed_filename, 'Input BED file');
+$status->add_file('fasta', $output_filename, 'Output FASTA file');
+$status->add_message($opts_ok ? 'Arguments ok' : "Error parsing arguments");
+$status->update($opts_ok ? 'Starting' : 'Error');
+# exit if there was an error reading the arguments
+unless ($opts_ok) {
+ $status->write_log();
+ pod2usage(2);
+}
+# create the symlink to the databases
+symlink($fasta_db_dir, 'db');
+# ensure it will be removed on completion (when the log is written)
+$status->set_cleanup( sub { unlink('db'); } );
+# Run bed2fasta
+my @bed2fasta_args = ();
+push(@bed2fasta_args, '-s', '-both');
+push(@bed2fasta_args , '-o', $output_filename, $bed_filename, $genome_filename);
+$status->run(PROG => 'bed2fasta', BIN => $bin_dir, ARGS => \@bed2fasta_args);
+# done
+$status->add_message("Done");
+$status->update();
+$status->write_log();
+1;

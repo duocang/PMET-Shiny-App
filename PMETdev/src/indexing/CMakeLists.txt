@@ -27,5 +27,4 @@ add_executable(pmetindex
 # file(GLOB_RECURSE SOURCES "*.cpp")
 # add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
-# 添加性能测试工具
-target_link_libraries(${PROJECT_NAME} profiler unwind)
+target_link_libraries(${PROJECT_NAME})

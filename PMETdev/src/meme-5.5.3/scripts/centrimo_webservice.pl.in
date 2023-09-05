@@ -1,0 +1,200 @@
+#!@WHICHPERL@
+=head1 NAME
+
+centrimo_webservice - Run centrimo in a restricted mode and create an index webpage.
+
+=head1 SYNOPSIS
+
+centrimo_webservice [options] <sequences file> <motif databases>
+
+  Options:
+    -local            compute the enrichment of all regions; 
+                       default: central regions only
+    -score <score>    minimum score counted as hit
+    -optsc            search for optimized score above the threshold given by
+                       '-score' argument. Slow computation due to multiple tests
+    -ethresh <evalue> minimum E-value to report
+    -maxreg <region>  maximum region size to test
+    -bedfile-pos      Target (positive) sequence file is a BED file of loci
+    -bedfile-neg      Control (negative) sequence file is a BED file of loci
+    -genome-pos  <file> Genome file for BED file of loci for target (positive) sequences
+    -genome-neg  <file> Genome file for BED file of loci for control (negative) sequences
+    -neg <file>       plot a negative set of sequences against the default set
+                      and test each window with Fisher's Exact Test
+    -upmotifs <file>  uploaded motifs
+    -bfile <file>     background file (0-order)
+    -norc             don't scan with the reverse complement motif
+    -sep              scan separately with reverse complement motif;
+                      (requires --norc)
+    -flip             allow 'fliping' of sequences causing rc matches to appear
+                       'reflected' around center
+    -noseq            don't store sequence ids in the output
+    -xalph <file>     use a different alphabet and force the expansion of the motif's alphabet.
+    -help             brief help message
+
+  Motif Databases
+    The motif databases may be specified as a pattern using * as a wildcard.
+
+=cut
+
+use strict;
+use warnings;
+# load standard perl libraries
+use Getopt::Long qw(:config permute auto_help);
+use Pod::Usage;
+# load custom perl libraries
+use lib qw(@PERLLIBDIR@);
+use StatusPage qw(arg_checks opt_uploaded opt_db opt_integer opt_evalue);
+# constants
+my $bin_dir = '@BINDIR@';
+my $libexec_dir = '@LIBEXECDIR@';
+my $motif_db_dir = '@MEMEDB@/motif_databases';
+my $genome_db_dir = '@MEMEDB@/fasta_databases';
+# required parameters
+my $sequences;
+my @motifs = ();
+# options
+my ($upmotif, $neg_sequences, $xalph_file, $bfile, $score, $ethresh, $maxreg);
+my ($bedfile_pos, $genome_pos, $bedfile_neg, $genome_neg);
+my ($local, $optsc, $flip, $sep, $norc, $noseq) = (0, 0, 0, 0, 0, 0);
+#status page
+my $status = new StatusPage('CENTRIMO', \@ARGV);
+$status->add_message('Parsing arguments');
+# parse options
+my @arg_errors = ();
+my $opts_ok = do {
+  local $SIG{__WARN__} = sub { my ($msg) = @_; chomp($msg); push(@arg_errors, $msg); };
+  GetOptions(
+    '<>' => arg_checks(opt_uploaded(\$sequences), opt_db(\@motifs, $motif_db_dir, 'motif_db')),
+    'local' => \$local,
+    'score=f' => \$score,
+    'optsc' => \$optsc,
+    'ethresh=f' => opt_evalue(\$ethresh),
+    'maxreg=i' => opt_integer(\$maxreg, 0),
+    'upmotifs=s' => opt_uploaded(\$upmotif),
+    'bfile=s' => opt_uploaded(\$bfile),
+    'bedfile-pos'     => \$bedfile_pos,
+    'genome-pos=s'    => \$genome_pos,
+    'bedfile-neg'     => \$bedfile_neg,
+    'genome-neg=s'    => \$genome_neg,
+    'neg=s' => opt_uploaded(\$neg_sequences),
+    'xalph=s' => opt_uploaded(\$xalph_file),
+    'norc' => \$norc,
+    'noseq' => \$noseq,
+    'sep' => \$sep,
+    'flip' => \$flip,
+  );
+};
+unshift(@motifs, $upmotif) if defined $upmotif;
+# add additional error messages for missing sequences and motifs
+push(@arg_errors, "No sequences provided.") unless defined $sequences;
+push(@arg_errors, "No motifs provided.") unless @motifs;
+# Check bedfile related arguments
+if (defined $bedfile_pos || defined $genome_pos) {
+  if (! (defined $bedfile_pos && defined $genome_pos)) {
+    push(@arg_errors, "The -bedfile-pos, -genome-pos arguments must always be used together.");
+  }
+}
+if (defined $bedfile_neg || defined $genome_neg) {
+  push(@arg_errors, "The -bedfile-neg, -genome-neg arguments must always be used the '-neg' option.") unless defined $neg_sequences;
+  if (! (defined $bedfile_neg && defined $genome_neg)) {
+    push(@arg_errors, "The -bedfile-neg, -genome-neg arguments must always be used together.");
+  }
+}
+# display the error messages both to the status page and stdout
+foreach my $arg_error (@arg_errors) {
+  print STDERR $arg_error, "\n";
+  $status->add_message($arg_error);
+}
+$opts_ok = 0 if (scalar(@arg_errors) > 0);
+# setup status page
+$status->add_file('html', 'centrimo.html', 'CentriMo HTML output');
+$status->add_file('tsv', 'centrimo.tsv', 'CentriMo TSV output');
+$status->add_file('sites', 'site_counts.txt', 'CentriMo site counts');
+$status->add_file('motif', $upmotif, 'Uploaded Motifs');
+$status->add_file('alph', $xalph_file, 'Uploaded Alphabet');
+$status->add_file('bfile', $bfile, 'Uploaded Background');
+if (defined $bedfile_pos) {
+  $status->add_file('pos_bed', $sequences, '(Primary) Uploaded BED file');
+  $status->add_file('pos_seqs', $sequences . '.fa', '(Primary) Sequences from BED file');
+}
+else {
+  $status->add_file('fasta', $sequences, 'Input Sequences');
+}
+if (defined $bedfile_neg) {
+  $status->add_file('neg_bed', $neg_sequences, '(Control) Uploaded BED file');
+  $status->add_file('neg_seqs', $neg_sequences . '.fa', '(Control) Sequences from BED file');
+}
+else {
+  $status->add_file('neg', $neg_sequences, '(Control) Sequences');
+}
+$status->add_message($opts_ok ? 'Arguments ok' : "Error parsing arguments");
+$status->update($opts_ok ? 'Starting' : 'Error');
+# exit if there was an error reading the arguments
+unless ($opts_ok) {
+  $status->write_log();
+  pod2usage(2);
+}
+# create the symlink to the databases
+symlink($motif_db_dir, 'motif_db');
+symlink($genome_db_dir, 'genome_db');
+# ensure it will be removed on completion (when the log is written)
+$status->set_cleanup( sub { unlink('motif_db'); } );
+$status->set_cleanup( sub { unlink('genome_db'); } );
+# If invoked with a bedfile option the sequence file is in BED format
+# and we need to generate a FASTA file before passing it to MEME
+if (defined $bedfile_pos) {
+  my @bedargs = ();
+  push(@bedargs, '-s', '-both');
+  push(@bedargs, '-o', $sequences . '.fa', $sequences);
+  push(@bedargs, 'genome_db/'. $genome_pos); 
+  $status->run(PROG => 'bed2fasta', BIN => $libexec_dir, ARGS => \@bedargs);
+  $sequences = $sequences . '.fa';
+}
+if (defined $bedfile_neg) {
+  my @bedargs = ();
+  push(@bedargs, '-o', $neg_sequences . '.fa', $neg_sequences);
+  push(@bedargs, 'genome_db/'. $genome_neg); 
+  $status->run(PROG => 'bed2fasta', BIN => $libexec_dir, ARGS => \@bedargs);
+  $neg_sequences = $neg_sequences . '.fa';
+}
+# when no background provided create one
+unless (defined($bfile)) {
+  # when no alphabet is provided extract one from the motifs
+  my $afile = $xalph_file;
+  unless (defined($afile)) {
+    # Run meme2alph
+    $afile = 'alphabet.txt';
+    $status->update_file('alph', FILE => $afile, DESC => 'Calculated Alphabet');
+    $status->run(PROG => 'meme2alph', BIN => $libexec_dir,
+      ARGS => [$motifs[0], $afile], REASON => 'to extract alphabet');
+  }
+  # Run fasta-get-markov
+  $bfile = $sequences . '.bg';
+  $status->update_file('bfile', FILE => $bfile, DESC => 'Calculated Background');
+  $status->run(PROG => 'fasta-get-markov', BIN => $libexec_dir,
+    ARGS => ['-nostatus', '-nosummary', '-m', 0, '-alph', $afile, $sequences, $bfile],
+    REASON => 'to calculate background');
+}
+# Run centrimo
+my @centrimo_args = ('--oc', '.', '--verbosity', 1);
+push(@centrimo_args, '--dfile', 'description') if (-e 'description');
+push(@centrimo_args, '--noseq') if ($noseq);
+push(@centrimo_args, '--norc') if ($norc);
+push(@centrimo_args, '--sep') if ($sep);
+push(@centrimo_args, '--flip') if ($flip);
+push(@centrimo_args, '--local') if ($local);
+push(@centrimo_args, '--optimize-score') if ($optsc);
+push(@centrimo_args, '--score', $score) if (defined($score));
+push(@centrimo_args, '--ethresh', $ethresh) if (defined($ethresh));
+push(@centrimo_args, '--maxreg', $maxreg) if (defined($maxreg));
+push(@centrimo_args, '--xalph', $xalph_file) if (defined($xalph_file));
+push(@centrimo_args, '--bfile', $bfile);
+push(@centrimo_args, '--neg', $neg_sequences) if (defined($neg_sequences));
+push(@centrimo_args, $sequences, @motifs);
+$status->run(PROG => 'centrimo', BIN => $bin_dir, ARGS => \@centrimo_args);
+# done
+$status->add_message("Done");
+$status->update();
+$status->write_log();
+1;

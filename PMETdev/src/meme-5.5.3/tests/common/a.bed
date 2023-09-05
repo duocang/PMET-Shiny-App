@@ -1,0 +1,19 @@
+chr1	0	10	feature0	0	+
+chr1	0	10	feature1	0	-
+chr2	10	200	feature2	0	-
+chr2	10	200	feature2b	0	+
+chr3	0	2	feature3	0	.
+chr3	0	2	feature3b	0	+
+chr3	0	2	feature3c	0	-
+chr3	0	2	feature3c	0	-
+chr4	0	1	feature4	0	&
+chr4	0	1	feature4a	0	1
+chr4	0	1	feature4b	0	.
+chr1	0	10	feature4c
+chr4	0	2	feature5	0	.
+chr4	2	3	feature6	0	.
+chr4	2	-3	feature7	0	.
+chr1	1	0	feature8	0	+
+chr1	-1	1	feature9	0	+
+chr1	1	-1	feature10	0	+
+chr5	0	10	feature12	0	+

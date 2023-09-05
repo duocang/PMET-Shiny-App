@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Begin document body -->
+<mcast version="5.5.3" release="Fri Jun 9 08:12:01 2023 -0700">
+<command-line>mcast --oc results/mcast1 --verbosity 1 --max-gap 60 --seed 3 /Users/t.bailey/meme_git/meme/tests/meme/meme.lex0.zoops.txt common/lex0.s</command-line>
+<sequence-data num-sequences="16" num-residues="3067" />
+<alphabet>nucleotide</alphabet>
+<motif name="WACTGTATATATATACAGTW" width="20" best-possible-match="TACTGTATATATATACAGTA" best-possible-rc-match="TACTGTATATATATACAGTA"/>
+<background source="non-redundant database">
+<value letter="A">0.275</value>
+<value letter="C">0.225</value>
+<value letter="G">0.225</value>
+<value letter="T">0.275</value>
+</background>
+<cisml-file>cisml.xml</cisml-file>
+<mcast-parameters>
+<min-match-score>2.868</min-match-score>
+<e-thresh>10.000</e-thresh>
+<p-thresh>1.000</p-thresh>
+<q-thresh>1.000</q-thresh>
+<max-gap>60</max-gap>
+<max-total-width>-1</max-total-width>
+<cost-factor>1</cost-factor>
+<gap-open-cost>0.0478</gap-open-cost>
+<gap-extend-cost>0.0478</gap-extend-cost>
+</mcast-parameters>
+<e-value-parameters>
+<distribution>exponential</distribution>
+<status>Too few scores to estimate fit</status>
+<mu1>NaN</mu1>
+<mu2>NaN</mu2>
+<sigma2>NaN</sigma2>
+<c>NaN</c>
+<num-scores-used>0</num-scores-used>
+<num-matches>14</num-matches>
+<db-length>3067</db-length>
+</e-value-parameters>
+</mcast>

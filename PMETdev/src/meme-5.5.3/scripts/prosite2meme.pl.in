@@ -1,0 +1,130 @@
+#!@WHICHPERL@ -w
+
+# AUTHOR: James Johnson and Timothy Bailey
+# CREATE DATE: 01/10/2022
+# DESCRIPTION: Convert regular expression motifs in ELM format
+
+use warnings;
+use strict;
+
+
+use lib qw(@PERLLIBDIR@);
+
+use Alphabet qw(protein);
+use MotifUtils qw(seq_to_intern intern_to_meme read_background_file);
+
+use Fcntl qw(O_RDONLY);
+use Getopt::Long;
+use Pod::Usage;
+
+=head1 NAME
+
+prosite2meme - Converts PROSITE fixed-length patterns into MEME motifs.
+
+=head1 SYNOPSIS
+
+prosite2meme [options] <PROSITE file>+
+
+ Options: 
+  -anchored			allow anchored motifs; 
+				default: skip anchored motifs
+  -bg <background file>         file with background frequencies of letters; 
+                                default: uniform background
+  -pseudo <total pseudocounts>  add <total pseudocounts> times letter 
+                                background to each frequency; default: 0
+  -logodds                      print log-odds matrix, too; 
+                                default: print frequency matrix only
+  -url <website>                website for the motif; the motif name
+                                is substituted for MOTIF_NAME
+  -h                            print usage message
+
+ Converts PROSITE fixed-length patterns into MEME motifs
+ Variable-length PROSITE patterns are skipped.
+
+ Writes to standard output.
+
+=cut
+
+# Set option defaults
+my $help = 0;
+my $anchored = 0;
+my $bg_file;
+my $pseudo_total = 0;
+my $print_logodds = 0;
+my $url_pattern = "";
+my $nsites = 20;
+my @files = ();
+
+GetOptions(
+  "anchored" => \$anchored, "bg=s" => \$bg_file, "pseudo=f" => \$pseudo_total,
+  "logodds" => \$print_logodds, "url=s" => \$url_pattern, "help|?" => \$help) or pod2usage(2);
+#output help if requested
+pod2usage(1) if $help;
+@files = @ARGV;
+pod2usage("Missing PROSITE files") unless @files;
+
+# get the background model
+my %bg = &read_background_file(&protein(), $bg_file);
+
+my $num_skipped = 0;
+my $num_failed = 0;
+my $num_motifs = 0;
+foreach my $file (@files) {
+  my $fh;
+  sysopen($fh, $file, O_RDONLY);
+  my ($line, $id, $ac, $pattern) = ("", "", "", "");
+  while ($line = <$fh>) {
+    my ($tag, $value);
+    next if $line =~ m/^CC/; #skip comments
+    if ($line =~ m/^(ID|AC|PA|\/\/)/) {
+      $tag = $1;
+      my @parts = split /\s+/, $line;
+      $value = (@parts > 1) ? $parts[1] : "";
+      chop $value;
+      if ($tag eq "ID") {
+        $id = $value;
+      } elsif ($tag eq "AC") {
+        $ac = $value;
+      } elsif ($tag eq "PA") {
+        $pattern .= $value;
+      } elsif ($tag eq "//" && $pattern) {
+        # handle motifs that must be anchored? 
+        if ($anchored) { $pattern =~ s/^<|>$//; }
+        # can not handle motifs that are of variable length
+	if ($pattern =~ m/,|<|>/) {
+	  $num_skipped++;
+	  printf STDERR "Skipping %15s %25s     %s\n", $ac, $id, $pattern;
+	} else {
+	  print STDERR "ID $id AC $ac PA $pattern\n";
+	  my $url = $url_pattern;
+	  $url =~ s/MOTIF_NAME/$ac/g;
+          # convert PROSITE excluded disjunction to PERL
+          $pattern =~ s/{/\[^/g;
+          $pattern =~ s/}/\]/g;
+          # Split pattern on the '-' character.
+          @parts = split /-/, $pattern;
+          # Construct regex, expanding repeated parts.
+          my $regex = "";
+          my $field;
+          foreach $field (@parts) {
+            # Get the field and any repeat number.
+            $field =~ m/([^\(]+)(\((\d+)\))*/;
+            my $repeat = $3 ? $3 : 1;
+            for (my $i=0; $i < $repeat; $i++) {
+              $regex .= $1;  
+            }
+          }
+          print STDERR "$regex\n";
+	  my ($motif, $errors) = seq_to_intern(\%bg, $regex, $nsites, 
+	    $pseudo_total, url => $url, id => $ac, alt => $id, also => '.');
+	  print STDERR join("\n", @{$errors}), "\n" if @{$errors};
+	  print intern_to_meme($motif, $print_logodds, 1, !($num_motifs++)) if $motif;
+	  $num_failed++ unless $motif;
+        }
+        ($id, $ac, $pattern) = ("", "", "");
+      } # end of entry
+    } # ID, AC, PA or // line
+  } # line
+  close($fh);
+}
+print STDERR "Skipped: $num_skipped, Failed: $num_failed, Converted: $num_motifs\n";

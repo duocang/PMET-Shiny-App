@@ -27,7 +27,10 @@ universefile = args.universefile
 
 #soak up current promoters.bed file
 prom = pd.read_csv(promfile,header=None,index_col=None,sep='\t').values
-annot = pd.read_csv(gff3file,header=None,index_col=None,sep='\t',comment='#').values
+# annot = pd.read_csv(gff3file,header=None,index_col=None,sep='\t',comment='#').values
+dtype_dict = {0: str, 1: str, 2: str, 3: int, 4: int, 5: str, 6: str, 7: str, 8: str}
+annot = pd.read_csv(gff3file, header=None, index_col=None, sep='\t', comment='#', dtype=dtype_dict).values
+
 univ = pd.read_csv(universefile,header=None,index_col=None).values
 
 #the order is the same in the universe.txt as it is in annot.gff3

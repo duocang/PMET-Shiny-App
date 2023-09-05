@@ -1,0 +1,123 @@
+#!@WHICHPERL@
+# AUTHOR: Timothy L. Bailey
+# CREATE DATE: 15-Dec-2021
+#use strict;
+use File::Basename;
+
+my $PGM = $0;			# name of program
+$PGM =~ s#.*/##;                # remove part up to last slash
+#@args = @ARGV;			# arguments to program
+$| = 1;				# flush after all prints
+$SIG{'INT'} = \&cleanup;	# interrupt handler
+# Note: so that interrupts work, always use for system calls:
+# 	if ($status = system("$command")) {&cleanup($status)}
+
+# requires
+push(@INC, split(":", $ENV{'PATH'}));	# look in entire path
+
+# defaults
+my $usage = <<USAGE;		# usage message
+  USAGE:
+	$PGM [options]
+	-D<macro>	define <macro>
+
+	A simple preprocessor for ifdef/else/endif MACROs
+	similar to the C preprocessor.
+
+	Reads standard input.
+	Writes standard output.
+
+        Copyright
+        (2021) The University of Nevada
+        All Rights Reserved.
+        Author: Timothy L. Bailey
+USAGE
+
+my $nargs = 0;			# number of required args
+if ($#ARGV+1 < $nargs) { &print_usage("$usage", 1); }
+
+# get input arguments
+my %macros = ();		# defined macros
+my %clauses = ();		# 0=not in clause; 1=in ifdef; 2=in else
+while ($#ARGV >= 0) {
+  $_ = shift;
+  if (/-D(.*)/) {
+    $macros{$1} = 1;		# Names of defined macros
+    $clauses{$1} = 0;		# Not in clause for this macro
+  } elsif ($_ eq "-h") {	# help
+    &print_usage("$usage", 0);
+  } else {
+    &print_usage("$usage", 1);
+  }
+}
+
+my @macro_stack = (1);
+my @print_stack = (1);
+while (<STDIN>) {
+  if (/#ifdef\s+([a-zA-z]+)/) {
+    my $macro = $1;
+    my $value = $macros{$macro} ? 1 : 0;
+    push(@macro_stack, $value);
+    # Set the current print state to the AND of value 
+    # and the previous print state.
+    push(@print_stack, $value && $print_stack[-1]);
+  } elsif (/#else/) {
+    # Toggle the value of the top of the macro stack.
+    my $value = pop(@macro_stack);
+    $value = !$value;
+    push(@macro_stack, $value);
+    # Set the current print state to the AND of value 
+    # and the previous print state.
+    pop(@print_stack);
+    push(@print_stack, $value && $print_stack[-1]);
+  } elsif (/#endif/) {
+    # Pop the stacks.
+    pop(@macro_stack);
+    pop(@print_stack);
+  } else {
+    # Print the line if we are not in a no-print state.
+    print if ($print_stack[-1]);
+  }
+};
+
+my $status = 1;
+
+# cleanup files
+&cleanup($status, "");
+ 
+################################################################################
+#                       Subroutines                                            #
+################################################################################
+ 
+################################################################################
+#
+#       print_usage
+#
+#	Print the usage message and exit.
+#
+################################################################################
+sub print_usage {
+  my($usage, $status) = @_;
+ 
+  if (-c STDOUT) {			# standard output is a terminal
+    open(C, "| more");
+    print C $usage;
+    close C;
+  } else {				# standard output not a terminal
+    print STDERR $usage;
+  }
+
+  exit $status;
+}
+ 
+################################################################################
+#       cleanup
+#
+#       cleanup stuff
+#
+################################################################################
+sub cleanup {
+  my($status, $msg) = @_;
+  if ($status && "$msg") {print STDERR "$msg: $status\n";}
+  exit($status);
+}

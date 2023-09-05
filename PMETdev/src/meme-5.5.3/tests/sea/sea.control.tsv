@@ -1,0 +1,17 @@
+RANK	DB	ID	ALT_ID	CONSENSUS	TP	TP%	FP	FP%	ENR_RATIO	SCORE_THR	PVALUE	LOG_PVALUE	EVALUE	LOG_EVALUE	QVALUE	LOG_QVALUE
+1	common/Jaspar-subset.meme	MA0039.2	Klf4	DGGGYGKGGC	72	42.60	9	4.89	7.94	8.2	1.34e-17	-38.85	1.75e-16	-36.28	1.75e-16	-36.28
+2	common/Jaspar-subset.meme	MA0140.1	Tal1::Gata1	CTGBNNNNNDSAGATAAG	35	20.71	2	1.09	13.1	8.9	5.73e-10	-21.28	7.44e-9	-18.72	3.72e-9	-19.41
+3	common/Jaspar-subset.meme	MA0300.1	GAT1	YYGATAAG	28	16.57	4	2.17	6.31	6	6.31e-6	-11.97	8.20e-5	-9.41	2.73e-5	-10.51
+4	common/Jaspar-subset.meme	MA0035.2	Gata1	DSAGATAAGVV	31	18.34	6	3.26	4.97	7.7	1.14e-5	-11.38	1.48e-4	-8.82	3.70e-5	-10.21
+5	common/Jaspar-subset.meme	MA0079.1	SP1	KRGGCDGGGT	27	15.98	6	3.26	4.35	7.3	8.83e-5	-9.34	1.15e-3	-6.77	2.15e-4	-8.45
+6	common/Jaspar-subset.meme	MA0309.1	GZF3	YGATAASR	19	11.24	2	1.09	7.25	9.1	9.90e-5	-9.22	1.29e-3	-6.66	2.15e-4	-8.45
+7	common/Jaspar-subset.meme	MA0270.1	AFT2	SACACCCB	20	11.83	5	2.72	3.81	9.7	2.12e-3	-6.16	2.75e-2	-3.59	3.93e-3	-5.54
+8	common/Jaspar-subset.meme	MA0079.2	SP1	CCCCKCCCCC	12	7.10	3	1.63	3.54	8.5	2.03e-2	-3.90	2.64e-1	-1.33	3.30e-2	-3.41
+9	common/Jaspar-subset.meme	MA0443.1	btd	AGGGGGCGGR	21	12.43	10	5.43	2.18	0.86	6.32e-2	-2.76	8.22e-1	-0.20	8.22e-2	-2.50
+10	common/Jaspar-subset2.meme	MA0443.1	btd	AGGGGGCGGR	21	12.43	10	5.43	2.18	0.86	6.32e-2	-2.76	8.22e-1	-0.20	8.22e-2	-2.50
+11	common/Jaspar-subset.meme	MA0091.1	TAL1::TCF3	NSAMCATCTGKT	20	11.83	11	5.98	1.9	0.6	1.49e-1	-1.91	1.93e0	0.66	1.76e-1	-1.74
+12	common/Jaspar-subset2.meme	MA0039.1	Klf4	WAARGRAAGG	148	87.57	151	82.07	1.07	1.6	6.07e-1	-0.50	7.89e0	2.07	6.57e-1	-0.42
+
+# SEA (Simple Enrichment Analysis): Version 5.5.3 compiled on Jun  9 2023 at 08:16:00
+# The format of this file is described at https://meme-suite.org/meme/doc/sea-output-format.html.
+# sea --verbosity 1 --oc results/sea2 --p common/Klf1-200-100.fa --n sea/Klf1-200-100-shuffled.fa --motif-pseudo 0 --hofract 0 --m common/Jaspar-subset.meme --m common/Jaspar-subset2.meme --thresh 10

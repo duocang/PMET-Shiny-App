@@ -91,7 +91,7 @@ MarkDuplicates <- function(vec) {
   return(all_dup)
 }
 
-#' DiscardSharedMotifs: Remove shared motifs between motif clusters
+#' DiscardSharedItems: Remove shared motifs between motif clusters
 #'
 #' This function removes shared motifs between different motif clusters in a given motifs_list.
 #'
@@ -105,7 +105,7 @@ MarkDuplicates <- function(vec) {
 #'   cluster2 = c("motif2", "motif3", "motif4"),
 #'   cluster3 = c("motif4", "motif5", "motif6")
 #' )
-#' updated_motifs_list <- DiscardSharedMotifs(motifs_list)
+#' updated_motifs_list <- DiscardSharedItems(motifs_list)
 #' # updated_motifs_list:
 #     $cluster1
 #     [1] "motif1"
@@ -118,7 +118,7 @@ MarkDuplicates <- function(vec) {
 #'
 #' @keywords motif clusters, shared motifs, list manipulation
 #' @export
-DiscardSharedMotifs <- function(motifs_list) {
+DiscardSharedItems <- function(motifs_list) {
   # Iterate over each cluster in the motifs_list
   motifs_list <- names(motifs_list) %>%
     lapply(function(clu) {
@@ -134,6 +134,46 @@ DiscardSharedMotifs <- function(motifs_list) {
   return(motifs_list)
 }
 
+PmetHistogramPlot <- function(res           = NULL,
+                              ncols         = 2,
+                              histgram_path = "histgram_padj_before_filter.png") {
+
+  colors <- c("#ed3333", "#8b2671", "#11659a", "#1a6840",
+              "#f9a633", "#2f2f35", "#5c2223", "#ec8aa4",
+              "#813c85", "#74759b", "#101f30", "#1661ab",
+              "#126e82", "#1ba784", "#43b244", "#fed71a",
+              "#e8b004", "#ffa60f", "#954416", "#f2481b")
+
+  clusters <- unique(res$cluster) %>% sort()
+
+  colors <- colors[1:length(clusters)]
+  names(colors) <- clusters
+
+  ncols <- ifelse(length(clusters) > 1, 2, 1)
+
+  p <- lapply(clusters, function(clu) {
+    res[, c("cluster", "p_adj")] %>% filter(cluster == clu) %>%
+      ggplot( aes(x=p_adj, fill=cluster)) +
+        geom_histogram( fill=colors[[clu]], alpha=0.6, position = 'identity') +
+        theme_ipsum() +
+        theme_bw()    +
+        ggtitle(clu)  +
+        labs(fill="")
+    }) %>%
+    ggarrange(plotlist=.,
+              ncol=ncols,
+              nrow = ceiling(length(clusters)/ncols))
+
+  ggsave(histgram_path,
+         p,
+         dpi = 300,
+         units="in",
+         width = 10,
+         height = 3 * ceiling(length(clusters)/ncols))
+
+  return(p)
+}
+
 
 # process PMET result
 # 1. filter
@@ -145,13 +185,8 @@ ProcessPmetResult <- function(pmet_result       = NULL,
                               p_adj_limt        = 0.05,
                               gene_portion      = 0.05,
                               topn              = 40,
-                              ncol_             = 2,
                               histgram_dir      = NULL,
-                              unique_cmbination = TRUE,
-                              colors            = c("#ed3333", "#8b2671", "#11659a",
-                                                    "#1a6840", "#f9a633", "#2f2f35",
-                                                    "#993399", "#00cc99", "#ff6600",
-                                                    "#006699", "#ff3399", "#669933")) {
+                              unique_cmbination = TRUE) {
   suppressMessages({
 
     clusters <- unique(pmet_result$cluster) %>% sort()
@@ -159,20 +194,13 @@ ProcessPmetResult <- function(pmet_result       = NULL,
     names(colors) <- clusters
 
     ### 1.1 Histogram of p_adj
+    ### 3.1 Histogram of p_adj
     if (!is.null(histgram_dir)) {
-      plots <- clusters %>%
-        lapply(function(clu) {
-          p <- pmet_result[, c("cluster", "p_adj")] %>%
-            filter(cluster == clu) %>%
-            ggplot(aes(x = p_adj, fill = cluster)) +
-            geom_histogram(fill = colors[[clu]], alpha = 0.6, position = "identity") +
-            theme_ipsum() + theme_bw() +
-            ggtitle(clu) + labs(fill = "")
-          return(p)
-        }) %>%
-        ggarrange(plotlist = ., ncol = ncol_, nrow = ceiling(length(clusters) / ncol_))
-      ggsave(file.path(histgram_dir, "histgram_padj_before_filter.png"), plots)
-    }
+      PmetHistogramPlot(
+        res   = pmet_filtered,
+        ncols = 2,
+        histgram_path = file.path(histgram_dir, "histgram_padj_after_filter.png"))
+    } # if
 
     ## 2. Full genes of each cluster
     genes.list <- clusters %>%
@@ -205,22 +233,13 @@ ProcessPmetResult <- function(pmet_result       = NULL,
     # update clusters every time after filtering
     clusters <- unique(pmet.filtered$cluster) %>% sort()
 
-    ## 3.1 Histogram of p_adj
+    ### 3.1 Histogram of p_adj
     if (!is.null(histgram_dir)) {
-      p <- clusters %>%
-        lapply(function(clu) {
-          pmet.filtered[, c("cluster", "p_adj")] %>%
-            filter(cluster == clu) %>%
-            ggplot(aes(x = p_adj, fill = cluster)) +
-            geom_histogram(fill = colors[[clu]], alpha = 0.6, position = "identity") +
-            theme_ipsum() +
-            theme_bw() +
-            ggtitle(clu) +
-            labs(fill = "")
-        }) %>%
-        ggarrange(plotlist = ., ncol = ncol_, nrow = ceiling(length(clusters) / ncol_))
-      ggsave(file.path(histgram_dir, "histgram_padj_after_filter.png"), p)
-    }
+      PmetHistogramPlot(
+        res   = pmet_filtered,
+        ncols = 2,
+        histgram_path = file.path(histgram_dir, "histgram_padj_after_filter.png"))
+    } # if
 
     ## 4. find and remove motif pairs are not unique in different clusters
     if (unique_cmbination) {
@@ -272,7 +291,7 @@ ProcessPmetResult <- function(pmet_result       = NULL,
 #' @importFrom dplyr unname
 #' @importFrom dplyr unique
 #' @importFrom dplyr sort
-#' @importFrom . DiscardSharedMotifs
+#' @importFrom . DiscardSharedItems
 #'
 #' @export
 TopMotifsGenerator <- function( motifs.list = NULL,
@@ -281,7 +300,7 @@ TopMotifsGenerator <- function( motifs.list = NULL,
 
   # remove shared motifs, if exclusive.motifs is TRUE
   if (exclusive.motifs) {
-    motifs.list <- DiscardSharedMotifs(motifs.list)
+    motifs.list <- DiscardSharedItems(motifs.list)
   }
   # If parameters "by.cluster" and exclusive.motifs are set to TRUE, motifs
   # from the same cluster will be grouped together.

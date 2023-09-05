@@ -1,0 +1,43 @@
+my @beds = ('a.bed', 'b.bed');
+my @ids = ('', '-name', '-both');
+my @strands = ('', '-s');
+my $counter = 1;
+
+foreach my $bed (@beds) {
+  foreach my $id (@ids) {
+    foreach my $strand (@strands) {
+      my $testname = 'bed2fasta' . $counter;
+      my $fasta = $testname . '.fa';
+      my $err = $testname . '.err';
+      my $out_prefix = 'results/' . $testname . '/';
+      my $ref_prefix = 'bed2fasta/';
+      my @opts = ();
+      push(@opts, $id) if ($id ne '');
+      push(@opts, $strand) if ($strand ne '');
+      &test($testname, '',
+        'bed2fasta', '',
+	[
+	  '-o', $out_prefix . $fasta,
+	  '-e', $out_prefix . $err,
+          @opts,
+	  'common/' . $bed,
+	  'common/tiny_genome.fa'
+	],
+	[
+	  {
+	    output => $out_prefix . $fasta,
+	    reference => make_test_src_path($ref_prefix . $fasta),
+	    type => 'text', ignore => ['^#']
+	  },
+	  {
+	    output => $out_prefix . $err,
+	    reference => make_test_src_path($ref_prefix . $err),
+	    type => 'text', ignore => ['^#']
+	  }
+	],
+	$out_prefix
+      );
+      $counter++;
+    }
+  }
+}

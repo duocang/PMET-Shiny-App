@@ -1,0 +1,699 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<!-- Document definition -->
+<!-- http://zlab.bu.edu/~phaverty/SupplementalData/CisML/cisml.dtd -->
+<!DOCTYPE cis-element-search[
+<!ELEMENT cis-element-search (program-name, parameters, (pattern | multi-pattern-scan)*)>
+<!ELEMENT program-name (#PCDATA)>
+<!ELEMENT parameters (
+  pattern-file, 
+  sequence-file, 
+  background-seq-file?,
+  pattern-pvalue-cutoff?,
+  sequence-pvalue-cutoff?,
+  site-pvalue-cutoff?,
+  sequence-filtering,
+  ANY*
+ )>
+<!ELEMENT command-line (#PCDATA)>
+<!ELEMENT pattern-file (#PCDATA)>
+<!ELEMENT sequence-file (#PCDATA)>
+<!ELEMENT background-seq-file (#PCDATA)>
+<!ELEMENT pattern-pvalue-cutoff (#PCDATA)>
+<!ELEMENT sequence-pvalue-cutoff (#PCDATA)>
+<!ELEMENT site-pvalue-cutoff (#PCDATA)>
+<!ELEMENT sequence-filtering EMPTY>
+<!ELEMENT multi-pattern-scan (pattern+, ANY*)>
+<!ELEMENT pattern (scanned-sequence+, ANY*)>
+<!ELEMENT scanned-sequence (matched-element*, ANY*)>
+<!ELEMENT matched-element (sequence)>
+<!ELEMENT sequence (#PCDATA)>
+<!ATTLIST cis-element-search
+xmlns:xsi CDATA #IMPLIED
+xmlns:mem CDATA #IMPLIED
+xsi:schemaLocation CDATA #IMPLIED
+>
+<!ATTLIST sequence-filtering
+on-off CDATA #REQUIRED
+type CDATA #IMPLIED
+>
+<!ATTLIST multi-pattern-scan
+score CDATA #IMPLIED
+pvalue CDATA #IMPLIED
+>
+<!ATTLIST pattern
+accession CDATA #REQUIRED
+name CDATA #REQUIRED
+pvalue CDATA #IMPLIED
+score CDATA #IMPLIED
+db CDATA #IMPLIED
+lsid CDATA #IMPLIED
+>
+<!ATTLIST scanned-sequence
+accession CDATA #REQUIRED
+name CDATA #REQUIRED
+score CDATA #IMPLIED
+pvalue CDATA #IMPLIED
+length CDATA #IMPLIED
+db CDATA #IMPLIED
+lsid CDATA #IMPLIED
+>
+<!ATTLIST matched-element
+start CDATA #REQUIRED
+stop CDATA #REQUIRED
+score CDATA #IMPLIED
+pvalue CDATA #IMPLIED
+clusterid CDATA #IMPLIED
+>
+
+]>
+<cis-element-search
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://zlab.bu.edu/schema/cisml cisml.xsd"
+  xmlns="http://zlab.bu.edu/schema/cisml"
+  xmlns:mem="http://noble.gs.washington.edu/meme"
+>
+<program-name>mcast</program-name>
+<parameters>
+<pattern-file>/Users/t.bailey/meme_git/meme/tests/fimo/GCN4.meme.txt</pattern-file>
+<sequence-file>/Users/t.bailey/meme_git/meme/tests/fimo/GCN4_YPD.fasta</sequence-file>
+<pattern-pvalue-cutoff>0.01</pattern-pvalue-cutoff>
+<sequence-pvalue-cutoff>1</sequence-pvalue-cutoff>
+</parameters>
+<multi-pattern-scan score="24.7064" pvalue="8.5194e-06">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL059W" name="iYOL059W">
+<matched-element start="375" stop="395" pvalue="4.7772e-05">
+<sequence>CGCTATGTTAGTCACTACTGA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL059W" name="iYOL059W">
+<matched-element start="440" stop="420" pvalue="2.0938e-05">
+<sequence>TTTTTAGTGACTCATGTCGCA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL059W" name="iYOL059W">
+<matched-element start="490" stop="510" pvalue="0.0004563">
+<sequence>GTATGGAAGAGTCATTTAAAG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL059W" name="iYOL059W">
+<matched-element start="518" stop="538" pvalue="1.763e-05">
+<sequence>AGAGAGATTACTCATCTTCAT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-56" seq-name="iYOL059W" start="375" stop="538" evalue="0.00062192" qvalue="0.00062192">CGCTATGTTAGTCACTACTGACGGCTCTCCAGTCATTTATGTGATTTTTTAGTGACTCATGTCGCATTTGGCCCGTTTTTTTCCGCTGTCGCAACCTATTTCCATTAACGGTGCCGTATGGAAGAGTCATTTAAAGGCAGGAGAGAGAGATTACTCATCTTCAT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="21.4482" pvalue="5.1555e-05">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJL089W" name="iYJL089W">
+<matched-element start="48" stop="28" pvalue="1.3745e-05">
+<sequence>CTTCGTATTACTCATTCAGCT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJL089W" name="iYJL089W">
+<matched-element start="80" stop="100" pvalue="5.7973e-07">
+<sequence>CACGTCGTGACTCATATGCTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-39" seq-name="iYJL089W" start="28" stop="100" evalue="0.0037635" qvalue="0.0018818">CTTCGTATTACTCATTCAGCTCTTCCTCTGATAGCAGTGAATTTTCGAGGGTCACGTCGTGACTCATATGCTT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="18.7527" pvalue="0.00018703">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYHR018C" name="iYHR018C">
+<matched-element start="181" stop="201" pvalue="5.2622e-07">
+<sequence>CAAAAAGTGAGTCATTCATCT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYHR018C" name="iYHR018C">
+<matched-element start="244" stop="224" pvalue="0.00015067">
+<sequence>CTGCCAATGAGTAACCACCAC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-34" seq-name="iYHR018C" start="181" stop="244" evalue="0.013653" qvalue="0.004551">CAAAAAGTGAGTCATTCATCTACTAATCATGATTTTCGGGATTCTGCCAATGAGTAACCACCAC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="14.4515" pvalue="0.0022682">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYDR126W" name="iYDR126W">
+<matched-element start="23" stop="3" pvalue="1.8484e-06">
+<sequence>ATGCATATGACTCATCCCGAA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYDR126W" name="iYDR126W">
+<matched-element start="42" stop="62" pvalue="0.0047644">
+<sequence>TCGGTTTTTTCTCACCGCCAT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYDR126W" name="iYDR126W">
+<matched-element start="92" stop="72" pvalue="0.0046141">
+<sequence>CCGCAAATGTCGAACAAATTC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYDR126W" name="iYDR126W">
+<matched-element start="137" stop="157" pvalue="0.00037167">
+<sequence>GTAACCATTAGTAACAGATCA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-16" seq-name="iYDR126W" start="3" stop="157" evalue="0.16558" qvalue="0.041395">ATGCATATGACTCATCCCGAACATGAAATTTTTTTTCACTCGGTTTTTTCTCACCGCCATAGATTCTAACCGCAAATGTCGAACAAATTCATTATACAAGCGGTTTATTAATATAGAAGGTAGGACGCCGACTCGTAACCATTAGTAACAGATCA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="13.5702" pvalue="0.0030012">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJR109C" name="iYJR109C">
+<matched-element start="290" stop="310" pvalue="0.00067387">
+<sequence>ATCAATAAGAGTCATTCACAA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJR109C" name="iYJR109C">
+<matched-element start="316" stop="336" pvalue="0.0080649">
+<sequence>TATAGAATGCCGCAGGAAAGA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJR109C" name="iYJR109C">
+<matched-element start="363" stop="343" pvalue="8.9527e-06">
+<sequence>TGGTGGATGAGTCATTTTCTC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-43" seq-name="iYJR109C" start="290" stop="363" evalue="0.21908" qvalue="0.043295">ATCAATAAGAGTCATTCACAATAATCTATAGAATGCCGCAGGAAAGAAGACAGTGGTGGATGAGTCATTTTCTC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="13.5345" pvalue="0.0035585">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYGR267C" name="iYGR267C">
+<matched-element start="43" stop="63" pvalue="8.4275e-07">
+<sequence>CAAAAAATGAGTCACGCACGC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-33" seq-name="iYGR267C" start="43" stop="63" evalue="0.25977" qvalue="0.043295">CAAAAAATGAGTCACGCACGC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="13.2055" pvalue="0.0048847">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYHR070W" name="iYHR070W">
+<matched-element start="36" stop="56" pvalue="4.7772e-05">
+<sequence>AACGAGATGACTAACACCTTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYHR070W" name="iYHR070W">
+<matched-element start="89" stop="109" pvalue="4.8168e-05">
+<sequence>TGCGCGATGCGTCATACTACT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-35" seq-name="iYHR070W" start="36" stop="109" evalue="0.35658" qvalue="0.050941">AACGAGATGACTAACACCTTTATCTTCGAGAAGGCGCGGGGCTGACAGGGCACTGCGCGATGCGTCATACTACT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="12.2603" pvalue="0.0065027">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYER052C" name="iYER052C">
+<matched-element start="287" stop="307" pvalue="2.0383e-06">
+<sequence>GAAAAGGTGAGTCATGGGCCT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-18" seq-name="iYER052C" start="287" stop="307" evalue="0.47469" qvalue="0.056851">GAAAAGGTGAGTCATGGGCCT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="12.43" pvalue="0.007009">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYNL005C" name="iYNL005C">
+<matched-element start="610" stop="630" pvalue="1.8122e-06">
+<sequence>CGAATGGTGAGTCACCATTTA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-50" seq-name="iYNL005C" start="610" stop="630" evalue="0.51166" qvalue="0.056851">CGAATGGTGAGTCACCATTTA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="11.8802" pvalue="0.008623">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL141W" name="iYOL141W">
+<matched-element start="39" stop="59" pvalue="2.6528e-06">
+<sequence>CGCTATGTGACTCACTTAAAG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-59" seq-name="iYOL141W" start="39" stop="59" evalue="0.62948" qvalue="0.062948">CGCTATGTGACTCACTTAAAG
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="11.3247" pvalue="0.01014">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYER068W" name="iYER068W">
+<matched-element start="391" stop="371" pvalue="5.2366e-05">
+<sequence>ATCCGAATGACTCAGTCTACA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYER068W" name="iYER068W">
+<matched-element start="437" stop="417" pvalue="0.00022597">
+<sequence>TAATTGATGACTCTTCTATTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-23" seq-name="iYER068W" start="371" stop="437" evalue="0.74019" qvalue="0.066229">ATCCGAATGACTCAGTCTACATCAAAAAACTGTGGCCGAATGGTGGTAATTGATGACTCTTCTATTT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="11.5306" pvalue="0.011967">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYLR355C" name="iYLR355C">
+<matched-element start="316" stop="296" pvalue="2.4794e-05">
+<sequence>ACGCGGATGAGTCACTGACAG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYLR355C" name="iYLR355C">
+<matched-element start="325" stop="345" pvalue="0.00093089">
+<sequence>GAGGTTCTGACTCCTACTGAG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-46" seq-name="iYLR355C" start="296" stop="345" evalue="0.87356" qvalue="0.066229">ACGCGGATGAGTCACTGACAGCCACCGCAGAGGTTCTGACTCCTACTGAG
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="11.4514" pvalue="0.012348">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYNL104C" name="iYNL104C">
+<matched-element start="351" stop="371" pvalue="0.00036898">
+<sequence>CCAAGTATGACACACATTCAA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYNL104C" name="iYNL104C">
+<matched-element start="396" stop="376" pvalue="0.0079466">
+<sequence>GCTTTTCTGAGGCCTTCTTTC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYNL104C" name="iYNL104C">
+<matched-element start="434" stop="414" pvalue="4.4735e-05">
+<sequence>AGAGCGATGACTAACCTACTA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-52" seq-name="iYNL104C" start="351" stop="434" evalue="0.90137" qvalue="0.066229">CCAAGTATGACACACATTCAACTCAGCTTTTCTGAGGCCTTCTTTCTTTTCCTGCGCGTCGGTAGAGCGATGACTAACCTACTA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="11.2461" pvalue="0.013263">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYHR161C" name="iYHR161C">
+<matched-element start="396" stop="376" pvalue="0.0043486">
+<sequence>CTGCCAGGGCGTCATCTTTTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYHR161C" name="iYHR161C">
+<matched-element start="405" stop="425" pvalue="7.7632e-05">
+<sequence>GCCAGGCTGAGTCACGTCAGT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYHR161C" name="iYHR161C">
+<matched-element start="473" stop="453" pvalue="0.00022974">
+<sequence>CTACGAATTACTCATTTGTTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-36" seq-name="iYHR161C" start="376" stop="473" evalue="0.9682" qvalue="0.066229">CTGCCAGGGCGTCATCTTTTTCTACAAAAGCCAGGCTGAGTCACGTCAGTTGCTGACCCTGGGGGCTGCATTGTTTCCTACGAATTACTCATTTGTTT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="10.8026" pvalue="0.013609">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYEL063C" name="iYEL063C">
+<matched-element start="379" stop="359" pvalue="5.5989e-06">
+<sequence>AGCCGTATGACTCACCCGGAA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-17" seq-name="iYEL063C" start="359" stop="379" evalue="0.99343" qvalue="0.066229">AGCCGTATGACTCACCCGGAA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="10.3755" pvalue="0.016731">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOR130C" name="iYOR130C">
+<matched-element start="222" stop="202" pvalue="0.0028526">
+<sequence>ACGTATATGTCACATTTTTCG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOR130C" name="iYOR130C">
+<matched-element start="225" stop="245" pvalue="2.3988e-05">
+<sequence>CTCAAGGTGAGTCACGATGCA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-61" seq-name="iYOR130C" start="202" stop="245" evalue="1.2214" qvalue="0.071439">ACGTATATGTCACATTTTTCGAGCTCAAGGTGAGTCACGATGCA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="10.5102" pvalue="0.017484">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYCL030C" name="iYCL030C">
+<matched-element start="198" stop="218" pvalue="6.8569e-06">
+<sequence>AAAAACGTGAGTCACTGTGCA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-10" seq-name="iYCL030C" start="198" stop="218" evalue="1.2763" qvalue="0.071439">AAAAACGTGAGTCACTGTGCA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="10.72" pvalue="0.017615">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJL072C" name="iYJL072C">
+<matched-element start="73" stop="93" pvalue="0.0014752">
+<sequence>CTTTAGGCGACTGATTTTTCA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJL072C" name="iYJL072C">
+<matched-element start="134" stop="154" pvalue="9.1817e-06">
+<sequence>AAAAAGGTTAGTCATCACTGA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJL072C" name="iYJL072C">
+<matched-element start="177" stop="157" pvalue="0.0059052">
+<sequence>TTCCCATGGAGTCATAAGCAC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-38" seq-name="iYJL072C" start="73" stop="177" evalue="1.2859" qvalue="0.071439">CTTTAGGCGACTGATTTTTCATTAAATGGAAAATATCACAAGAAATTTCACGCTGGAGAAAAAAAAGGTTAGTCATCACTGATCTTCCCATGGAGTCATAAGCAC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="10.3517" pvalue="0.019031">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYDL198C" name="iYDL198C">
+<matched-element start="155" stop="135" pvalue="7.6529e-06">
+<sequence>TGCACAGTGACTCACGAGTTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-13" seq-name="iYDL198C" start="135" stop="155" evalue="1.3892" qvalue="0.073118">TGCACAGTGACTCACGAGTTT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="10.2238" pvalue="0.025235">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYMR062C" name="iYMR062C">
+<matched-element start="95" stop="115" pvalue="0.0017147">
+<sequence>CCGAGGATGAGGCTTTTATAT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYMR062C" name="iYMR062C">
+<matched-element start="146" stop="166" pvalue="1.1662e-05">
+<sequence>TACGCAGTGAGTCATCCTACC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-47" seq-name="iYMR062C" start="95" stop="166" evalue="1.8422" qvalue="0.092108">CCGAGGATGAGGCTTTTATATACTCGACGACTAAAGAAGTTGGCAACGAATTACGCAGTGAGTCATCCTACC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="9.53842" pvalue="0.031345">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYDL171C" name="iYDL171C">
+<matched-element start="569" stop="589" pvalue="5.7508e-05">
+<sequence>CAGGGTCTGAGTCATCAAAGA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYDL171C" name="iYDL171C">
+<matched-element start="599" stop="619" pvalue="0.0015223">
+<sequence>TACAATAAGAGTCTTACTTAA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-12" seq-name="iYDL171C" start="569" stop="619" evalue="2.2882" qvalue="0.10639">CAGGGTCTGAGTCATCAAAGAAAAAGAAATTACAATAAGAGTCTTACTTAA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="9.27231" pvalue="0.032061">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOR107W" name="iYOR107W">
+<matched-element start="507" stop="487" pvalue="1.6172e-05">
+<sequence>TAGTGAATGACTCATATTTTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-60" seq-name="iYOR107W" start="487" stop="507" evalue="2.3405" qvalue="0.10639">TAGTGAATGACTCATATTTTT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="9.37277" pvalue="0.034762">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYER055C" name="iYER055C">
+<matched-element start="188" stop="208" pvalue="1.5084e-05">
+<sequence>GTAGAGGTGACTCACTTGGAA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-19" seq-name="iYER055C" start="188" stop="208" evalue="2.5376" qvalue="0.10743">GTAGAGGTGACTCACTTGGAA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="9.30067" pvalue="0.036553">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYPL274W" name="iYPL274W">
+<matched-element start="233" stop="253" pvalue="1.5857e-05">
+<sequence>CAGAGTATTAGTCATTTTTGA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-69" seq-name="iYPL274W" start="233" stop="253" evalue="2.6684" qvalue="0.10743">CAGAGTATTAGTCATTTTTGA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="9.35495" pvalue="0.03679">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOR301W" name="iYOR301W">
+<matched-element start="149" stop="129" pvalue="8.9761e-05">
+<sequence>GGGTGTTTGACTCATCATCGC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOR301W" name="iYOR301W">
+<matched-element start="160" stop="180" pvalue="0.001056">
+<sequence>CTCATGATGAGTAAATAGTTG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-65" seq-name="iYOR301W" start="129" stop="180" evalue="2.6857" qvalue="0.10743">GGGTGTTTGACTCATCATCGCATCGCATTACCTCATGATGAGTAAATAGTTG
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="9.21634" pvalue="0.038293">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYBR043C" name="iYBR043C">
+<matched-element start="362" stop="342" pvalue="1.6811e-05">
+<sequence>TTTACAATGACTCATTCTGAC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-2" seq-name="iYBR043C" start="342" stop="362" evalue="2.7954" qvalue="0.10751">TTTACAATGACTCATTCTGAC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="8.82011" pvalue="0.044989">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYBR248C" name="iYBR248C">
+<matched-element start="196" stop="216" pvalue="0.00011488">
+<sequence>TACGATATGACTCAATTTTTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYBR248C" name="iYBR248C">
+<matched-element start="238" stop="218" pvalue="0.0018362">
+<sequence>TTGCAGAAGAGTAACTGATAG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-6" seq-name="iYBR248C" start="196" stop="238" evalue="3.2842" qvalue="0.12164">TACGATATGACTCAATTTTTTTTTGCAGAAGAGTAACTGATAG
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="9.10012" pvalue="0.049607">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJR111C" name="iYJR111C">
+<matched-element start="79" stop="99" pvalue="0.0019898">
+<sequence>CCTGCAGTGTGGCACTTGTAT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJR111C" name="iYJR111C">
+<matched-element start="124" stop="104" pvalue="0.0023454">
+<sequence>GTATGTGTAAGTCAGTACACA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYJR111C" name="iYJR111C">
+<matched-element start="176" stop="156" pvalue="7.3556e-05">
+<sequence>GTAATTATTAGTCACACATTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-44" seq-name="iYJR111C" start="79" stop="176" evalue="3.6213" qvalue="0.12933">CCTGCAGTGTGGCACTTGTATATATGTATGTGTAAGTCAGTACACAAGTATAAGCATATATGGTTATGCTTCGTTGAGTAATTATTAGTCACACATTT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="8.37332" pvalue="0.061791">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL119C" name="iYOL119C">
+<matched-element start="170" stop="150" pvalue="0.00030138">
+<sequence>TCGCCTGTGACTCTTTGCCAT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL119C" name="iYOL119C">
+<matched-element start="196" stop="216" pvalue="0.0003037">
+<sequence>GCACGGCTGACTAATTTGAAG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-58" seq-name="iYOL119C" start="150" stop="216" evalue="4.5107" qvalue="0.15554">TCGCCTGTGACTCTTTGCCATCTCGCCTGTTAATTACCGCTCATAGGCACGGCTGACTAATTTGAAG
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="8.20715" pvalue="0.070115">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYER072W" name="iYER072W">
+<matched-element start="617" stop="597" pvalue="3.3838e-05">
+<sequence>AGACTTCTGACTCATCACTAC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-27" seq-name="iYER072W" start="597" stop="617" evalue="5.1184" qvalue="0.17061">AGACTTCTGACTCATCACTAC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="7.97885" pvalue="0.078789">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYNR050C" name="iYNR050C">
+<matched-element start="209" stop="229" pvalue="3.9639e-05">
+<sequence>CAGAGTATGAGTAATTCTTTT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-55" seq-name="iYNR050C" start="209" stop="229" evalue="5.7516" qvalue="0.18135">CAGAGTATGAGTAATTCTTTT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="8.00187" pvalue="0.079496">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOR336W" name="iYOR336W">
+<matched-element start="222" stop="202" pvalue="3.9012e-05">
+<sequence>CTCCCCATGACTCATTAGATT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-67" seq-name="iYOR336W" start="202" stop="222" evalue="5.8032" qvalue="0.18135">CTCCCCATGACTCATTAGATT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="8.09594" pvalue="0.082669">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYBR113W" name="iYBR113W">
+<matched-element start="459" stop="479" pvalue="0.0081846">
+<sequence>CGAACGAGGAGTGACGTGGAC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYBR113W" name="iYBR113W">
+<matched-element start="503" stop="483" pvalue="3.8703e-05">
+<sequence>ATGAAGGTGACTCAGCCAATC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-3" seq-name="iYBR113W" start="459" stop="503" evalue="6.0349" qvalue="0.18287">CGAACGAGGAGTGACGTGGACGCGATGAAGGTGACTCAGCCAATC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="7.9319" pvalue="0.087875">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYGL184C" name="iYGL184C">
+<matched-element start="345" stop="365" pvalue="0.0026901">
+<sequence>TATTGTGTGAAGCACATGCCA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYGL184C" name="iYGL184C">
+<matched-element start="382" stop="402" pvalue="7.0973e-05">
+<sequence>GTCAGAATGAGTCAGCCGGAT</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-32" seq-name="iYGL184C" start="345" stop="402" evalue="6.4149" qvalue="0.18345">TATTGTGTGAAGCACATGCCACACTTTCCAAAAAAGAGTCAGAATGAGTCAGCCGGAT
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="7.68574" pvalue="0.087957">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYOL064C" name="iYOL064C">
+<matched-element start="146" stop="166" pvalue="4.8569e-05">
+<sequence>GCTCGTCTGAGTCATTCGCGC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-57" seq-name="iYOL064C" start="146" stop="166" evalue="6.4208" qvalue="0.18345">GCTCGTCTGAGTCATTCGCGC
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="7.81802" pvalue="0.091162">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYKL016C" name="iYKL016C">
+<matched-element start="281" stop="261" pvalue="0.00025542">
+<sequence>CCGCTCATTAGTCACGTGGTC</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYKL016C" name="iYKL016C">
+<matched-element start="349" stop="329" pvalue="0.00018441">
+<sequence>ATGGGATTGAGTCATCGGATA</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-45" seq-name="iYKL016C" start="261" stop="349" evalue="6.6548" qvalue="0.18486">CCGCTCATTAGTCACGTGGTCATCACGTGAGCATAATATATCACGTGATATACACCCATACCTCGTTTATGGGATTGAGTCATCGGATA
+</mem:match>
+</multi-pattern-scan>
+<multi-pattern-scan score="7.13852" pvalue="0.13503">
+<pattern accession="MA0303.1" name="MA0303.1">
+<scanned-sequence accession="iYGL184C" name="iYGL184C">
+<matched-element start="266" stop="286" pvalue="7.0973e-05">
+<sequence>GATGCGATGAGTCTTCCAAGG</sequence>
+</matched-element>
+</scanned-sequence>
+</pattern>
+<mem:match cluster-id="cluster-31" seq-name="iYGL184C" start="266" stop="286" evalue="9.8569" qvalue="0.2664">GATGCGATGAGTCTTCCAAGG
+</mem:match>
+</multi-pattern-scan>
+</cis-element-search>

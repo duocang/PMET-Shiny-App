@@ -26,7 +26,7 @@ ComdRunPmet <- function(input,
     },
     "promoters" = {
       bash_pmet <- paste(
-        "nohup PMETdev/promoters_index_pair.sh ",
+        "nohup PMETdev/promoters_index_pair_new_fimo.sh ",
         "-r ", "PMETdev/scripts ",
         "-i gene_id=",
         "-o", index_dir,
@@ -46,7 +46,7 @@ ComdRunPmet <- function(input,
         file.path(index_dir, "0.gff3"),
         file.path(index_dir, "0.meme"), "&")
       system("chmod +x PMETdev/scripts/gff3sort/gff3sort.pl")
-      system("chmod +x PMETdev/promoters_index_pair.sh")
+      system("chmod +x PMETdev/promoters_index_pair_new_fimo.sh")
     },
     "intervals" = {
       bash_pmet <- paste(

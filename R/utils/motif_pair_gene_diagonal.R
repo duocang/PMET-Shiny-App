@@ -4,18 +4,18 @@
 #   `me-M` = c("MYB3R4_JASPAR2022", "AGL6_COL_ARABD_DAP", "SOL1_COL_ARABD_DAP"),
 #   `me-S` = c("DEL1_COLAMP_ARABD_DAP", "GATA1_COLAMP_ARABD_DAP", "GATA26_CISBP2")
 # )
-# LegendGGplotGenerator(motifs_list)
+# GGplotLegendGenerator(motifs_list)
 
-LegendGGplotGenerator <- function(motifs_list) {
-  motifs_top <- motifs_list %>% unlist() %>% unname()
+GGplotLegendGenerator <- function(motifs.list) {
+  motifs.top <- motifs.list %>% unlist() %>% unname()
 
-  samp_id <- 1:length(motifs_top)
-  group <- names(motifs_list) %>%
-    lapply(function(clu) { rep(clu, length(motifs_list[[clu]])) }) %>% unlist()
+  samp.id <- 1:length(motifs.top)
+  group <- names(motifs.list) %>%
+    lapply(function(clu) { rep(clu, length(motifs.list[[clu]])) }) %>% unlist()
 
   # Build a legend "bar"
-  groups <- data.frame(samp_id = samp_id, group = group)
-  leg <- ggplot(groups, aes(y = samp_id, x = 0)) +
+  groups <- data.frame(samp.id = samp.id, group = group)
+  leg <- ggplot(groups, aes(y = samp.id, x = 0)) +
     geom_point(aes(color = group), shape = 15, size = 8, show.legend = F) +
     theme_classic() +
     theme(
@@ -24,7 +24,7 @@ LegendGGplotGenerator <- function(motifs_list) {
       plot.margin = unit(c(0, 0, 0, 0), "cm")
     )
 
-  arm <- ggplot(groups, aes(y = rev(samp_id), x = 0)) +
+  arm <- ggplot(groups, aes(y = rev(samp.id), x = 0)) +
     geom_point(aes(color = group), shape = 15, size = 8, show.legend = F) +
     theme_classic() +
     theme(

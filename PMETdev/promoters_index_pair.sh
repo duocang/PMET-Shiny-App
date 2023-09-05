@@ -33,6 +33,36 @@ function error_exit() {
     exit 1
 }
 
+function error_exit() {
+    echo "ERROR: $1" >&2
+    usage
+    exit 1
+}
+
+print_red(){
+    RED='\033[0;31m'
+    NC='\033[0m' # No Color
+    printf "${RED}$1${NC}\n"
+}
+
+print_green(){
+    GREEN='\033[0;32m'
+    NC='\033[0m' # No Color
+    printf "${GREEN}$1${NC}\n"
+}
+
+print_orange(){
+    ORANGE='\033[0;33m'
+    NC='\033[0m' # No Color
+    printf "${ORANGE}$1${NC}\n"
+}
+
+print_fluorescent_yellow(){
+    FLUORESCENT_YELLOW='\033[1;33m'
+    NC='\033[0m' # No Color
+    printf "${FLUORESCENT_YELLOW}$1${NC}\n"
+}
+
 # set up defaults
 topn=5000
 maxk=5
@@ -216,7 +246,7 @@ if [ $utr == 'Yes' ]; then
     echo "11. Adding UTRs...";
 	python3 $pmetroot/parse_utrs.py \
         $indexingOutputDir/promoters.bed \
-        $indexingOutputDir/sorted.gff3 $universefile
+        $gff3file $universefile
 fi
 
 # -------------------------------------------------------------------------------------------
@@ -343,32 +373,35 @@ runFimoIndexing () {
 }
 export -f runFimoIndexing
 
-find $indexingOutputDir/memefiles -name \*.txt \
-    | parallel  --jobs=$threads \
-        "runFimoIndexing {} $indexingOutputDir $fimothresh $pmetroot $maxk $topn"
-
 numfiles=$(ls -l $indexingOutputDir/memefiles/*.txt | wc -l)
 echo $numfiles" motifs found"
 
-echo "Delete unnecessary files"
+find $indexingOutputDir/memefiles -name \*.txt \
+    | parallel  --jobs=$threads \
+        "runFimoIndexing {} $indexingOutputDir $fimothresh $pmetroot $maxk $topn"
+# find $indexingOutputDir/memefiles -name "*.txt" \
+#     | parallel --bar --jobs=$threads \
+#         "runFimoIndexing {} $indexingOutputDir $fimothresh $pmetroot $maxk $topn; echo" \
+#     | zenity --progress --auto-close --width=500 --title="Processing files" --text="Running Fimo Indexing..." --percentage=0 --auto-kill --no-cancel
+
 
 echo "Delete unnecessary files"
 
-rm $indexingOutputDir/genelines.gff3
-rm $indexingOutputDir/bedgenome.genome
-rm $bedfile
-rm $indexingOutputDir/genome_stripped.fa
-rm $indexingOutputDir/genome_stripped.fa.fai
-rm $indexingOutputDir/promoters.bed
-rm $indexingOutputDir/promoters_rough.fa
-if [ -f "$indexingOutputDir/promoter_length_deleted.txt" ]; then
-    rm $indexingOutputDir/genes_negative.txt
-    rm $indexingOutputDir/promoter_length_deleted.txt
-fi
+rm -f $indexingOutputDir/genelines.gff3
+rm -f $indexingOutputDir/bedgenome.genome
+rm -f $bedfile
+rm -f $indexingOutputDir/genome_stripped.fa
+rm -f $indexingOutputDir/genome_stripped.fa.fai
+rm -f $indexingOutputDir/promoters.bed
+rm -f $indexingOutputDir/promoters_rough.fa
+rm -f $indexingOutputDir/genes_negative.txt
+rm -f $indexingOutputDir/promoter_length_deleted.txt
 rm -r $indexingOutputDir/memefiles
-rm $indexingOutputDir/promoters.bg
-rm $indexingOutputDir/promoters.fa
-rm $indexingOutputDir/sorted.gff3
+rm -f $indexingOutputDir/promoters.bg
+rm -f $indexingOutputDir/promoters.fa
+rm -f $indexingOutputDir/sorted.gff3
+rm -f $indexingOutputDir/pmetindex.log
+rm -f $indexingOutputDir/promoter_lengths_all.txt
 touch ${indexingOutputDir}_FLAG
 
 

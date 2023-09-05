@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>BED2FASTA - MEME Suite</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/memesuite_icon.ico">
+    <link rel="icon" type="image/png" href="images/memesuite_icon.png">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <script src="js/menu.js"></script>
+    <script src="js/shared-doc.js"></script>
+    <script src="js/simple-shared-doc.js"></script>
+    <script src="js/citation.js"></script>
+    <style>
+      div.example {
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="memesuitelogo">
+      <h1>The MEME Suite</h1>
+      <h2>Motif-based sequence analysis tools</h2>
+    </div>
+    <div class="prog_logo">
+      <img src="images/bed2fasta_icon.png" alt="BED2FASTA Logo">
+      <h1>BED2FASTA</h1>
+      <h3>Extract regions specified in a BED file from a genome</h3>
+    </div>
+
+    <div style='display:inline' id='man_web_button'>
+      <p> <button onclick="toggle_man_display()">View Web Version</button> </p>
+    </div>
+
+    <div style='display:none' id='man_cmd_button'>
+      <p> <button onclick="toggle_man_display()">View Command-Line Version</button> </p>
+    </div>
+
+    <div style='display:inline' id='man_usage'>
+      <div class="usage">
+        <h3>Usage:</h3>
+        <code>bed2fasta [options] &lt;BED file&gt; &lt;genome file&gt;</code>
+      </div>
+    </div>
+
+    <h3>Description</h3>
+    <div class="indent">
+      <span class="man blurb" data-id="bed2fasta"></span>
+    </div>
+
+    <!-- Command Line Version Doc -->
+    <div style='display:inline' id='man_cmd'>
+
+      <h3>Input</h3>
+      <div class="indent">
+        <span class='popt'><b>&lt;BED file&gt;</b></span>
+        <div class="indent">
+          <p>The name of a file containing genomic sequence regions 
+            <a href="bed-format.html">BED format</a>.
+          </p>
+        </div>
+        <span class='popt'><b>&lt;genome file&gt;</b></span>
+        <div class="indent">
+          <p>The name of a file containing the genomic sequences 
+	    for the genome corresponding to the BED file in 
+            <a href="fasta-format.html">FASTA format</a>.
+          </p>
+        </div>
+      </div>
+
+      <h3>Output</h3>
+      <div class="indent">
+        <p>
+          BED2FASTA writes a sequence region in <a href="fasta-format.html">FASTA format</a> 
+          for each (legal) BED record in the input BED file.  By default, BED2FASTA writes the
+	  sequence regions to standard output. You can cause BED2FASTA to write its output to
+          a file instead by using the <span class='popt'>-o</span> option (below).
+        </p>
+      </div>
+
+      <h3>Options</h3>
+      <div class="indent">
+        <table class="options">
+          <thead>
+            <tr>
+              <th>Option</th>
+              <th>Parameter</th>
+              <th>Description</th>
+              <th>Default Behavior</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td class="popt">-o </td><td><span class='pdat'>file name</span></td>
+              <td>Output the sequence regions to the named file.</td>
+              <td>BED2FASTA outputs the sequence regions to standard output.</td>
+            </tr>
+            <tr>
+              <td class="popt">-s</td><td></td>
+              <td>Output the reverse complement of the sequence region
+		if the strand given in its BED record is '-' (BED field 6).</td>
+              <td>Output the sequence region without reverse complementing.</td>
+            </tr>
+            <tr>
+              <td class="popt">-name</td><td></td>
+              <td>Use just the name field from the BED record (BED field 4)
+		as the sequence identifier in the FASTA sequence identifier for the genomic region.</td>
+              <td>Use the chromosome coordinates (&lt;chr&gt;:&lt;start&gt;-&lt;end&gt;) 
+		as the sequence identifier in the FASTA header.</td>
+            </tr>
+            <tr>
+              <td class="popt">-both</td><td></td>
+              <td>Include the name field from the BED record (BED field 4)
+		as a comment after the chromosome coordinates in the FASTA sequence identifier
+		for the genomic region.</td>
+              <td>Use the chromosome coordinates (&lt;chr&gt;:&lt;start&gt;-&lt;end&gt;) 
+		as the sequence identifier in the FASTA header.</td>
+            </tr>
+
+	    <script>
+	      wropt("all-version", {"ddash": false});
+	      wropt("all-help", {"ddash": false});
+	    </script>
+          </tbody>
+
+        </table>
+      </div>
+      <br>
+
+    </div>
+
+    <h3 id="citing">Citing</h3>
+    <div class=indent id="citation"><script>print_citation("citation", "MEME_SUITE");</script></div>
+
+    <script src="js/manual.js"></script>
+
+  </body>
+</html>

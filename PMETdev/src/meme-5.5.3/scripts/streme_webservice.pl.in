@@ -1,0 +1,188 @@
+#!@WHICHPERL@
+=head1 NAME
+
+streme_webservice - Run STREME in a restricted mode and create an index webpage.
+
+=head1 SYNOPSIS
+
+streme_webservice [options] <positive sequences file>
+
+  Options:
+    -bedfile-pos        Target (positive) sequence file is a BED file of loci
+    -bedfile-neg        Control (negative) sequence file is a BED file of loci
+    -genome-pos  <file> Genome file for BED file of loci for target (positive) sequences
+    -genome-neg  <file> Genome file for BED file of loci for control (negative) sequences
+    -n <file>         	file containing negative sequences
+    -minw <minw>	minimum motif width
+    -maxw <maxw>	maximum motif width
+    -thresh <thresh>    maximum motif p-value
+    -nmotifs <nmotifs>	maximum motif count
+    -bfile <bg file>	specify a background file
+    -order <order>	Markov order for shuffling and background
+    -notrim             do not trim control sequences
+    -align <align>	how to align sequences for site position diagrams
+    -parse-genomic-coord        parse genomic coordinates
+    -help             	brief help message
+
+=cut
+
+use strict;
+use warnings;
+# load standard perl libraries
+use Getopt::Long qw(:config permute auto_help);
+use Pod::Usage;
+use File::Basename qw(fileparse);
+# load custom perl libraries
+use lib qw(@PERLLIBDIR@);
+use Alphabet qw(rna dna protein);
+use StatusPage qw(arg_checks arg_end opt_uploaded opt_choice opt_integer opt_pvalue);
+use MemeWebUtils qw(is_safe_name);
+use Globals;
+# constants
+my $bin_dir = '@BINDIR@';
+my $dbdir = '@MEMEDB@';
+my $libexec_dir = '@LIBEXECDIR@';
+# required parameters
+my $positives;
+# Optional parameters.
+my ($alpha, $alphf, $negatives, $minw, $maxw, $thresh, $nmotifs, $bfile, $order, $notrim, $align, $pgc);
+my ($bedfile_pos, $bedfile_neg, $genome_pos, $genome_neg);
+$alpha = 'DNA';
+#status page
+my $status = new StatusPage('STREME', \@ARGV);
+$status->add_message('Parsing arguments');
+# parse options
+my @arg_errors = ();
+my $opts_ok = do {
+  local $SIG{__WARN__} = sub { my ($msg) = @_; chomp($msg); push(@arg_errors, $msg); };
+  GetOptions(
+  '<>' 			=> arg_checks(opt_uploaded(\$positives), arg_end()),
+  'alpha=s' 		=> opt_choice(\$alpha, 'DNA', 'RNA', 'PROTEIN'),
+  'alphf=s'		=> opt_uploaded(\$alphf),
+  'bedfile-pos'		=> \$bedfile_pos,
+  'genome-pos=s'	=> \$genome_pos,
+  'bedfile-neg'		=> \$bedfile_neg,
+  'genome-neg=s'	=> \$genome_neg,
+  'n=s'			=> opt_uploaded(\$negatives), 
+  'minw=i'		=> opt_integer(\$minw), 
+  'maxw=i'		=> opt_integer(\$maxw), 
+  'thresh=f'		=> opt_pvalue(\$thresh), 
+  'nmotifs=i'		=> opt_integer(\$nmotifs),
+  'bfile=s'		=> \$bfile,
+  'order=i'		=> opt_integer(\$order),
+  'notrim'		=> \$notrim,
+  'align=s'		=> \$align,
+  'parse-genomic-coord' => \$pgc,
+  );
+};
+
+# Check bedfile related arguments
+if (defined $bedfile_pos || defined $genome_pos) {
+  if (! (defined $bedfile_pos && defined $genome_pos)) {
+    push(@arg_errors, "The -bedfile-pos, -genome-pos arguments must always be used together.");
+  }
+}
+if (defined $bedfile_neg || defined $genome_neg) {
+  if (! (defined $bedfile_neg && defined $genome_neg)) {
+    push(@arg_errors, "The -bedfile-neg, -genome-neg arguments must always be used together.");
+  }
+}
+
+# Check background related arguments.
+if (defined($bfile)) {
+  $bfile = fileparse($bfile);
+  if (not is_safe_name($bfile)) {
+    push(@arg_errors, "Value \"$bfile\" invalid for option bfile (does not fit allowed file name pattern)");
+  } elsif (not -e $bfile) {
+    push(@arg_errors, "Value \"$bfile\" invalid for option bfile (file does not exist)");
+  }
+}
+if (defined($order)) {
+  if ($order < 0 || $order > 4) {
+    push(@arg_errors, "Value \"$order\" invalid for option order (expected 0-4)");
+  }
+}
+
+# add additional error messages for missing sequences and motifs
+push(@arg_errors, "No sequences provided.") unless defined $positives;
+# display the error messages both to the status page and stdout
+foreach my $arg_error (@arg_errors) {
+  print STDERR $arg_error, "\n";
+  $status->add_message($arg_error);
+}
+$opts_ok = 0 if (scalar(@arg_errors) > 0);
+# setup status page
+$status->add_file('html', 'streme.html', 'STREME HTML output');
+$status->add_file('text', 'streme.txt', 'STREME text output (motifs in MEME format)');
+$status->add_file('xml', 'streme.xml', 'STREME XML output');
+if (defined $bedfile_pos) {
+  $status->add_file('pos_bed', $positives, '(Primary) Uploaded BED file');
+  $status->add_file('pos_seqs', $positives . '.fa', '(Primary) Sequences from BED file');
+}
+else {
+  $status->add_file('pos_seqs', $positives, 'Input sequences');
+}
+if (defined $bedfile_neg) {
+  $status->add_file('neg_bed', $negatives, '(Control) Uploaded BED file');
+  $status->add_file('neg_seqs', $negatives . '.fa', '(Control) Sequences from BED file');
+}
+else {
+  $status->add_file('neg_seqs', $negatives, 'Control sequences');
+}
+$status->add_message($opts_ok ? 'Arguments ok' : "Error parsing arguments");
+$status->update($opts_ok ? 'Starting' : 'Error');
+# exit if there was an error reading the arguments
+unless ($opts_ok) {
+  $status->write_log();
+  pod2usage(2);
+}
+
+# load the alphabet
+my $alphabet = $status->load_alphabet($alpha, $alphf);
+my @alph_args = (defined($alphf) ? ('--alph', $alphf) : ('--' . lc($alpha)));
+
+# Set the maximum total sequence length allowed to limit the run-time and memory use.
+# Allow streme_length_factor characters of total sequence per 1GB or core memory.
+my $maxtotallength = @maxmemory@ * @streme_length_factor@;
+
+# If invoked with a bedfile option the sequence file is in BED format
+# and we need to generate a FASTA file before passing it to MEME
+if (defined $bedfile_pos) {
+  my @bedargs = ();
+  push(@bedargs, '-s', '-both');
+  push(@bedargs, '-o', $positives . '.fa', $positives);
+  push(@bedargs, $dbdir . '/fasta_databases/' . $genome_pos); 
+  $status->run(PROG => 'bed2fasta', BIN => $libexec_dir, ARGS => \@bedargs);
+  $positives = $positives . '.fa';
+}
+if (defined $bedfile_neg) {
+  my @bedargs = ();
+  push(@bedargs, '-s', '-both');
+  push(@bedargs, '-o', $negatives . '.fa', $negatives);
+  push(@bedargs, $dbdir . '/fasta_databases/' . $genome_neg); 
+  $status->run(PROG => 'bed2fasta', BIN => $libexec_dir, ARGS => \@bedargs);
+  $negatives = $negatives . '.fa';
+}
+# construct the arguments to streme
+my @streme_args = ('--verbosity', 1, '--oc', '.', @alph_args);
+push(@streme_args, '--totallength', $maxtotallength); 
+push(@streme_args, '--time', $status->remaining_time());
+push(@streme_args, '--minw', $minw) if defined($minw);
+push(@streme_args, '--maxw', $maxw) if defined($maxw);
+push(@streme_args, '--thresh', $thresh) if defined($thresh);
+push(@streme_args, '--nmotifs', $nmotifs) if defined($nmotifs);
+push(@streme_args, '--bfile', $bfile) if defined($bfile);
+push(@streme_args, '--order', $order) if defined($order);
+push(@streme_args, '--notrim') if ($notrim);
+push(@streme_args, '--align', $align) if defined($align);
+push(@streme_args, '--parse-genomic-coord') if ($pgc);
+push(@streme_args, '--dfile', 'description') if (-e 'description');
+push(@streme_args, '--p', $positives);
+push(@streme_args, '--n', $negatives) if $negatives;
+# run STREME (let STREME manage the timeout)
+$status->run(PROG => 'streme', BIN => $bin_dir, ARGS => \@streme_args, TIMEOUT => 0);
+# done
+$status->add_message("Done");
+$status->update();
+$status->write_log();
+1;

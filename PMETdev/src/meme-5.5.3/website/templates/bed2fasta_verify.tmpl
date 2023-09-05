@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<title>FIMO verification</title>
+<link href="../css/status.css" rel="stylesheet" type="text/css" />
+<script src="../doc/js/utilities.js"></script>
+<script src="../js/status.js"></script>
+<script>
+var verify = 
+<!--{message}-->
+{
+  "items": [
+    {
+      "type": "file",
+      "name": "BED file",
+      "key": "bedfile"
+    },
+    {
+      "type": "sequences",
+      "name": "Sequences",
+      "key": "sequences"
+    }
+  ]
+}<!--{/message}-->;
+
+var data = {
+  "service": "BED2FASTA",
+  "id": "appBED2FASTA_4.10.01381207214457-2050656034",
+  "when":1381207216291,
+  "expiry": 1381812016291,
+  "description": "This is a test of BEDToFASTA",
+  "inputs": {
+    "bedfile": {
+      "source": "file",
+      "safe-file": "a_file.bed",
+      "orig-file": "a file.bed",
+    },
+    "sequences": {
+      "source": "file",
+      "safe-file": "a_file.fa",
+      "orig-file": "a file.fa",
+      "alphabet": "DNA",
+      "count": 18,
+      "min": 105,
+      "max": 105,
+      "avg": 105.0,
+      "total": 1890
+    }
+  }
+};
+</script>
+</head>
+<body>
+<!--{title}-->BED2FASTA<!--{/title}--> - <!--{subtitle}-->Convert a BED file to a FASTA file <!--{/subtitle}--><br>
+<!--{logo}-->doc/images/bed2fasta_icon.png<!--{/logo}-->: <!--{alt}-->BED2FASTA Logo<!--{/alt}--><br>
+<div id="info"></div>
+<script>display_job_information($("info"), verify["items"], data);</script>
+</body>
+</html>
+
+

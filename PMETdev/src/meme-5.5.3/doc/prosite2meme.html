@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>prosite2meme - MEME Suite</title>
+    <link rel="shortcut icon" type="image/x-icon" href="images/memesuite_icon.ico">
+    <link rel="icon" type="image/png" href="images/memesuite_icon.png">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <script src="js/menu.js"></script>
+    <script src="js/shared-doc.js"></script>
+  </head>
+  <body>
+    <div class="memesuitelogo">
+      <h1>The MEME Suite</h1>
+      <h2>Motif-based sequence analysis tools</h2>
+    </div>
+    <h2>prosite2meme</h2>
+    <div class="usage">
+      <h3>Usage:</h3>
+      <code>prosite2meme [options] &lt;PROSITE file&gt;+</code>
+    </div>
+    <h3>Description</h3>
+    <div class="indent">
+      <p>Converts PROSITE fixed-length patterns into MEME motifs
+       Variable-length PROSITE patterns are skipped.</p>
+    </div>
+    <h3>Input</h3>
+    <div class="indent">
+      <h4><span class='popt'>&lt;PROSITE file&gt;+</span></h4>
+      <p>The names of one or more pattern files in PROSITE format.</p>
+
+      <p>PROSITE entries describe a motif as a regular expression. 
+      Not all PROSITE patterns can be converted into MEME motifs due to anchors or variable length.
+      The first two patterns below will be converted.  The third one will not 
+      because it contains variable-length regions (indicated by the numbers
+      is parentheses.  The fourth pattern will only be converted if the
+      <code>-anchor</code> option is given because it is anchored at the 
+      C-terminus (indcated by the less-than sign at the end of the regular expression.)</p>
+
+      <h5>Sample Input</h5>
+      <pre class="indent">
+ID   ASN_GLYCOSYLATION; PATTERN.
+AC   PS00001;
+PA   N-{P}-[ST]-{P}.
+//
+ID   GUANYLATE_KINASE_1; PATTERN.
+AC   PS00856;
+PA   [TS]-[ST]-R-x(2)-[KR]-x(2)-[DE]-x(2)-[GA]-x(2)-Y-x-[FY]-[LIVMKHRT].
+//
+ID   AA_TRANSFER_CLASS_4; PATTERN.
+AC   PS00770;
+PA   E-x-[STAGCI]-x(2)-N-[LIVMFAC]-[FY]-x(6,12)-[LIVMFA]-x-T-x(6,8)-[LIVM]-x-
+PA   [GS]-[LIVM]-x-[KR].
+//
+ID   ER_TARGET; PATTERN.
+AC   PS00014;
+PA   [KRHQSA]-[DENQ]-E-L>.
+      </pre>
+    </div>
+
+    <h3>Output</h3>
+    <div class="indent">
+      <script>wrdoc("2meme-output");</script>
+    </div>
+    <h3>Options</h3>
+    <div class="indent">
+      <table class="options">
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Parameter</th>
+            <th>Description</th>
+            <th>Default Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th colspan="4">General Options</th>
+          </tr>
+	  <tr>
+	    <td class="popt">-anchored</td>
+	    <td></td>
+	    <td>Convert anchored PROSITE patterns.  The resulting motif will <b>not</b>
+              be anchored.
+	    </td>
+	    <td>Do not convert anchored PROSITE patterns.
+	    </td>
+	  </tr>
+          <script>
+            wropt("2meme-bg");
+            wropt("2meme-pseudo");
+            wropt("2meme-logodds");
+            wropt("2meme-url", {"type": "motif ID", "example": "NANOG"});
+            wropt("all-help", {"short": true});
+          </script>
+        </tbody>
+      </table>
+    </div>
+
+  </body>
+</html>
+

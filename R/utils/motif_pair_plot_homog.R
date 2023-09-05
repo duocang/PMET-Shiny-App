@@ -39,7 +39,7 @@ MotifPairPlotHomog <- function( pmet.split       = NULL,
   # from the same cluster will be grouped together.
   # a legend bar will indicate the cluster with different colors
   if (by.cluster & exclusive.motifs) {
-    legends <- LegendGGplotGenerator(DiscardSharedMotifs(motifs.list))
+    legends <- GGplotLegendGenerator(DiscardSharedItems(motifs.list))
     leg <- legends$vertical
     arm <- legends$horizontal
   }

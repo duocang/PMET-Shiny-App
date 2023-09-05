@@ -1,0 +1,19 @@
+pattern_name	sequence_name	start	stop	score	p-value	E-value	q-value	matched_sequence
+cluster-14	muc-operon	49	68	18.8081	nan	nan	nan	TACTGTATAAATAAACAGTT
+cluster-13	lexA	14	95	19.2701	nan	nan	nan	CTCTGGTTTATTGTGCAGTTTATGGTTCCAAAATCGCCTTTTGCTGTATATACTCACAGCATAACTGTATATACACCCAGGG
+cluster-12	colicin-a	34	53	12.7583	nan	nan	nan	TACTGTATATAAACACATGT
+cluster-5	reca	71	90	15.0184	nan	nan	nan	TACTGTATGAGCATACAGTA
+cluster-6	recn	71	130	26.235	nan	nan	nan	TACTGTATATAAAACCAGTTTATACTGTACACAATAACAGTAATGGTTTTTCATACAGGA
+cluster-2	colicin-e1	97	116	12.2975	nan	nan	nan	TGCTGTATATAAAACCAGTG
+cluster-8	umu-operon	91	110	20.536	nan	nan	nan	TACTGTATATAAAAACAGTA
+cluster-3	colicin-ia	99	118	12.6379	nan	nan	nan	TACTGTATATGTATCCATAT
+cluster-4	colicin-ib	99	118	12.6379	nan	nan	nan	TACTGTATATGTATCCATAT
+cluster-11	uvrd	102	121	12.6724	nan	nan	nan	ATCTGTATATATACCCAGCT
+cluster-1	cloacin-df13	97	116	23.4494	nan	nan	nan	TACTGTGTATATATACAGTA
+cluster-9	uvra	60	79	11.8537	nan	nan	nan	TACTGTATATTCATTCAGGT
+cluster-10	uvrb	71	90	14.989	nan	nan	nan	AACTGTTTTTTTATCCAGTA
+cluster-7	sula	85	104	12.9253	nan	nan	nan	TACTGTACATCCATACAGTA
+
+# MCAST (Motif Cluster Alignment and Search Tool): Version 5.5.3 compiled on Jun 10 2023 at 16:02:39
+# The format of this file is described at https://meme-suite.org/meme/doc/mcast-output-format.html.
+# mcast --oc results/mcast1 --verbosity 1 --max-gap 60 --seed 3 /Users/t.bailey/meme_git/meme/tests/meme/meme.lex0.zoops.txt common/lex0.s

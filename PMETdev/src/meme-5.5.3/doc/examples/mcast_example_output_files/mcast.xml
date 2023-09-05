@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Begin document body -->
+<mcast version="5.5.3" release="Fri Jun 9 08:12:01 2023 -0700">
+<command-line>mcast -oc mcast_example_output_files -parse-genomic-coord Klf1.streme Klf1.fna</command-line>
+<sequence-data num-sequences="904" num-residues="452000" />
+<alphabet>nucleotide</alphabet>
+<motif name="1-RGCCACACCCWNNBY" width="15" best-possible-match="AGCCACACCCAGACC" best-possible-rc-match="GGTCTGGGTGTGGCT"/>
+<motif name="2-CTCCACCCAK" width="10" best-possible-match="CTCCACCCAT" best-possible-rc-match="ATGGGTGGAG"/>
+<motif name="3-RGAGATAAGRVD" width="12" best-possible-match="GGAGATAAGGAT" best-possible-rc-match="ATCCTTATCTCC"/>
+<motif name="4-CCCKCCCTYC" width="10" best-possible-match="CCCTCCCTCC" best-possible-rc-match="GGAGGGAGGG"/>
+<motif name="5-AAAATRAAANMCA" width="13" best-possible-match="AAAATGAAATACA" best-possible-rc-match="TGTATTTCATTTT"/>
+<motif name="6-CCCCACCCC" width="9" best-possible-match="CCCCACCCC" best-possible-rc-match="GGGGTGGGG"/>
+<motif name="7-AAAACAAACCTAG" width="13" best-possible-match="AAAACAAACCTAG" best-possible-rc-match="CTAGGTTTGTTTT"/>
+<background source="non-redundant database">
+<value letter="A">0.275</value>
+<value letter="C">0.225</value>
+<value letter="G">0.225</value>
+<value letter="T">0.275</value>
+</background>
+<cisml-file>cisml.xml</cisml-file>
+<mcast-parameters>
+<min-match-score>3.020</min-match-score>
+<e-thresh>10.000</e-thresh>
+<p-thresh>1.000</p-thresh>
+<q-thresh>1.000</q-thresh>
+<max-gap>50</max-gap>
+<max-total-width>-1</max-total-width>
+<cost-factor>1</cost-factor>
+<gap-open-cost>0.0604</gap-open-cost>
+<gap-extend-cost>0.0604</gap-extend-cost>
+</mcast-parameters>
+<e-value-parameters>
+<distribution>exponential</distribution>
+<status>Distribution estimated successfully.</status>
+<mu1>7.41</mu1>
+<mu2>51.2</mu2>
+<sigma2>3.43</sigma2>
+<c>1</c>
+<num-scores-used>1000</num-scores-used>
+<num-matches>1088</num-matches>
+<db-length>452000</db-length>
+</e-value-parameters>
+</mcast>

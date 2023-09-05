@@ -1,0 +1,7 @@
+WARNING: Feature (chr4:0-2) beyond length of chr4 size (1 bp). Skipping.
+WARNING: Feature (chr4:2-3) beyond length of chr4 size (1 bp). Skipping.
+WARNING: Feature (chr4:2--3) has end < 0. Skipping.
+WARNING: Feature (chr1:1-0) has length < 0. Skipping.
+WARNING: Feature (chr1:-1-1) has start < 0. Skipping.
+WARNING: Feature (chr1:1--1) has end < 0. Skipping.
+WARNING: Feature (chr5:0-10) not found in genome file common/tiny_genome.fa. Skipping.

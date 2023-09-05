@@ -1,0 +1,8 @@
+# <db_root>,<prot?>,<nuc?>,<short_seqs?>,<db_menu_name>,<db_long_name>,<protein_url>,<nuc_url>
+,,,yes,-----Other Databases-----,,,
+
+alu,yes,yes,yes,ALU,Alu repeats from REPBASE; suitable for masking Alu repeats from query sequences.  It used to be available by anonymous FTP from ncbi.nih.gov (under the /pub/jmc/alu directory). See "Alu alert" by Claverie and Makalowski; Nature vol. 371 page 752 (1994).,https://meme-suite.org/meme/meme-software/Databases/ALU/alu_PROTEIN_1069804800000.faa,https://meme-suite.org/meme/meme-software/Databases/ALU/alu_DNA_1069804800000.fna
+
+pdb,yes,no,yes,Protein Data Bank,PDB protein and nucleotide sequence databases from ftp.ncbi.nih.gov/blast/db/FASTA/pdbaa.gz,ftp.ncbi.nih.gov/blast/db/FASTA/pdbaa.gz,
+
+swissprot,yes,no,yes,Swissprot,<a href="http://ca.expasy.org/sprot/sprot_details.html">Swissprot</a> protein sequence database; last major update when this file was downloaded.,ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz,
