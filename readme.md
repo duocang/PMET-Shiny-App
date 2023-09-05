@@ -61,6 +61,24 @@ data/indexing
 
 In the future, if there are more plants or new databases to be added to the shiny app, we just need to copy the new indexing results to the indexing directory. the PMET shiny app will automatically recognize the new additions without the need to change the code.
 
+
+## PMET index and pair compile
+
+If you don't really want to know the details, you can just run the following script.
+
+```bash
+cd PMETdev
+
+chmod a+x binary_compile.sh
+
+bash binary_compile.sh
+```
+
+After compilation, the executable will be saved in the `PMETdev/scripts` directory for the Shiny app to call.
+
+
+
+
 ## tools needed
 ### Install GNU Parallel
 
@@ -339,39 +357,6 @@ if (length(failed_packages) > 0) {
 }
 ```
 
-## PMET index and pair compile
-
-Both are writen in C++, source code can be found in `PMETdev/src/indexing` and `PMETdev/src/pmetParallel`.
-
-If necessary, it is possible to compile pmet index and pmet in different OS.
-
-**PMET index**
-
-```bash
-# PMETdev/src/indexing
-./build.sh
-```
-
-or
-
-```bash
-# PMETdev/src/indexing
-g++  -g -Wall -std=c++11 cFimoFile.cpp cMotifHit.cpp fastFileReader.cpp main.cpp -o ../../scripts/pmetindex
-```
-
-**PMET**
-
-```bash
-# PMETdev/src/pmetParallel
-./build.sh
-```
-
-or
-
-```bash
-# PMETdev/src/pmetParallel
-g++ -g -Wall -std=c++11 Output.cpp motif.cpp motifComparison.cpp main.cpp -o ../../scripts/pmetParallel_linux -pthread
-```
 
 ![](www/figures/pmet_workflow_with_interval_option.png)
 
