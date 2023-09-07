@@ -67,7 +67,8 @@ observe({
   hide_spinner()
   shinyjs::hide("toast-container")
   shinyjs::hide("run_pmet_btn_div")
-  shinyjs::hide("pmet_result_download_btn")
+  # shinyjs::hide("pmet_result_download_btn")
+  shinyjs::hide("pmet_result_download_btn_temp")
 
   # check file input and gene file
   files_ready <- switch(input$mode,
@@ -123,18 +124,20 @@ observe({
 })
 
 
-# Run PMET ---------------------------------------------------------------------
+##################################### Run PMET #########################################
+folder_temp <- NULL
 # A queue of notification IDs
 notifi_pmet_ids <-  character(0)
 observeEvent(input$run_pmet_btn, {
   show_spinner()
   report_success(
     title = "PMET will take long time to complete.",
-    text ="You are safe to close this page and result will be send via email.",
+    text ="You are safe to close this page and result will be sent via email.",
     button = "OK"
   )
 
-  shinyjs::hide("pmet_result_download_btn")
+  # shinyjs::hide("pmet_result_download_btn")
+  shinyjs::hide("pmet_result_download_btn_temp")
   shinyjs::disable("run_pmet_btn")
 
   # move focus to run button
@@ -160,7 +163,14 @@ observeEvent(input$run_pmet_btn, {
     file.rename(file.path("result/indexing", job_id), pmet_paths$index_dir)
   }
   cli::cat_rule(sprintf("pmet task starts！"))
-  # PMET job is runnig in the back
+
+  ################################ print job status ################################
+  folder_temp <<- pmet_paths$pair_dir
+  print(paste0("Current job is saved to ", folder_temp))
+  print(paste("Indexing data in ", pmet_paths$index_dir))
+  print(paste("Gene file in ", pmet_paths$genes_path))
+
+  ######################## PMET job is runnig in the back ##########################
   future_promise({
     ComdRunPmet(inputs,
                 pmet_paths$index_dir,
@@ -168,22 +178,31 @@ observeEvent(input$run_pmet_btn, {
                 pmet_paths$genes_path,
                 mode)
   }) %...>% (function(result_link) {
-    # 1. Download button for ngxin file -----------------------------------------
-    shinyjs::show("pmet_result_download_btn") # hide download button
-    output$pmet_result_download_ui <- renderUI({
-      actionButton(
-        "pmet_result_download_btn",
-        "Result",
-        icon = icon("download"),
-        class = "btn-success",
-        onclick = paste0("location.href='", result_link, "'"),
-        style = "width: 130px;margin-left: 30px;"
-      )
-    }) # end of rednderUI
+    ####################### 1. Download button for ngxin file ########################
+    # shinyjs::show("pmet_result_download_btn") # hide download button
+    shinyjs::show("pmet_result_download_btn_temp") # hide download button
+    # output$pmet_result_download_ui <- renderUI({
+    #   actionButton(
+    #     "pmet_result_download_btn",
+    #     "Result",
+    #     icon = icon("download"),
+    #     class = "btn-success",
+    #     onclick = paste0("location.href='", result_link, "'"),
+    #     style = "width: 130px;margin-left: 30px;"
+    #   )
+    # }) # end of rednderUI
     # automatically scroll to the spot of download button
     runjs('document.getElementById("run_pmet_div").scrollIntoView();')
 
-    # 2. Notitication -----------------------------------------------------------
+    # dynamically create a button after PMET done to download PMET result
+    output$pmet_result_download_ui_temp <- renderUI({
+      downloadButton("pmet_result_download_btn_temp",
+        "PMET result",
+        style = "width: 135px"
+      )
+    })
+
+    ################################ 2. Notitication ##################################
     # Download reminder (automatically disappears after 120 seconds)
     showToast(
       "success",
@@ -204,10 +223,9 @@ observeEvent(input$run_pmet_btn, {
     cli::cat_rule(sprintf("pmet done!"))
     Sys.sleep(0.5)
 
-    # 3. Reset---------------------------------------------------------------------
-
+    ################################## 3. Reset #######################################
     # reset buttion
-    #   reset loadingButton (RUN PMET) to its active state after PMET DONE
+    # reset loadingButton (RUN PMET) to its active state after PMET DONE
     resetLoadingButton("run_pmet_btn")
     shinyjs::enable("run_pmet_btn")
     # when job is finished, disable the RUN buttion to avoid second run
@@ -221,26 +239,26 @@ observeEvent(input$run_pmet_btn, {
       shinyjs::reset(paste0(input$mode, "-", i))
       hideFeedback(paste0(input$mode, "-", i))
     }
-
-    # 4. Hide UI elements -------------------------------------------------------------
+    ############################## 4. Hide UI elements ##################################
     # hide gene not find link
     if (input$mode == "promoters_pre") {
       shinyjs::hide("promoters_pre-genes_not_found_link")
     }
-
-    # 5. Delete uploaded gene file
+    ########################### 5. Delete uploaded gene file #############################
     # The PMET RUN button should disappear after the previous PMET job is completed and
-    # set the fileInput of genne file to NUL, to ensure that a new gene file is uploaded
+    # set the fileInput of genne file to NULL, to ensure that a new gene file is uploaded
     # before showing the PMET RUN button again.
     # But it is not easy to set input$input$`promoters_pre-genes` to NULL. So, we decide
     # to delete temp gene file from previous PMET job and check the existence of gene file
     # to show PMET run button in the future PMET job.
+
+    print(input$`promoters_pre-genes`$datapath)
     # file.remove(input$`promoters_pre-genes`$datapath)
   }) # end of future
 })
 
 
-# info of species
+################################# info of species #######################################
 observeEvent(input$`promoters_pre-species`, {
   req(input$`promoters_pre-species`, input$`promoters_pre-species`!="")
   shinyjs::show("txt_species")
@@ -271,7 +289,7 @@ observeEvent(input$`promoters_pre-species`, {
   })
 }, ignoreInit = TRUE)
 
-# annotation
+###################################### annotation #######################################
 observeEvent(input$`promoters_pre-species`, {
   req(input$`promoters_pre-species`, input$`promoters_pre-species`!="")
   link_text <- MOTF_DB_META[[input$`promoters_pre-species`]][["annotation_name"]]
@@ -346,3 +364,15 @@ observeEvent(input$mode, {
   shinyjs::hide("txt_annotation")
   shinyjs::hide("txt_motif_db")
 })
+
+########################### Download PMET result zipped #################################
+output$pmet_result_download_btn_temp <- downloadHandler(
+  filename = function() {
+    "pmet_result.zip"
+  },
+  content = function(file) {
+    fs <- dir(folder_temp) %>% file.path(folder_temp, .)
+    zip::zip(file, files = fs, mode = "cherry-pick")
+  },
+  contentType = "application/zip"
+)

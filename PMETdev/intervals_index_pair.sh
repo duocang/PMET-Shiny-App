@@ -40,6 +40,48 @@ function error_exit() {
     exit 1
 }
 
+print_red(){
+    RED='\033[0;31m'
+    NC='\033[0m' # No Color
+    printf "${RED}$1${NC}\n"
+}
+
+print_green(){
+    BOLD_GREEN='\033[1;32m'
+    NC='\033[0m' # No Color
+    printf "${BOLD_GREEN}$1${NC}\n"
+}
+
+print_orange(){
+    ORANGE='\033[38;5;214m'
+    NC='\033[0m' # No Color
+    printf "${ORANGE}$1${NC}\n"
+}
+
+print_light_blue(){
+    ORANGE='\033[0;33m'
+    NC='\033[0m' # No Color
+    printf "${ORANGE}$1${NC}\n"
+}
+
+print_fluorescent_yellow(){
+    FLUORESCENT_YELLOW='\033[1;33m'
+    NC='\033[0m' # No Color
+    printf "${FLUORESCENT_YELLOW}$1${NC}\n"
+}
+
+print_light_blue(){
+    LIGHT_BLUE='\033[1;34m'
+    NC='\033[0m' # No Color
+    printf "${LIGHT_BLUE}$1${NC}\n"
+}
+
+print_white(){
+    WHITE='\033[1;37m'
+    NC='\033[0m' # No Color
+    printf "${WHITE}$1${NC}"
+}
+
 # set up arguments
 topn=5000
 maxk=5
@@ -64,31 +106,31 @@ fi
 # bring in arguments
 while getopts ":r:o:k:n:f:t:x:g:c:e:l:" options; do
     case $options in
-        r) echo "Full path of PMET_index:  $OPTARG" >&2
+        r) print_white "Directory of PMET_index                   : "; print_orange "$OPTARG" >&2
         pmetroot=$OPTARG;;
-        o) echo "Output directory for results: $OPTARG" >&2
+        o) print_white "Directory of homotypic motif hits         : "; print_orange "$OPTARG" >&2
         indexingOutputDir=$OPTARG;;
-        n) echo "Top n promoter hits to take per motif: $OPTARG" >&2
+        n) print_white "Top n promoter hits to take per motif     : "; print_orange "$OPTARG" >&2
         topn=$OPTARG;;
-        k) echo "Top k motif hits within each promoter: $OPTARG" >&2
+        k) print_white "Top k motif hits within each promoter     : "; print_orange "$OPTARG" >&2
         maxk=$OPTARG;;
-        f) echo "Fimo threshold: $OPTARG" >&2
+        f) print_white "Fimo threshold                            : "; print_orange "$OPTARG" >&2
         fimothresh=$OPTARG;;
-        t) echo "Number of threads: $OPTARG" >&2
+        t) print_white "Number of threads                         : "; print_orange "$OPTARG" >&2
         threads=$OPTARG;;
-        x) echo "Output directory for PMET results: $OPTARG" >&2
+        x) print_white "Output directory of heterotypic motif hits: "; print_orange "$OPTARG" >&2
         pairingOutputDir=$OPTARG;;
-        g) echo "gene: $OPTARG" >&2
+        g) print_white "Path of gene files                        : "; print_orange "$OPTARG" >&2
         genefile=$OPTARG;;
-        c) echo "IC threshold: $OPTARG" >&2
+        c) print_white "IC threshold                              : "; print_orange "$OPTARG" >&2
         icthreshold=$OPTARG;;
-        e) echo "Output directory for results: $OPTARG" >&2
+        e) print_white "Email                                     : "; print_orange "$OPTARG" >&2
         email=$OPTARG;;
-        l) echo "Output directory for results: $OPTARG" >&2
+        l) print_white "Output directory for results              : "; print_orange "$OPTARG" >&2
         resultlink=$OPTARG;;
-        \?) echo "Invalid option: -$OPTARG" >&2
+        \?) print_red "Invalid option: -$OPTARG" >&2
         exit 1;;
-        :)  echo "Option -$OPTARG requires an argument." >&2
+        :)  print_red "Option -$OPTARG requires an argument." >&2
         exit 1;;
     esac
 done
@@ -101,7 +143,7 @@ memefile=$2
 [ ! -d $indexingOutputDir ] && mkdir $indexingOutputDir
 # cd $indexingOutputDir
 
-echo "Preparing sequences...";
+print_green "Preparing sequences...";
 
 # final pmet binary requires the universe file. Need to create this if validation scrip didnt.
 # In promoters version, this is initially all genes in gff3 file. This version is used to add UTRs if
@@ -131,7 +173,7 @@ fasta-get-markov $genomefile > $indexingOutputDir/genome.bg
 # FIMO barfs ALL the output. that's not good. time for individual FIMOs
 # on individual MEME-friendly motif files too
 
-echo "Processing motifs...";
+print_light_blue "Processing motifs...";
 
 ### Make motif  files from user's meme file
 [ ! -d $indexingOutputDir/memefiles ] && mkdir $indexingOutputDir/memefiles
@@ -170,7 +212,7 @@ python3 $pmetroot/calculateICfrommeme_IC_to_csv.py \
 #     [ `expr $n % $threads` -eq 0 ] && wait
 # done
 
-echo "Runing FIMO and PMET index..."
+print_green "Runing FIMO and PMET index..."
 # Run fimo and pmetindex on each mitif (parallel version)
 runFimoIndexing () {
     memefile=$1
@@ -179,9 +221,7 @@ runFimoIndexing () {
     pmetroot=$4
     maxk=$5
     topn=$6
-    # echo $memefile
     filename=`basename $memefile .txt`
-    # echo $filename
 
     mkdir -p $indexingOutputDir/fimo/$filename
 
@@ -223,7 +263,7 @@ touch ${indexingOutputDir}_FLAG
 #   gene input file             supplied by user
 
 # ------------------------------------ Run pmet ----------------------------------
-echo "Runing PMET pairing..."
+print_green "Runing PMET pairing..."
 mkdir -p $pairingOutputDir
 
 PMETdev/scripts/pmetParallel_linux \
@@ -235,14 +275,12 @@ PMETdev/scripts/pmetParallel_linux \
     -c IC.txt \
     -f fimohits \
     -o $pairingOutputDir \
-    -t 1
+    -t $threads
 
 cat $pairingOutputDir/temp*.txt > $pairingOutputDir/motif_output.txt
 rm -rf  $pairingOutputDir/temp*.txt
 zip -j ${pairingOutputDir}.zip $pairingOutputDir/*
-rm -rf $pairingOutputDir
-touch ${pairingOutputDir}_FLAG
+# rm -rf $pairingOutputDir
+# touch ${pairingOutputDir}_FLAG
 
 Rscript R/utils/send_mail.R $email $resultlink
-
-exit 0;

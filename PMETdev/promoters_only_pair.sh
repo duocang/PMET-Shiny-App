@@ -6,6 +6,48 @@ set -o errexit
 set -o pipefail
 
 
+print_red(){
+    RED='\033[0;31m'
+    NC='\033[0m' # No Color
+    printf "${RED}$1${NC}\n"
+}
+
+print_green(){
+    BOLD_GREEN='\033[1;32m'
+    NC='\033[0m' # No Color
+    printf "${BOLD_GREEN}$1${NC}\n"
+}
+
+print_orange(){
+    ORANGE='\033[38;5;214m'
+    NC='\033[0m' # No Color
+    printf "${ORANGE}$1${NC}\n"
+}
+
+print_light_blue(){
+    ORANGE='\033[0;33m'
+    NC='\033[0m' # No Color
+    printf "${ORANGE}$1${NC}\n"
+}
+
+print_fluorescent_yellow(){
+    FLUORESCENT_YELLOW='\033[1;33m'
+    NC='\033[0m' # No Color
+    printf "${FLUORESCENT_YELLOW}$1${NC}\n"
+}
+
+print_light_blue(){
+    LIGHT_BLUE='\033[1;34m'
+    NC='\033[0m' # No Color
+    printf "${LIGHT_BLUE}$1${NC}\n"
+}
+
+print_white(){
+    WHITE='\033[1;37m'
+    NC='\033[0m' # No Color
+    printf "${WHITE}$1${NC}"
+}
+
 # set up defaults
 threads=4
 icthreshold=24
@@ -15,32 +57,33 @@ pmetindex=
 genefile=
 outputdir=
 
+
 # deal with arguments
 # if none, exit
 if [ $# -eq 0 ]; then
-    echo "No arguments supplied"  >&2
+    print_red "No arguments supplied"  >&2
     exit 1
 fi
 
 while getopts ":d:g:i:t:o:e:l:" options; do
     case $options in
-        d) echo "Full path of PMET_index:  $OPTARG" >&2
+        d) print_white "Directory of PMET_index: "; print_orange "$OPTARG" >&2
         pmetindex=$OPTARG;;
-        g) echo "Gene file: $OPTARG" >&2
+        g) print_white "Gene file              : "; print_orange "$OPTARG" >&2
         genefile=$OPTARG;;
-        i) echo "IC threshold: $OPTARG" >&2
+        i) print_white "IC threshold           : "; print_orange "$OPTARG" >&2
         icthreshold=$OPTARG;;
-        t) echo "Number of threads: $OPTARG" >&2
+        t) print_white "Number of threads      : "; print_orange "$OPTARG" >&2
         threads=$OPTARG;;
-        o) echo "Output directory for results: $OPTARG" >&2
+        o) print_white "Output directory       : "; print_orange "$OPTARG" >&2
         outputdir=$OPTARG;;
-        e) echo "Output directory for results: $OPTARG" >&2
+        e) print_white "Email                  : "; print_orange "$OPTARG" >&2
         email=$OPTARG;;
-        l) echo "Output directory for results: $OPTARG" >&2
+        l) print_white "Download link          : "; print_orange "$OPTARG" >&2
         resultlink=$OPTARG;;
-        \?) echo "Invalid option: -$OPTARG" >&2
+        \?) print_red "Invalid option: -$OPTARG" >&2
         exit 1;;
-        :)  echo "Option -$OPTARG requires an argument." >&2
+        :)  print_red "Option -$OPTARG requires an argument." >&2
         exit 1;;
     esac
 done
@@ -52,29 +95,26 @@ mkdir -p $outputdir
 universe_file=$pmetindex/universe.txt
 gene_file=$genefile
 
-echo "Extracting genes..."
-
-# grep -vwFf  $pmetindex/universe.txt $genefile > $outputdir/genes_not_found.txt
-# grep -wFf   $pmetindex/universe.txt $genefile > $outputdir/genes_used_PMET.txt
+print_light_blue "\nExtracting genes..."
 
 if grep -wFf  $pmetindex/universe.txt $genefile > $outputdir/genes_used_PMET.txt; then
-    echo "Find valid gene(s)"
+    print_fluorescent_yellow "      Valid genes found"
 else
-    echo "NO valid genes" > $outputdir/genes_used_PMET.txt
-    echo "Search failed. Aborting further commands."
+    print_red "      NO valid genes" > $outputdir/genes_used_PMET.txt
+    print_red "      Search failed. Aborting further commands."
     exit 1
 fi
 
 
 if grep -vwFf $pmetindex/universe.txt $genefile > $outputdir/genes_not_found.txt; then
-    echo "Some gene(s) not found"
+    print_orange "      Some genes not found"
 else
-    echo "All genes found" > $outputdir/genes_not_found.txt
-    echo "Search finished. Continuting further commands."
+    print_green "      All genes found" > $outputdir/genes_not_found.txt
+    print_green "      Search finished. Continuting further commands."
 fi
 
 
-echo "Runing PMET index..."
+print_green "\nRuning PMET index..."
 
 PMETdev/scripts/pmetParallel_linux \
     -d $pmetindex \
@@ -85,14 +125,14 @@ PMETdev/scripts/pmetParallel_linux \
     -c IC.txt \
     -f fimohits \
     -t $threads \
-    -o $outputdir > $outputdir/PMET_OUTPUT.log
+    -o $outputdir #> $outputdir/PMET_OUTPUT.log
 
 cat $outputdir/temp*.txt > $outputdir/PMET_OUTPUT.txt
 rm -rf  $outputdir/temp*.txt
 zip -j ${outputdir}.zip $outputdir/*
-rm -rf $outputdir
-touch ${outputdir}_FLAG
+# rm -rf $outputdir
+# touch ${outputdir}_FLAG
 
 Rscript R/utils/send_mail.R $email $resultlink
 
-exit 0;
+print_green "DONE"

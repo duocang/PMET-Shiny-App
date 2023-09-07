@@ -33,12 +33,6 @@ function error_exit() {
     exit 1
 }
 
-function error_exit() {
-    echo "ERROR: $1" >&2
-    usage
-    exit 1
-}
-
 print_red(){
     RED='\033[0;31m'
     NC='\033[0m' # No Color
@@ -105,7 +99,7 @@ genefile=
 # deal with arguments
 # if none, exit
 if [ $# -eq 0 ]; then
-    echo "No arguments supplied"  >&2
+    print_red "No arguments supplied"  >&2
     usage
     exit 1
 fi
@@ -151,7 +145,7 @@ fi
 
 while getopts ":r:i:o:n:k:p:f:g:v:u:t:c:x:g:e:l:" options; do
     case $options in
-        r) print_white "Full path of PMET_index                : "; print_orange "$OPTARG" >&2
+        r) print_white "Directory of PMET_index                : "; print_orange "$OPTARG" >&2
         pmetroot=$OPTARG;;
         i) print_white "GFF3 feature identifier                : "; print_orange "$OPTARG" >&2
         gff3id=$OPTARG;;
@@ -173,7 +167,7 @@ while getopts ":r:i:o:n:k:p:f:g:v:u:t:c:x:g:e:l:" options; do
         threads=$OPTARG;;
         c) print_white "IC threshold                           : "; print_orange "$OPTARG" >&2
         icthreshold=$OPTARG;;
-        x) print_white "Output directory for PMET results      : "; print_orange "$OPTARG" >&2
+        x) print_white "Output directory                       : "; print_orange "$OPTARG" >&2
         pairingOutputDir=$OPTARG;;
         g) print_white "gene                                   : "; print_orange "$OPTARG" >&2
         genefile=$OPTARG;;
@@ -521,9 +515,9 @@ PMETdev/scripts/pmetParallel_linux \
 cat $pairingOutputDir/temp*.txt > $pairingOutputDir/PMET_OUTPUT.txt
 rm -rf  $pairingOutputDir/temp*.txt
 zip -j ${pairingOutputDir}.zip $pairingOutputDir/*
-rm -rf $pairingOutputDir
+# rm -rf $pairingOutputDir
 # touch ${pairingOutputDir}_FLAG
 
-# Rscript R/utils/send_mail.R $email $resultlink
+Rscript R/utils/send_mail.R $email $resultlink
 
 print_green "DONE"

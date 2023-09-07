@@ -46,6 +46,7 @@ tabPanel(
           )
         ),
         uiOutput("pmet_result_download_ui"),
+        uiOutput("pmet_result_download_ui_temp"),
         # Use this function somewhere in UI
         use_busy_spinner(spin = "fading-circle", position = "bottom-left")
       )
