@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "pmet-index-MemCheck.h"
+
 #define MAX_PROMOTER_NAME_LENGTH 100 // Maximum allowable length for a promoter name
 
 /**
@@ -48,7 +50,7 @@ size_t findPromoterLength(PromoterList *list, const char *promoterName);
  *
  * @param list Pointer to the PromoterList to be freed.
  */
-void deletePromoterLenListContent(PromoterList *list);
+void deletePromoterLenListContents(PromoterList *list);
 
 /**
  * Release all memory associated with a given promoter list, including each individual promoter and itelsf.
@@ -72,7 +74,8 @@ void insertPromoter(PromoterList *list, const char *promoterName, int length);
  *
  * @param list Pointer to the PromoterList to be populated.
  * @param filename Name/path of the file containing promoter data.
+ * @return Number of file lines read from the file
  */
-void readPromoterLengthFile(PromoterList *list, const char *filename);
+size_t readPromoterLengthFile(PromoterList *list, const char *filename);
 
 #endif /* PROMOTER_LENGTH_H */

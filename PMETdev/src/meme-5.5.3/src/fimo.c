@@ -10,6 +10,7 @@
 #define DEFINE_GLOBALS
 #endif
 
+#include <time.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -44,8 +45,12 @@
 #include "pmet-index-ScoreLabelPairVector.h"
 #include "pmet-index-utils.h"
 #include "pmet-index-HashTable.h"
+#include "pmet-index-MemCheck.c"
+
 
 char* program_name = "fimo";
+
+size_t TABLE_SIZE = 175447;  // default value
 
 const char *threshold_type_to_string(THRESHOLD_TYPE type) {
   switch(type) {
@@ -480,9 +485,9 @@ static inline bool fimo_score_site(
     *score = get_unscaled_pssm_score(scaled_log_odds, pssm);
 
     if (!isnan(prior)) {
-    // Use the prior to adjust the motif site score.
-    // Using the log-odds prior increases the width
-    // of the scaled score table by 1.
+      // Use the prior to adjust the motif site score.
+      // Using the log-odds prior increases the width
+      // of the scaled score table by 1.
       ++w;
       double prior_log_odds = (options.alpha) * prior;
       prior_log_odds = my_log2(prior_log_odds / (1.0 - prior_log_odds));
@@ -786,24 +791,24 @@ static void fimo_build_pssms(
     int i;
     for (i = 1; i < get_array_length((*pos_pssm)->pv); i++) {
       fprintf(pval_lookup_file, "%g ",
-      get_array_item(i-1, (*pos_pssm)->pv) - get_array_item(i, (*pos_pssm)->pv));
+              get_array_item(i - 1, (*pos_pssm)->pv) - get_array_item(i, (*pos_pssm)->pv));
     }
     fprintf(pval_lookup_file, "\n");
   }
 
   // If needed, build the PSSM for the reverse complement motif.
-  if (options.scan_both_strands) {
+  if (options.scan_both_strands)
+  {
     // TODO: the non-averaged freqs should be used for p-values
     *rev_pssm = build_motif_pssm(
-      rev_motif,
-      bg_freqs,
-      bg_freqs,
-      prior_dist,
-      options.alpha,
-      PSSM_RANGE,
-      0, // GC bins
-      false
-    );
+        rev_motif,
+        bg_freqs,
+        bg_freqs,
+        prior_dist,
+        options.alpha,
+        PSSM_RANGE,
+        0, // GC bins
+        false);
   }
 }
 
@@ -914,14 +919,11 @@ static void fimo_score_each_motif(
     }
 
     // Read the FASTA file one sequence at a time.
-    while (fasta_reader->go_to_next_sequence(fasta_reader) != false)
-    {
-      char *fasta_seq_name = NULL;
+    while (fasta_reader->go_to_next_sequence(fasta_reader) != false) {
+      char* fasta_seq_name = NULL;
       bool fasta_result = fasta_reader->get_seq_name(fasta_reader, &fasta_seq_name);
 
-      // MotifHitVector vec;
-      MotifHitVector *vec = malloc(sizeof(MotifHitVector));
-      initMotifHitVector(vec);
+      MotifHitVector *vec = createMotifHitVector();
 
       long scanned_positions = fimo_score_sequence(
           options,
@@ -940,9 +942,9 @@ static void fimo_score_each_motif(
         *num_scanned_positions += scanned_positions;
       }
 
-      if (vec->size == 0 ) {
+      if (vec->size == 0) {
         // printf("Found no %s hit on %s\n", motif_id, fasta_seq_name);
-        deleteMotifHitVectorContent(vec);
+        deleteMotifHitVectorContents(vec);
         continue;
       }
 
@@ -959,21 +961,26 @@ static void fimo_score_each_motif(
             removeHitAtIndex(vec, nextIndex);
             // Do not increment nextIndex here because after removing
             // an element, the next element shifts to the current nextIndex
-          } else {
+          }
+          else {
             nextIndex++; // No overlap, move to next hit
           }
         }
         currentIndex++;
       }
 
-      if (vec->size == 0 ) {
-        deleteMotifHitVectorContent(vec);
+      if (vec->size == 0) {
+        deleteMotifHitVectorContents(vec);
         continue;
       }
 
+      // printf("\n开始：retainTopKMotifHits\n");
+      // printMotifHitVector(vec);
+      // printf("有%d记录, k的值为%d\n", vec->size, k);
       if (vec->size > k) {
         retainTopKMotifHits(vec, k);
       }
+      // printf("\n完成：retainTopKMotifHits\n");
 
       /*
         #################################################################
@@ -1003,8 +1010,9 @@ static void fimo_score_each_motif(
         #################################################################
       */
       if (vec) {
-        putHashTable(ht, fasta_seq_name, vec);
+        putHashTable2(ht, fasta_seq_name, vec, adapterDeleteFunction);
       }
+      // Release of vec has been taken care of by the adapter function in hash table
     } // All sequences parsed
 
     // Sort the binThresholds vector by ascending score and keep top N
@@ -1013,24 +1021,34 @@ static void fimo_score_each_motif(
       retainTopN(binThresholds, N);
 
     if (motif_id[0] == '+') {
-        memmove(motif_id, motif_id + 1, strlen(motif_id));  // memmove also takes care of the null terminator
+      memmove(motif_id, motif_id + 1, strlen(motif_id)); // memmove also takes care of the null terminator
     }
-      /*************************************************************************
+    /*************************************************************************
      * Write PMET index result
      *************************************************************************/
+    char *motifHitFilePath = paste(4, "", removeTrailingSlashAndReturn(outDir), "/", motif_id, ".txt");
     int i;
-    for (i = 0; i < binThresholds->size; i++)
-    {
+    for (i = 0; i < binThresholds->size; i++) {
       MotifHitVector *vec = getHashTable(ht, binThresholds->items[i].label);
-      writeVectorToFile(vec,
-                        paste(4, "", removeTrailingSlashAndReturn(outDir), "/", motif_id, ".txt"));
+      writeVectorToFile(vec, motifHitFilePath);
     }
+    new_free(motifHitFilePath);
+
+    if (ht) {
+      if (ht->table) {
+        int i = 0;
+        for (i = 0; i < TABLE_SIZE; i++) {
+          struct kv *p = ht->table[i];
+        }
+      }
+    }
+
     deleteHashTable(ht);
     /*************************************************************************
      * Write "binomial_thresholds.txt"
      *************************************************************************/
     // return Nth best value to save in thresholds file
-    double thresholdScore = binThresholds->items[binThresholds->size-1].score;
+    double thresholdScore = binThresholds->items[binThresholds->size - 1].score;
     pushBack(binResults, thresholdScore, motif_id);
 
     deleteScoreLabelVector(binThresholds);
@@ -1056,12 +1074,12 @@ static void fimo_score_each_motif(
     free_pssm(rev_pssm);
 
     need_reset = true;
-
   } // All motifs parsed
 
-  writeScoreLabelPairVectorToTxt(binResults,
-      paste(3, "", removeTrailingSlashAndReturn(outDir), "/", "binomial_thresholds.txt")
-  );
+  char *binomialThresholdFilePaht = paste(3, "", removeTrailingSlashAndReturn(outDir), "/", "binomial_thresholds.txt");
+  writeScoreLabelPairVectorToTxt(binResults, binomialThresholdFilePaht);
+  new_free(binomialThresholdFilePaht);
+
   deleteScoreLabelVector(binResults);
 
   if (reservoir != NULL) {
@@ -1072,7 +1090,11 @@ static void fimo_score_each_motif(
 /*************************************************************************
  * Entry point for fimo
  *************************************************************************/
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
+  printf("\n\n******************************** Start timing *******************************\n\n");
+
+  // Start timing
+  clock_t start_time = clock();
 
   // Get command line arguments
   FIMO_OPTIONS_T options = process_fimo_command_line(argc, argv);
@@ -1116,8 +1138,13 @@ int main(int argc, char *argv[]) {
   /****************************************************************************
    * Iterate through each motif, searching homotypic matches on all promoters
    ****************************************************************************/
-  PromoterList *promoterList = malloc(sizeof(PromoterList));
-  readPromoterLengthFile(promoterList, options.promoter_length);
+  PromoterList *promoterList = new_malloc(sizeof(PromoterList));
+  size_t lineCount =  readPromoterLengthFile(promoterList, options.promoter_length);
+
+  TABLE_SIZE = getPrime((size_t)lineCount/0.7);
+
+  printf("\n\n%lu\n", TABLE_SIZE);
+
   fimo_score_each_motif(
       options,
       bg_freqs,
@@ -1134,6 +1161,15 @@ int main(int argc, char *argv[]) {
       promoterList);
 
   deletePromoterLenList(promoterList);
+
+  show_block(); // 显示内存泄漏报告 memory leak report
+
+  // Stop timing
+  clock_t end_time = clock();
+
+  // Calculate and print the elapsed time.
+  int time_taken = (int) ((double)end_time - start_time) / CLOCKS_PER_SEC;
+  printf("\n\n************************** %d seconds spent **************************\n\n", time_taken);
 
   printf("\nDONE\n");
 

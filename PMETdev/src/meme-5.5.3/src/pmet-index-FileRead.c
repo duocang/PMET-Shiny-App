@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "pmet-index-FileRead.h"
+#include "pmet-index-MemCheck.h"
 
 
 size_t readFileAndCountLines(const char *filename, char **content)
@@ -31,7 +32,7 @@ size_t readFileAndCountLines(const char *filename, char **content)
   fseek(file, 0, SEEK_SET);
 
   // Allocate memory for the buffer.
-  *content = (char *)malloc(flength + 1);
+  *content = (char *)new_malloc(flength + 1);
   if (!*content)
   {
     perror("Error allocating memory");
@@ -44,7 +45,7 @@ size_t readFileAndCountLines(const char *filename, char **content)
   if (bytesRead != flength)
   { // Check if read was successful
     perror("Error reading file");
-    free(*content);
+    new_free(*content);
     fclose(file);
     exit(ERR_OPEN_FILE);
   }
@@ -57,8 +58,7 @@ size_t readFileAndCountLines(const char *filename, char **content)
   }
 
   // Count the number of lines in the buffer.
-  long i;
-  for (i = 0; i < flength; i++)
+  for (long i = 0; i < flength; i++)
   {
     if ((*content)[i] == '\n')
     {

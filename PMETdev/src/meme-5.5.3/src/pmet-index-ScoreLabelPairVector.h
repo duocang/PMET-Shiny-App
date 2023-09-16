@@ -7,6 +7,8 @@
  * score-label pairs, with functions for sorting, searching, and file I/O.
  */
 
+#include "pmet-index-MemCheck.h"
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -109,9 +111,10 @@ void printVector(ScoreLabelPairVector *vec);
  *
  * @param vec The vector to free.
  */
-void deleteScoreLabelVectorContent(ScoreLabelPairVector *vec);
+void deleteScoreLabelVectorContents(ScoreLabelPairVector *vec);
 
 void deleteScoreLabelVector(ScoreLabelPairVector *vec);
+
 /**
  * Write the contents of the ScoreLabelPairVector to a text file.
  *

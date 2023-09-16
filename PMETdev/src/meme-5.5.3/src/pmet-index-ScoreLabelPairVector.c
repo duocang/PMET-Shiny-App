@@ -2,7 +2,7 @@
 
 ScoreLabelPairVector *createScoreLabelPairVector()
 {
-  ScoreLabelPairVector *vec = (ScoreLabelPairVector *)malloc(sizeof(ScoreLabelPairVector));
+  ScoreLabelPairVector *vec = (ScoreLabelPairVector *)new_malloc(sizeof(ScoreLabelPairVector));
   if (!vec)
   {
     perror("Failed to allocate memory for ScoreLabelPairVector");
@@ -42,7 +42,7 @@ bool pushBack(ScoreLabelPairVector *vec, double score, char *label)
   if (vec->size >= vec->capacity)
   {
     size_t newCapacity = vec->capacity == 0 ? 4 : vec->capacity * 2;
-    ScoreLabelPair *newItems = (ScoreLabelPair *)realloc(vec->items, newCapacity * sizeof(ScoreLabelPair));
+    ScoreLabelPair *newItems = (ScoreLabelPair *)new_realloc(vec->items, newCapacity * sizeof(ScoreLabelPair));
     if (!newItems)
     {
       fprintf(stderr, "Memory allocation failed in pushBack.\n");
@@ -60,7 +60,7 @@ bool pushBack(ScoreLabelPairVector *vec, double score, char *label)
       会指向无效的内存。为了解决这个问题，你应该在pushBack函数里为label分配堆内存，并复制字符
       串到这片内存。
   */
-  vec->items[vec->size].label = strdup(label);
+  vec->items[vec->size].label = new_strdup(label);
   if (!vec->items[vec->size].label)
   {
     fprintf(stderr, "Memory allocation for label failed in pushBack.\n");
@@ -86,10 +86,9 @@ void retainTopN(ScoreLabelPairVector *vec, size_t N)
   }
 
   // Free memory for labels that are beyond the Nth element
-  size_t i;
-  for (i = N; i < vec->size; ++i)
+  for (size_t i = N; i < vec->size; ++i)
   {
-    free(vec->items[i].label);
+    new_free(vec->items[i].label);
   }
 
   // Update the size of the vector to N
@@ -100,7 +99,7 @@ void retainTopN(ScoreLabelPairVector *vec, size_t N)
   // 而原始的 vec->items 保持不变。这样，如果 realloc 失败并返回 NULL，
   // 你仍然有原始的 vec->items 指针指向之前分配的内存，这样你就不会丢失对
   // 那块内存的引用，可以在后续中安全地释放它。
-  ScoreLabelPair *newItems = realloc(vec->items, N * sizeof(ScoreLabelPair));
+  ScoreLabelPair *newItems = new_realloc(vec->items, N * sizeof(ScoreLabelPair));
   if (newItems == NULL)
   {
     fprintf(stderr, "Error: Memory reallocation failed in retainTopN.\n");
@@ -117,8 +116,8 @@ int labelExists(const ScoreLabelPairVector *vec, const char *searchLabel)
     fprintf(stderr, "Warning: NULL argument passed to labelExists().\n");
     return NOT_FOUND;
   }
-  size_t i;
-  for (i = 0; i < vec->size; i++)
+
+  for (size_t i = 0; i < vec->size; i++)
   {
     if (strcmp(vec->items[i].label, searchLabel) == 0)
     {
@@ -136,8 +135,7 @@ double findScoreByLabel(ScoreLabelPairVector *vec, const char *searchLabel)
     return LABEL_NOT_FOUND;
   }
 
-  size_t i;
-  for (i = 0; i < vec->size; i++)
+  for (size_t i = 0; i < vec->size; i++)
   {
     if (strcmp(vec->items[i].label, searchLabel) == 0)
     {
@@ -157,30 +155,29 @@ void printVector(ScoreLabelPairVector *vec)
 
   printf("Printing vector contents:\n");
   printf("==========================\n");
-  size_t i;
-  for (i = 0; i < vec->size; i++)
+  for (size_t i = 0; i < vec->size; i++)
   {
     printf("Item %zu - Score: %.15f, Label: %s\n", i, vec->items[i].score, vec->items[i].label);
   }
   printf("==========================\n");
 }
 
-void deleteScoreLabelVectorContent(ScoreLabelPairVector *vec)
+void deleteScoreLabelVectorContents(ScoreLabelPairVector *vec)
 {
   if (!vec)
   {
     return;
   }
+
   // Free each label
-  size_t i;
-  for (i = 0; i < vec->size; i++)
+  for (size_t i = 0; i < vec->size; i++)
   {
-    free(vec->items[i].label);
+    new_free(vec->items[i].label);
     vec->items[i].label = NULL;
   }
 
   // Free the items array
-  free(vec->items);
+  new_free(vec->items);
   vec->items = NULL;
 }
 
@@ -191,10 +188,10 @@ void deleteScoreLabelVector(ScoreLabelPairVector *vec)
     return;
   }
 
-  deleteScoreLabelVectorContent(vec);
+  deleteScoreLabelVectorContents(vec);
 
   // Free the vector itself
-  free(vec);
+  new_free(vec);
 }
 
 void writeScoreLabelPairVectorToTxt(ScoreLabelPairVector *vector, const char *filename)
@@ -205,19 +202,19 @@ void writeScoreLabelPairVectorToTxt(ScoreLabelPairVector *vector, const char *fi
     return;
   }
 
-  FILE *file = fopen(filename, "a");
+  FILE *file = fopen(filename, "w");
   if (!file)
   {
     perror("Unable to open file for writing");
     return;
   }
 
-  // // Assuming the first line to be headers
-  // fprintf(file, "Score\tLabel\n");
-  size_t i;
-  for (i = 0; i < vector->size; i++)
+  // Assuming the first line to be headers
+  fprintf(file, "Score\tLabel\n");
+
+  for (size_t i = 0; i < vector->size; i++)
   {
-    fprintf(file, "%s\t%.15f\n", vector->items[i].label, vector->items[i].score);
+    fprintf(file, "%.15f\t%s\n", vector->items[i].score, vector->items[i].label);
   }
 
   if (fclose(file) != 0)

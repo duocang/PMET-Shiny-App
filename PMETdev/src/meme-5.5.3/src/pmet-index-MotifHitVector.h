@@ -2,6 +2,7 @@
 #define MOTIF_VECTOR_H
 
 #include "pmet-index-MotifHit.h"
+#include "pmet-index-MemCheck.h"
 
 // 动态数组结构体
 typedef struct {
@@ -10,8 +11,6 @@ typedef struct {
     int capacity;
 } MotifHitVector;
 
-
-MotifHitVector* deepCopyMotifHitVector(const MotifHitVector *original);
 
 /**
  * Returns the current size (number of elements) of the MotifHitVector.
@@ -25,6 +24,14 @@ size_t motifHitVectorSize(const MotifHitVector* vec);
  * @param vec Pointer to the MotifHitVector to be printed.
  */
 void printMotifHitVector(const MotifHitVector* vec);
+
+void adapterPrintFunction(void *ptr);
+
+/**
+ * Creates the a MotifHitVector*.
+ * @return vec Pointer to the MotifHitVector to be initialized.
+ */
+MotifHitVector* createMotifHitVector();
 
 /**
  * Initializes the given MotifHitVector.
@@ -71,7 +78,14 @@ void removeHitAtIndex(MotifHitVector* vec, size_t indx);
  * Clears all the MotifHits from the MotifHitVector without freeing the vector itself.
  * @param vec Pointer to the MotifHitVector to be cleared.
  */
-void deleteMotifHitVectorContent(MotifHitVector* vec);
+void deleteMotifHitVectorContents(MotifHitVector* vec);
+
+/**
+ * Adapter function to bridge between a generic void pointer and the specific MotifHitVector deletion function.
+ * Converts the void pointer back to a MotifHitVector pointer and then calls the appropriate delete function.
+ * @param ptr Generic pointer to the object, which is expected to be of type MotifHitVector.
+ */
+void adapterDeleteFunction(void *ptr);
 
 void deleteMotifHitVector(MotifHitVector *vec);
 

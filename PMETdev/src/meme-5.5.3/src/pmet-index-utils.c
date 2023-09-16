@@ -15,7 +15,7 @@ char *paste2(const char *spe, const char *string1, const char *string2)
   spe = spe ? spe : ""; // If spe is NULL, treat it as an empty string
   int lenSep = strlen(spe);
 
-  char *result = malloc(len1 + len2 + lenSep + 1); // +1 for the null-terminator
+  char *result = new_malloc(len1 + len2 + lenSep + 1); // +1 for the null-terminator
   if (!result)
   {
     perror("Memory allocation failed");
@@ -41,8 +41,7 @@ char *paste(int numStrings, const char *sep, ...)
 
   // First pass: calculate the total length
   va_start(args, sep);
-  int i;
-  for (i = 0; i < numStrings; i++)
+  for (int i = 0; i < numStrings; i++)
   {
     const char *str = va_arg(args, const char *);
     length += strlen(str);
@@ -54,7 +53,7 @@ char *paste(int numStrings, const char *sep, ...)
   va_end(args);
 
   // Allocate memory for the result
-  char *result = (char *)malloc(length + 1);
+  char *result = (char *)new_malloc(length + 1);
   if (!result)
   {
     perror("Memory allocation failed");
@@ -64,8 +63,7 @@ char *paste(int numStrings, const char *sep, ...)
 
   // Second pass: concatenate strings
   va_start(args, sep);
-  int j;
-  for (j = 0; j < numStrings; j++)
+  for (int j = 0; j < numStrings; j++)
   {
     const char *str = va_arg(args, const char *);
     size_t lenStr = strlen(str);
@@ -97,7 +95,7 @@ char *getFilenameNoExt(const char *path)
   char *dot = strrchr(base, '.');
   size_t len = dot ? (size_t)(dot - base) : strlen(base);
 
-  char *filename = (char *)malloc(len + 1);
+  char *filename = (char *)new_malloc(len + 1);
   if (!filename)
   {
     // 如果需要，处理内存分配失败的情况
@@ -145,4 +143,43 @@ char *removeTrailingSlashAndReturn(const char *path)
   }
 
   return newPath;
+}
+
+// Function to check if a number is prime
+int isPrime(size_t num)
+{
+  if (num <= 1)
+    return 0; // false
+  if (num == 2)
+    return 1; // true
+  if (num % 2 == 0)
+    return 0; // false
+
+  for (size_t i = 3; i * i <= num; i += 2)
+  {
+    if (num % i == 0)
+    {
+      return 0; // false
+    }
+  }
+  return 1; // true
+}
+
+// Function to get the next prime greater than the given number
+size_t getPrime(size_t num)
+{
+
+  if (isPrime(num))
+  {
+    return num;
+  }
+  // Start with the next number
+  num = (num % 2 == 0) ? num + 1 : num + 2;
+
+  // Check until a prime number is found
+  while (!isPrime(num))
+  {
+    num += 2; // Even numbers >2 can't be prime, so only checking odds
+  }
+  return num;
 }

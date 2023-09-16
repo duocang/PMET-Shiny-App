@@ -7,6 +7,8 @@
 #include <stdlib.h> // for free function
 #include <assert.h> // for assert function
 
+#include "pmet-index-MemCheck.h"
+
 // /// Maximum size for the sequence string. Adjust as needed.
 // #define MAX_SEQUENCE_SIZE 100
 
@@ -67,10 +69,9 @@ int sortHits(const MotifHit *a, const MotifHit *b);
 /**
  * Print details of a MotifHit to an output stream.
  *
- * @param ostr Output stream (e.g., file or stdout).
  * @param hit MotifHit to be printed.
  */
-void printMotifHit(FILE *ostr, const MotifHit *hit);
+void printMotifHit(const MotifHit *hit);
 
 /**
  * Free allocated memory for a MotifHit.
@@ -78,6 +79,8 @@ void printMotifHit(FILE *ostr, const MotifHit *hit);
  * @param hit MotifHit to free.
  * @details Should be called once a MotifHit is no longer needed.
  */
-void freeMotifHit(MotifHit *hit);
+void deleteMotifHitContents(MotifHit *hit);
+
+void deleteMotifHit(MotifHit *hit);
 
 #endif /* MOTIF_HIT_H */

@@ -45,25 +45,11 @@ bool areNodeStoresEqual(NodeStore *store1, NodeStore *store2);
  */
 void insertIntoNodeStore(NodeStore *store, const MotifHit* hit);
 
-
-/**
- * Inserts a MotifHitVector into the store.
- * @param store - A pointer to the NodeStore structure.
- * @param vec - The MotifHitVector structure to insert.
- */
-void insertVectorIntoNodeStore(NodeStore *store, const char *key, MotifHitVector* vec);
-
 /**
  * Frees memory allocated for the KeyValueStore.
  * @param store - A pointer to the NodeStore structure to free.
  */
 void freeNodeStore(NodeStore *store);
-
-/**
- * Prints the contents of the NodeStore.
- * @param Node* - A pointer to the Node structure.
- */
-void printSingleNode(Node *node);
 
 /**
  * Prints the contents of the NodeStore.
@@ -94,18 +80,11 @@ size_t countAllMotifHitsInStore(NodeStore *store);
 bool deleteNodeByKeyStore(NodeStore *store, const char *key);
 
 /**
- * Writes all the MotifHits in a node to a file.
- * @param node - A pointer to the NodeS structure.
- * @param filename - The name of the file where to write the MotifHits.
- */
-void writeSingleNodeToFile(const Node *node, const char *filename);
-
-/**
  * Writes all the MotifHits in the store to a file.
  * @param store - A pointer to the NodeStore structure.
  * @param filename - The name of the file where to write the MotifHits.
  */
-void writeNodeStoreToFile(const NodeStore* store, const char* filename);
+void writeMotifHitsToFile(const NodeStore* store, const char* filename);
 
 
 #endif /* MOTIF_HIT_VECTOR_NODE_H */

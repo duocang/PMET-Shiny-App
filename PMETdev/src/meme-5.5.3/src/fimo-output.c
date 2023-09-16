@@ -78,23 +78,6 @@ void insert_site_into_store(
 ) {
   static bool print_header = true;
 
-  // if (print_header) {
-  //   fprintf(
-  //     tsv_file,
-  //     "motif_id"
-  //     "\tmotif_alt_id"
-  //     "\tsequence_name"
-  //     "\tstart"
-  //     "\tstop"
-  //     "\tstrand"
-  //     "\tscore"
-  //     "\tp-value"
-  //     "\tq-value"
-  //     "\tmatched_sequence\n"
-  //     );
-  //   print_header = false;
-  // }
-
   PATTERN_T *pattern = get_scanned_sequence_parent(scanned_seq);
   char *motif_id = get_pattern_accession(pattern);
   char *motif_id2 = get_pattern_name(pattern);
@@ -106,25 +89,6 @@ void insert_site_into_store(
     SWAP(int, start, stop);
   }
 
-  // fprintf(
-  //   tsv_file,
-  //   "%s\t%s\t%s\t%d\t%d\t%c\t%g\t%.3g",
-  //   motif_id,
-  //   motif_id2,
-  //   seq_name,
-  //   start,
-  //   stop,
-  //   get_matched_element_strand(match),
-  //   get_matched_element_score(match),
-  //   get_matched_element_pvalue(match)
-  // );
-  // if (print_qvalue) {
-  //   fprintf(tsv_file, "\t%.3g", get_matched_element_qvalue(match));
-  // } else {
-  //   fprintf(tsv_file, "\t");
-  // }
-  // fprintf(tsv_file, "\t%s\n", seq ? seq : "");
-
   char strand   = get_matched_element_strand(match);
   double score  = get_matched_element_score(match);
   double pvalue = get_matched_element_pvalue(match);
@@ -132,10 +96,8 @@ void insert_site_into_store(
   MotifHit hit;
   initMotifHit(&hit, motif_id, motif_id2, seq_name, start, stop, strand, score, pvalue, seq, 0.0);
   pushMotifHitVector(vec, &hit);
-  // insertIntoNodeStore(store, &hit);
 
-
-  freeMotifHit(&hit);
+  deleteMotifHitContents(&hit);
 } // print_site_as_tsv
 
 /***********************************************************************

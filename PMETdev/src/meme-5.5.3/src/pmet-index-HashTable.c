@@ -12,7 +12,6 @@ static void initKV(struct kv *kv)
   kv->free_value = NULL;
 }
 
-
 /**
  * destructor of struct kv.
  * @param kv - A pointer to the struct kv that needs to be freed.
@@ -26,12 +25,11 @@ static void freeKV(struct kv *kv)
     {
       kv->free_value(kv->value);
     }
-    free(kv->key);
+    new_free(kv->key);
     kv->key = NULL;
-    free(kv);
+    new_free(kv);
   }
 }
-
 
 /**
  * Calculates the hash value for a given key using the classic Times33 hash function.
@@ -61,20 +59,19 @@ static unsigned int hash33(char *key)
 //     hash = (97 << 5) + 97 + 98
 //     hash = 3104 + 97 + 98 = 3299
 
-
 /**
  * Create a new instance of HashTable.
  * @return - Pointer to the newly created HashTable; NULL if memory allocation failed.
  */
 HashTable *createHashTable()
 {
-  HashTable *ht = malloc(sizeof(HashTable));
+  HashTable *ht = new_malloc(sizeof(HashTable));
   if (NULL == ht)
   {
     deleteHashTable(ht);
     return NULL;
   }
-  ht->table = malloc(sizeof(struct kv *) * TABLE_SIZE);
+  ht->table = new_malloc(sizeof(struct kv *) * TABLE_SIZE);
   if (NULL == ht->table)
   {
     deleteHashTable(ht);
@@ -84,7 +81,6 @@ HashTable *createHashTable()
 
   return ht;
 }
-
 
 /**
  * Delete an instance of HashTable.
@@ -107,17 +103,16 @@ void deleteHashTable(HashTable *ht)
         while (p)
         {
           q = p->next; // Store the address of the next node, to q
-          freeKV(p);  // Free the current node
+          freeKV(p);   // Free the current node
           p = q;       // Move to the next node
         }
       }
-      free(ht->table); // Free the hash table array
+      new_free(ht->table); // Free the hash table array
       ht->table = NULL;
     }
-    free(ht);          // Free the hash table struct
+    new_free(ht); // Free the hash table struct
   }
 }
-
 
 /**
  * Inserts a new key-value pair into the HashTable, or updates the value of an existing key.
@@ -131,7 +126,8 @@ void deleteHashTable(HashTable *ht)
 int putHashTable2(HashTable *ht, char *key, void *value, void (*free_value)(void *))
 {
   // Basic error checks
-  if (ht == NULL || key == NULL || value == NULL) {
+  if (ht == NULL || key == NULL || value == NULL)
+  {
     fprintf(stderr, "Invalid arguments to putHashTable2.\n");
     return -1;
   }
@@ -162,14 +158,16 @@ int putHashTable2(HashTable *ht, char *key, void *value, void (*free_value)(void
   }
 
   // Allocate memory for new key and kv struct
-  char *kstr = strdup(key);
-  if (kstr == NULL) {
+  char *kstr = new_strdup(key);
+  if (kstr == NULL)
+  {
     return -1;
   }
 
-  struct kv *kv = malloc(sizeof(struct kv));
-  if (kv == NULL) {
-    free(kstr);
+  struct kv *kv = new_malloc(sizeof(struct kv));
+  if (kv == NULL)
+  {
+    new_free(kstr);
     return -1;
   }
 
@@ -251,5 +249,30 @@ void rmHashTable(HashTable *ht, char *key)
     // Move to the next element in the chain
     prep = p;
     p = p->next;
+  }
+}
+
+void printHashTable(const HashTable *ht, void (*print_value)(void *))
+{
+  // Basic error checks
+  if (ht == NULL || print_value == NULL)
+  {
+    fprintf(stderr, "Invalid arguments to printHashTable.\n");
+    return;
+  }
+
+  // Iterate over each bucket in the hashtable
+  for (int i = 0; i < TABLE_SIZE; i++)
+  {
+    struct kv *p = ht->table[i];
+    while (p)
+    {
+      // Print key
+      printf("Key: %s\n", p->key);
+      // Use the passed function pointer to print the value
+      print_value(p->value);
+      p = p->next;
+      printf("\n");
+    }
   }
 }
