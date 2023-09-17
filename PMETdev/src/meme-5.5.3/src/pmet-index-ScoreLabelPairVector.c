@@ -202,19 +202,19 @@ void writeScoreLabelPairVectorToTxt(ScoreLabelPairVector *vector, const char *fi
     return;
   }
 
-  FILE *file = fopen(filename, "w");
+  FILE *file = fopen(filename, "a");
   if (!file)
   {
     perror("Unable to open file for writing");
     return;
   }
 
-  // Assuming the first line to be headers
-  fprintf(file, "Score\tLabel\n");
+  // // Assuming the first line to be headers
+  // fprintf(file, "Score\tLabel\n");
 
   for (size_t i = 0; i < vector->size; i++)
   {
-    fprintf(file, "%.15f\t%s\n", vector->items[i].score, vector->items[i].label);
+    fprintf(file, "%s\t%.15f\n", vector->items[i].label, vector->items[i].score);
   }
 
   if (fclose(file) != 0)
