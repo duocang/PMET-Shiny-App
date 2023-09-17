@@ -252,7 +252,7 @@ observeEvent(input$run_pmet_btn, {
     # to delete temp gene file from previous PMET job and check the existence of gene file
     # to show PMET run button in the future PMET job.
 
-    print(input$`promoters_pre-genes`$datapath)
+    # print(input$`promoters_pre-genes`$datapath)
     # file.remove(input$`promoters_pre-genes`$datapath)
   }) # end of future
 })

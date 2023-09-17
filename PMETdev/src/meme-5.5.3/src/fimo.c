@@ -1091,10 +1091,9 @@ static void fimo_score_each_motif(
  * Entry point for fimo
  *************************************************************************/
 int main(int argc, char* argv[]) {
-  printf("\n\n******************************** Start timing *******************************\n\n");
-
-  // Start timing
-  clock_t start_time = clock();
+  // printf("\n\n******************************** Start timing *******************************\n\n");
+  // // Start timing
+  // clock_t start_time = clock();
 
   // Get command line arguments
   FIMO_OPTIONS_T options = process_fimo_command_line(argc, argv);
@@ -1143,8 +1142,6 @@ int main(int argc, char* argv[]) {
 
   TABLE_SIZE = getPrime((size_t)lineCount/0.7);
 
-  printf("\n\n%lu\n", TABLE_SIZE);
-
   fimo_score_each_motif(
       options,
       bg_freqs,
@@ -1162,16 +1159,16 @@ int main(int argc, char* argv[]) {
 
   deletePromoterLenList(promoterList);
 
-  show_block(); // 显示内存泄漏报告 memory leak report
+  // show_block(); // 显示内存泄漏报告 memory leak report
 
-  // Stop timing
-  clock_t end_time = clock();
+  // // Stop timing
+  // clock_t end_time = clock();
 
-  // Calculate and print the elapsed time.
-  int time_taken = (int) ((double)end_time - start_time) / CLOCKS_PER_SEC;
-  printf("\n\n************************** %d seconds spent **************************\n\n", time_taken);
+  // // Calculate and print the elapsed time.
+  // int time_taken = (int) ((double)end_time - start_time) / CLOCKS_PER_SEC;
+  // printf("\n\n************************** %d seconds spent **************************\n\n", time_taken);
 
-  printf("\nDONE\n");
+  // printf("\nDONE\n");
 
   return 0;
 }
