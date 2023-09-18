@@ -195,7 +195,8 @@ void printNodeStore(NodeStore *store)
       return;
     }
 
-    for (size_t i = 0; i < node->value->size; ++i)
+    size_t i;
+    for (i = 0; i < node->value->size; ++i)
     {
       if (node->value->hits == NULL)
       {
@@ -310,7 +311,8 @@ void writeMotifHitsToFile(const NodeStore *store, const char *filename)
   while (currentNode)
   {
     MotifHitVector *vec = currentNode->value;
-    for (size_t i = 0; i < vec->size; i++)
+    size_t i;
+    for (i = 0; i < vec->size; i++)
     {
       MotifHit hit = vec->hits[i];
 
