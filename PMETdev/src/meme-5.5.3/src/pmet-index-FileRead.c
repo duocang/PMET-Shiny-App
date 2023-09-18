@@ -58,7 +58,8 @@ size_t readFileAndCountLines(const char *filename, char **content)
   }
 
   // Count the number of lines in the buffer.
-  for (long i = 0; i < flength; i++)
+  long i;
+  for (i = 0; i < flength; i++)
   {
     if ((*content)[i] == '\n')
     {

@@ -86,7 +86,8 @@ void retainTopN(ScoreLabelPairVector *vec, size_t N)
   }
 
   // Free memory for labels that are beyond the Nth element
-  for (size_t i = N; i < vec->size; ++i)
+  size_t i;
+  for (i = N; i < vec->size; ++i)
   {
     new_free(vec->items[i].label);
   }
@@ -117,7 +118,8 @@ int labelExists(const ScoreLabelPairVector *vec, const char *searchLabel)
     return NOT_FOUND;
   }
 
-  for (size_t i = 0; i < vec->size; i++)
+  size_t i;
+  for (i = 0; i < vec->size; i++)
   {
     if (strcmp(vec->items[i].label, searchLabel) == 0)
     {
@@ -135,7 +137,8 @@ double findScoreByLabel(ScoreLabelPairVector *vec, const char *searchLabel)
     return LABEL_NOT_FOUND;
   }
 
-  for (size_t i = 0; i < vec->size; i++)
+  size_t i;
+  for (i = 0; i < vec->size; i++)
   {
     if (strcmp(vec->items[i].label, searchLabel) == 0)
     {
@@ -155,7 +158,8 @@ void printVector(ScoreLabelPairVector *vec)
 
   printf("Printing vector contents:\n");
   printf("==========================\n");
-  for (size_t i = 0; i < vec->size; i++)
+  size_t i;
+  for (i = 0; i < vec->size; i++)
   {
     printf("Item %zu - Score: %.15f, Label: %s\n", i, vec->items[i].score, vec->items[i].label);
   }
@@ -170,7 +174,8 @@ void deleteScoreLabelVectorContents(ScoreLabelPairVector *vec)
   }
 
   // Free each label
-  for (size_t i = 0; i < vec->size; i++)
+  size_t i;
+  for (i = 0; i < vec->size; i++)
   {
     new_free(vec->items[i].label);
     vec->items[i].label = NULL;
@@ -212,7 +217,8 @@ void writeScoreLabelPairVectorToTxt(ScoreLabelPairVector *vector, const char *fi
   // // Assuming the first line to be headers
   // fprintf(file, "Score\tLabel\n");
 
-  for (size_t i = 0; i < vector->size; i++)
+  size_t i;
+  for (i = 0; i < vector->size; i++)
   {
     fprintf(file, "%s\t%.15f\n", vector->items[i].label, vector->items[i].score);
   }

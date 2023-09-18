@@ -262,7 +262,8 @@ void printHashTable(const HashTable *ht, void (*print_value)(void *))
   }
 
   // Iterate over each bucket in the hashtable
-  for (int i = 0; i < TABLE_SIZE; i++)
+  int i;
+  for (i = 0; i < TABLE_SIZE; i++)
   {
     struct kv *p = ht->table[i];
     while (p)
