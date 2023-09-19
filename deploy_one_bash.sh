@@ -80,16 +80,23 @@ urls=(
 read -p "Would you like to download data of homotypic motif hits? (Y/yes to confirm): " answer
 
 if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
-    mkdir -p data/indexing
 
-    for url in "${urls[@]}"; do
-        filename=$(basename $url .7z)
-        print_fluorescent_yellow "Downloading homotypic motifs hits of ${filename//_/ }"
+    read -p "Do you have p7zip-full installed? (Y/yes to confirm): " answer
+    if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
+        mkdir -p data/indexing
 
-        wget $url
-        7za x "$filename.7z" -odata/indexing
-        rm "$filename.7z"
-    done
+        for url in "${urls[@]}"; do
+            filename=$(basename $url .7z)
+            print_fluorescent_yellow "Downloading homotypic motifs hits of ${filename//_/ }"
+
+            wget $url
+            7za x "$filename.7z" -odata/indexing
+            rm "$filename.7z"
+        done
+    else
+        print_red "Please install p7zip-full first!"
+        exit 1
+    fi
 else
     print_red "No data download\n"
 fi

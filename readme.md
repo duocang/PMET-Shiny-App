@@ -26,6 +26,16 @@ This is a Shiny app developed for PMET.
 └── result         # result of Shiny app
 ```
 
+
+## Actions
+
+1. Install and configure Shiny Server and Nginx correctly.
+2. Run `deploy_one_bash.sh` to compile and fetch data.
+
+
+
+
+
 ## Pre-computed PMET indexing data
 Given that the PMET indexing calculation takes a very long time, we have already performed pre-calculation for some plants and several common plant transcription factor databases.
 ```shell
@@ -64,6 +74,7 @@ In the future, if there are more plants or new databases to be added to the shin
 
 ## PMET index and pair compile
 
+There are a few tools that need to be compiled before deploying the Shiny app, and we provide a script that does all the work.
 If you don't really want to know the details, you can just run the following script.
 
 ```bash
