@@ -28,8 +28,7 @@ This is a Shiny app developed for PMET.
 
 1. Install dependencies [[details](#tools)]
 2. Install and configure Shiny Server and Nginx correctly [[details](#setup-shiny-server-and-nginx)]
-3. `git clone` this project in the folder of Shiny Server sites (default: `/srv/shiny-server`)
-<img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png" style="zoom: 60%;" />
+3. `git clone` this project in the folder of Shiny Server sites (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
 4. Run `deploy_one_bash.sh`
    - fetch data (Pre-computed homotypic motif hits) [[details](#index-data)]
    - compile binaries needed by Shiny app [[details](#compile)]
