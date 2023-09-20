@@ -340,7 +340,8 @@ Pair geometricBinTest(MotifHitVector *hitsVec, size_t promoterLength, size_t mot
   }
 
   // Data integrity checks
-  if (promoterLength <= 0 || motifLength <= 0 || motifLength > promoterLength || !hitsVec->hits)
+  // if (promoterLength <= 0 || motifLength <= 0 || motifLength > promoterLength || !hitsVec->hits)
+  if (promoterLength <= 0 || motifLength <= 0 || !hitsVec->hits)
   {
     fprintf(stderr, "Error: Invalid data provided to geometricBinTest.\n");
     exit(1); // Consider if you want to exit or handle the error differently
@@ -410,12 +411,12 @@ bool motifsOverlap(MotifHit *m1, MotifHit *m2)
 
 double binomialCDF(size_t numPVals, size_t numLocations, double gm)
 {
-  // gm is geometric mean
-  if (gm <= 0.0 || gm >= 1.0 || numPVals < 0 || numPVals > numLocations)
-  {
-    fprintf(stderr, "Error: Invalid parameters in binomialCDF.\n");
-    return -1.0; // Error value
-  }
+  // // gm is geometric mean
+  // if (gm <= 0.0 || gm >= 1.0 || numPVals < 0 || numPVals > numLocations)
+  // {
+  //   fprintf(stderr, "Error: Invalid parameters in binomialCDF.\n");
+  //   return -1.0; // Error value
+  // }
 
   // gm is geometric mean
   double cdf = 0.0;
