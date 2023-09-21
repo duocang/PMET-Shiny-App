@@ -63,6 +63,11 @@ print_fluorescent_yellow(){
     printf "${FLUORESCENT_YELLOW}$1${NC}\n"
 }
 
+print_white(){
+    WHITE='\033[1;37m'
+    NC='\033[0m' # No Color
+    printf "${WHITE}$1${NC}"
+}
 # set up defaults
 topn=5000
 maxk=5
@@ -147,13 +152,13 @@ start=$SECONDS
 
 # -------------------------------------------------------------------------------------------
 # 1. sort annotaion by gene coordinates
-echo "1. Sorting annotation by gene coordinates"
+print_fluorescent_yellow "     1. Sorting annotation by gene coordinates"
 $pmetroot/gff3sort/gff3sort.pl $gff3file > $indexingOutputDir/sorted.gff3
 
 
 # -------------------------------------------------------------------------------------------
 # 2. extract gene line from annoitation
-echo "2. Extracting gene line from annoitation"
+print_fluorescent_yellow "     2. Extracting gene line from annoitation"
 # grep -P '\tgene\t' $indexingOutputDir/sorted.gff3 > $indexingOutputDir/genelines.gff3
 if [[ "$(uname)" == "Linux" ]]; then
     grep -P '\tgene\t' $indexingOutputDir/sorted.gff3 > $indexingOutputDir/genelines.gff3
@@ -165,7 +170,8 @@ fi
 
 # -------------------------------------------------------------------------------------------
 # 3. extract chromosome , start, end, gene ('gene_id' for input) ...
-echo "3. Extracting chromosome, start, end, gene ..."
+print_fluorescent_yellow "     3. Extracting chromosome, start, end, gene ..."
+
 # 使用grep查找字符串 check if gene_id is present
 grep -q "$gff3id" $indexingOutputDir/genelines.gff3
 
@@ -184,27 +190,31 @@ if [[ -n "$invalidRows" ]]; then
     echo "$invalidRows" > $outputdir/invalid_genelines.bed
 fi
 # awk '$2 >= $3' $bedfile > $outputdir/invalid_genelines.bed
+
+print_fluorescent_yellow "     4. Extracting genes coordinates: start should be smaller than end (genelines.bed)"
 awk '$2 <  $3' $bedfile > temp.bed && mv temp.bed $bedfile
 # 在BED文件格式中，无论是正链（+）还是负链（-），起始位置总是小于终止位置。
+# In the BED file format, the start position is always less than the end position for both positive (+) and negative (-) chains.
 # 这是因为起始和终止位置是指定基因或基因组特性在基因组上的物理位置，而不是表达或翻译的方向。
+# thisIsBecauseTheStartAndEndPositionsSpecifyThePhysicalLocationOfTheGeneOrGenomicFeatureOnTheGenomeRatherThanTheDirectionOfExpressionOrTranslation
 # starting site < stopped site in bed file
-
 
 # -------------------------------------------------------------------------------------------
 # 5. list of all genes found
+print_fluorescent_yellow "     5. Extracting genes names: complete list of all genes found (universe.txt)"
 cut -f 4 $bedfile > $universefile
 
 # -------------------------------------------------------------------------------------------
 # 6. strip the potential FASTA line breaks. creates genome_stripped.fa
-echo "6. Removing potential FASTA line breaks"
+print_fluorescent_yellow "     6. Removing potential FASTA line breaks (genome_stripped.fa)"
 awk '/^>/ { if (NR!=1) print ""; printf "%s\n",$0; next;} \
     { printf "%s",$0;} \
     END { print ""; }'  $genomefile > $indexingOutputDir/genome_stripped.fa
 # python3 $pmetroot/strip_newlines.py $genomefile $indexingOutputDir/genome_stripped_py.fa
 
-
 # -------------------------------------------------------------------------------------------
 # 7. create the .genome file which contains coordinates for each chromosome start
+print_fluorescent_yellow "     7. Listing chromosome start coordinates (bedgenome.genome)"
 samtools faidx $indexingOutputDir/genome_stripped.fa
 cut -f 1-2 $indexingOutputDir/genome_stripped.fa.fai > $indexingOutputDir/bedgenome.genome
 
@@ -215,7 +225,7 @@ start=$SECONDS
 
 # -------------------------------------------------------------------------------------------
 # 8. create promoters' coordinates from annotation
-echo "8. Creating promoters' coordinates from annotation"
+print_fluorescent_yellow "     8. Creating promoters' coordinates from annotation (promoters.bed)"
 # 在bedtools中，flank是一个命令行工具，用于在BED格式的基因组坐标文件中对每个区域进行扩展或缩短。
 # 当遇到负链（negative strand）时，在区域的右侧进行扩展或缩短，而不是左侧。
 bedtools flank \
@@ -227,31 +237,36 @@ bedtools flank \
 # -------------------------------------------------------------------------------------------
 # 9. remove overlapping promoter chunks
 if [ $overlap == 'NoOverlap' ]; then
-	echo "9. Removing overlaps";
+	print_fluorescent_yellow "     9. Removing overlapping promoter chunks (promoters.bed)"
 	sleep 0.1
 	bedtools subtract \
         -a $indexingOutputDir/promoters.bed \
         -b $bedfile > $indexingOutputDir/promoters2.bed
 	mv $indexingOutputDir/promoters2.bed $indexingOutputDir/promoters.bed
+else
+    print_fluorescent_yellow "     9. (skipped) Removing overlapping promoter chunks (promoters.bed)"
 fi
-
 
 # -------------------------------------------------------------------------------------------
 # 10. check split promoters. if so, keep the bit closer to the TSS
+print_fluorescent_yellow "    10. Checking split promoter (if so):  keep the bit closer to the TSS (promoters.bed)"
 python3 $pmetroot/assess_integrity.py $indexingOutputDir/promoters.bed
 
 # -------------------------------------------------------------------------------------------
 # 11. add 5' UTR
 if [ $utr == 'Yes' ]; then
-    echo "11. Adding UTRs...";
-	python3 $pmetroot/parse_utrs.py \
+    print_fluorescent_yellow "    11. Adding UTRs...";
+	python3 $pmetroot/parse_utrs.py      \
         $indexingOutputDir/promoters.bed \
-        $gff3file $universefile
+        $indexingOutputDir/sorted.gff3   \
+        $universefile
+else
+    print_fluorescent_yellow "    11. (skipped) Adding UTRs...";
 fi
 
 # -------------------------------------------------------------------------------------------
 # 12. promoter lenfths from promoters.bed
-echo "12. Promoter lengths from promoters.bed"
+print_fluorescent_yellow "    12. Promoter lengths from promoters.bed (promoter_lengths_all.txt)"
 # python3 $pmetroot/parse_promoter_lengths.py \
 #     $indexingOutputDir/promoters.bed \
 #     $indexingOutputDir/promoter_lengths.txt
@@ -260,6 +275,7 @@ awk '{print $4 "\t" ($3 - $2)}' $indexingOutputDir/promoters.bed \
 
 # -------------------------------------------------------------------------------------------
 # 13. filters out the rows with NEGATIVE lengths
+print_fluorescent_yellow "    13. Filtering out the rows of promoter_lengths_all.txt with NEGATIVE lengths"
 while read -r gene length; do
     # Check if the length is a positive number
     if (( length >= 0 )); then
@@ -274,16 +290,18 @@ done < $indexingOutputDir/promoter_lengths_all.txt
 # -------------------------------------------------------------------------------------------
 # 14. remove NEGATIVE genes
 if [ -f "$indexingOutputDir/promoter_length_deleted.txt" ]; then
-    echo "14. Removing NEGATIVE genes"
+    print_fluorescent_yellow "    14. Finding genes with NEGATIVE promoter lengths (genes_negative.txt)"
     cut -d " " \
         -f1  $indexingOutputDir/promoter_length_deleted.txt \
         > $indexingOutputDir/genes_negative.txt
+else
+    print_fluorescent_yellow "    14. (skipped) Finding genes with NEGATIVE promoter lengths (genes_negative.txt)"
 fi
-
 # -------------------------------------------------------------------------------------------
 # 15. filter promoter annotation with negative length
 echo "15. Filtering promoter with negative length"
 if [ -f "$indexingOutputDir/promoter_length_deleted.txt" ]; then
+    print_fluorescent_yellow "    15. Removing promoter with negative length (promoters.bed)"
     grep -v -w -f \
         $indexingOutputDir/genes_negative.txt \
         $indexingOutputDir/promoters.bed \
@@ -291,49 +309,59 @@ if [ -f "$indexingOutputDir/promoter_length_deleted.txt" ]; then
 
     mv $indexingOutputDir/promoters.bed $indexingOutputDir/promoters_before_filter.bed
     mv $indexingOutputDir/filtered_promoters.bed $indexingOutputDir/promoters.bed
+else
+    print_fluorescent_yellow "    15. (skipped) Removing promoter with negative length (promoters.bed)"
 fi
 
 
 # -------------------------------------------------------------------------------------------
 # 16. update gene list (no NEGATIVE genes)
-echo "16. Updating gene list (about NEGATIVE genes)";
+print_fluorescent_yellow "    16. Updating gene list without NEGATIVE genes (universe.txt)";
 cut -d " " -f1  $indexingOutputDir/promoter_lengths.txt > $universefile
 
 
 # -------------------------------------------------------------------------------------------
 # 17. create promoters fasta
-echo "17. Creating promoters file";
-bedtools getfasta -fi \
-    $indexingOutputDir/genome_stripped.fa \
-    -bed $indexingOutputDir/promoters.bed \
-    -s -fo $indexingOutputDir/promoters_rough.fa
+print_fluorescent_yellow "    17. Creating promoters file (promoters_rough.fa)";
+# bedtools getfasta -fi \
+#     $indexingOutputDir/genome_stripped.fa \
+#     -bed $indexingOutputDir/promoters.bed \
+#     -s -fo $indexingOutputDir/promoters_rough.fa
+bedtools getfasta \
+        -fi  $indexingOutputDir/genome_stripped.fa \
+        -bed $indexingOutputDir/promoters.bed      \
+        -fo  $indexingOutputDir/promoters_rough.fa \
+        -name -s
+
 
 
 # -------------------------------------------------------------------------------------------
 # 18. replace the id of each seq with gene names
-echo "18. Replacing the id of each sequences' with gene names"
-awk 'BEGIN{OFS="\t"} NR==FNR{a[NR]=$4; next} /^>/{$0=">"a[++i]} 1' \
-    $indexingOutputDir/promoters.bed \
-    $indexingOutputDir/promoters_rough.fa \
-    > $indexingOutputDir/promoters.fa
-# python3 $pmetroot/parse_promoters.py \
-#     $indexingOutputDir/promoters_rough.fa \
+print_fluorescent_yellow "    18. Replacing the id of each sequences' with gene names (promoters.fa)"
+# awk 'BEGIN{OFS="\t"} NR==FNR{a[NR]=$4; next} /^>/{$0=">"a[++i]} 1' \
 #     $indexingOutputDir/promoters.bed \
-#     $indexingOutputDir/promoters.fa
+#     $indexingOutputDir/promoters_rough.fa \
+#     > $indexingOutputDir/promoters.fa
+# # python3 $pmetroot/parse_promoters.py \
+# #     $indexingOutputDir/promoters_rough.fa \
+# #     $indexingOutputDir/promoters.bed \
+# #     $indexingOutputDir/promoters.fa
+sed 's/::.*//g' $indexingOutputDir/promoters_rough.fa > $indexingOutputDir/promoters.fa
 
 # -------------------------------------------------------------------------------------------
 # 19. promoters.bg from promoters.fa
+print_fluorescent_yellow "    19.  fasta-get-markov estimates a Markov model from promoters.fa. (promoters.bg)"
 fasta-get-markov $indexingOutputDir/promoters.fa > $indexingOutputDir/promoters.bg
 
 # -------------------------------------------------------------------------------------------
 # 20. individual motif files from user's meme file
-echo "Spliting .meme file into individual meme files"
+print_fluorescent_yellow "    20. Spliting motifs into individual meme files (folder memefiles)"
 [ ! -d $indexingOutputDir/memefiles ] && mkdir $indexingOutputDir/memefiles
 python3 $pmetroot/parse_memefile.py $memefile $indexingOutputDir/memefiles/
 
 # -------------------------------------------------------------------------------------------
 # 21. IC.txt
-echo "21. Generating IC.txt"
+print_fluorescent_yellow "    21. Generating information content (IC.txt)"
 python3 $pmetroot/calculateICfrommeme_IC_to_csv.py \
     $indexingOutputDir/memefiles/ \
     $indexingOutputDir/IC.txt
@@ -342,7 +370,7 @@ python3 $pmetroot/calculateICfrommeme_IC_to_csv.py \
 [ ! -d $indexingOutputDir/fimo     ] && mkdir $indexingOutputDir/fimo
 [ ! -d $indexingOutputDir/fimohits ] && mkdir $indexingOutputDir/fimohits
 
-echo "Running FIMO and PMET index"
+print_green "Running FIMO and PMET index..."
 runFimoIndexing () {
     memefile=$1
     indexingOutputDir=$2
@@ -374,7 +402,7 @@ runFimoIndexing () {
 export -f runFimoIndexing
 
 numfiles=$(ls -l $indexingOutputDir/memefiles/*.txt | wc -l)
-echo $numfiles" motifs found"
+print_orange "    $numfiles motifs found"
 
 find $indexingOutputDir/memefiles -name \*.txt \
     | parallel  --jobs=$threads \
@@ -385,7 +413,7 @@ find $indexingOutputDir/memefiles -name \*.txt \
 #     | zenity --progress --auto-close --width=500 --title="Processing files" --text="Running Fimo Indexing..." --percentage=0 --auto-kill --no-cancel
 
 
-echo "Delete unnecessary files"
+print_green "Deleting unnecessary files..."
 
 rm -f $indexingOutputDir/genelines.gff3
 rm -f $indexingOutputDir/bedgenome.genome
@@ -406,6 +434,7 @@ touch ${indexingOutputDir}_FLAG
 
 
 
+# ------------------------------------ Run pmet ----------------------------------
 # next stage needs the following inputs
 
 #   promoter_lengths.txt        made by parse_promoter_lengths.py from .bed file
@@ -413,7 +442,7 @@ touch ${indexingOutputDir}_FLAG
 #   IC.txt                      made by calculateICfrommeme.py from meme file
 #   gene input file             supplied by user
 
-# ------------------------------------ Run pmet ----------------------------------
+print_green "Running PMET pair...\n"
 
 mkdir -p $pairingOutputDir
 
@@ -426,19 +455,19 @@ gene_file=$genefile
 # grep -wFf   $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_used_PMET.txt
 
 if grep -wFf  $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_used_PMET.txt; then
-    echo "Find valid gene(s)"
+    print_fluorescent_yellow "      Valid genes found"
 else
-    echo "NO valid genes" > $outputdir/genes_used_PMET.txt
-    echo "Search failed. Aborting further commands."
+    print_red "      NO valid genes" > $outputdir/genes_used_PMET.txt
+    print_red "      Search failed. Aborting further commands."
     exit 1
 fi
 
 
 if grep -vwFf $indexingOutputDir/universe.txt $genefile > $pairingOutputDir/genes_not_found.txt; then
-    echo "Some gene(s) not found"
+    print_orange "      Some genes not found"
 else
-    echo "All genes found" > $pairingOutputDir/genes_not_found.txt
-    echo "Search finished. Continuting further commands."
+    print_green "      All genes found" > $pairingOutputDir/genes_not_found.txt
+    print_green "      Search finished. Continuting further commands."
 fi
 
 
@@ -456,9 +485,9 @@ PMETdev/scripts/pmetParallel_linux \
 cat $pairingOutputDir/temp*.txt > $pairingOutputDir/PMET_OUTPUT.txt
 rm -rf  $pairingOutputDir/temp*.txt
 zip -j ${pairingOutputDir}.zip $pairingOutputDir/*
-rm -rf $pairingOutputDir
-touch ${pairingOutputDir}_FLAG
+# rm -rf $pairingOutputDir
+# touch ${pairingOutputDir}_FLAG
 
 Rscript R/utils/send_mail.R $email $resultlink
 
-exit 0;
+print_green "DONE"

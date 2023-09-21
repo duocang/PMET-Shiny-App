@@ -241,9 +241,10 @@ fi
 print_light_blue "     4. Extracting genes coordinates: start should be smaller than end (genelines.bed)"
 awk '$2 <  $3' $bedfile > temp.bed && mv temp.bed $bedfile
 # 在BED文件格式中，无论是正链（+）还是负链（-），起始位置总是小于终止位置。
+# In the BED file format, the start position is always less than the end position for both positive (+) and negative (-) chains.
 # 这是因为起始和终止位置是指定基因或基因组特性在基因组上的物理位置，而不是表达或翻译的方向。
+# thisIsBecauseTheStartAndEndPositionsSpecifyThePhysicalLocationOfTheGeneOrGenomicFeatureOnTheGenomeRatherThanTheDirectionOfExpressionOrTranslation
 # starting site < stopped site in bed file
-
 
 # -------------------------------------------------------------------------------------------
 # 5. list of all genes found
@@ -270,7 +271,9 @@ cut -f 1-2 $indexingOutputDir/genome_stripped.fa.fai > $indexingOutputDir/bedgen
 # 8. create promoters' coordinates from annotation
 print_light_blue "     8. Creating promoters' coordinates from annotation (promoters.bed)"
 # 在bedtools中，flank是一个命令行工具，用于在BED格式的基因组坐标文件中对每个区域进行扩展或缩短。
+# In bedtools, flank is a command-line tool used to extend or shorten each region in a BED format genomic coordinate file.
 # 当遇到负链（negative strand）时，在区域的右侧进行扩展或缩短，而不是左侧。
+# When a negative strand is encountered, it is expanded or shortened on the right side of the region, not the left.
 bedtools flank \
     -l $promlength \
     -r 0 -s -i $bedfile \
@@ -362,7 +365,6 @@ fi
 print_light_blue "    16. Updating gene list without NEGATIVE genes (universe.txt)";
 cut -d " " -f1  $indexingOutputDir/promoter_lengths.txt > $universefile
 
-
 # -------------------------------------------------------------------------------------------
 # 17. create promoters fasta
 print_light_blue "    17. Creating promoters file (promoters_rough.fa)";
@@ -371,7 +373,6 @@ bedtools getfasta -fi                         \
     -bed $indexingOutputDir/promoters.bed     \
     -fo $indexingOutputDir/promoters_rough.fa \
     -name -s
-
 
 # -------------------------------------------------------------------------------------------
 # 18. replace the id of each seq with gene names
