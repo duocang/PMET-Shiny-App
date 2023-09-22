@@ -281,6 +281,13 @@ bedtools flank \
     > $indexingOutputDir/promoters.bed
 
 # -------------------------------------------------------------------------------------------
+print_fluorescent_yellow "     8.1 Remove promoters with less than 20 base pairs"
+# remove promoter length < 20
+awk '($3 - $2) >= 10' $indexingOutputDir/promoters.bed > $indexingOutputDir/promoters_.bed
+mv $indexingOutputDir/promoters_.bed $indexingOutputDir/promoters.bed
+awk '($3 - $2) <  10' $indexingOutputDir/promoters.bed > $indexingOutputDir/8_promoters_less_20.bed
+
+# -------------------------------------------------------------------------------------------
 # 9. remove overlapping promoter chunks
 if [ $overlap == 'NoOverlap' ]; then
 	print_light_blue "     9. Removing overlapping promoter chunks (promoters.bed)"
@@ -293,6 +300,12 @@ else
     print_light_blue "     9. (skipped) Removing overlapping promoter chunks (promoters.bed)"
 fi
 
+# -------------------------------------------------------------------------------------------
+# remove promoter length < 20
+print_fluorescent_yellow "     9.1 Remove promoters with less than 20 base pairs"
+awk '($3 - $2) <  20' $indexingOutputDir/promoters.bed > $indexingOutputDir/9_promoters_less_20.bed
+awk '($3 - $2) >= 20' $indexingOutputDir/promoters.bed > $indexingOutputDir/promoters_.bed
+mv $indexingOutputDir/promoters_.bed $indexingOutputDir/promoters.bed
 
 # -------------------------------------------------------------------------------------------
 # 10. check split promoters. if so, keep the bit closer to the TSS
@@ -434,7 +447,7 @@ runFimoIndexing () {
         --bgfile $indexingOutputDir/promoters.bg \
         $memefile                                \
         $indexingOutputDir/promoters.fa          \
-        $indexingOutputDir/promoter_lengths.txt #> $indexingOutputDir/pmetindex.log
+        $indexingOutputDir/promoter_lengths.txt > $indexingOutputDir/pmetindex.log
 }
 export -f runFimoIndexing
 
