@@ -10,7 +10,6 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
   d3Temp.id = "d3Temp";
   d3Placeholder.appendChild(d3Temp);
 
-
   var clusters = pmet.clusters;
 
   if (pmet.method == "All") {
@@ -89,7 +88,7 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     var valMin = Math.min(...dataFiltered.map(o => o.p_adj))
 
     var svgHeatmap = DrawHeatmap( data       = pmet.data,
-                                  svgID      = "#placeholder",
+                                  svgID      = "#d3Temp",
                                   heatmapID  = pmet.method,
                                   valMax     = valMax,
                                   valMin     = valMin,
@@ -104,7 +103,7 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     var colorInd = clusters.indexOf(pmet.method[0]);
 
     var svgHeatmap = DrawHeatmap( data       = pmet.data,
-                                  svgID      = "#placeholder",
+                                  svgID      = "#d3Temp",
                                   heatmapID  = pmet.method,
                                   valMax     = valMax,
                                   valMin     = valMin,
