@@ -319,7 +319,7 @@ output$download.button <- downloadHandler(
                               by.cluster        = FALSE,
                               show.cluster      = FALSE,
                               legend.title      = "-log10(p.adj)",
-                              nrow_             = 2,
+                              nrow_             = ceiling(length(clusters)/2),
                               ncol_             = 2,
                               axis.lables       = "",
                               show.axis.text    = TRUE,
