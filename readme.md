@@ -33,10 +33,15 @@ This is a Shiny app developed for PMET.
 3. `git clone` this project in the folder of Shiny Server sites (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
    > git pull to update code
 4. Run `deploy_one_bash.sh`
-   - install R package
+   - install R packages
+   - install python packages
    - fetch data (Pre-computed homotypic motif hits) [[details](#index-data)]
    - compile binaries needed by Shiny app [[details](#compile)]
-5. CPU arranged for Shiny app [[details](#cpu)]
+5. email account [[details](#mail)]
+   ```bash
+   vim R/utils/send_mail.R
+   ```
+6. CPU arranged for Shiny app [[details](#cpu)]
 
 
 
@@ -153,11 +158,10 @@ NCPU <- 6
 
 <!-- <img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181500980.png" style="zoom: 50%;" /> -->
 
-## Send emails
+
+## <span id="mail"> Send emails</span>
 
 Given that the calculation of PMET takes a long time, we will send an email to notify the user after the PMET calculation is completed.
-
-### Send email function based on R
 
 We use the `send.mail` function from `mailR` package.
 
@@ -183,7 +187,7 @@ send.mail(
 
 ## <span id="tools">Tools needed</span>
 
-### Install GNU Parallel
+**Install GNU Parallel**
 
 GNU Parallel helps PMET index (FIMO and PMET index) to run in parallel mode.
 
@@ -198,8 +202,7 @@ Put GNU Parallel silent:
  parallel --citation
 ```
 
-### Install The MEME Suite (FIMO and fasta-get-markov)
-
+**Install The MEME Suite (FIMO and fasta-get-markov)**
 ```bash
 # cd a folder you want to put the software
 wget https://meme-suite.org/meme/meme-software/5.5.2/meme-5.5.2.tar.gz
@@ -219,7 +222,7 @@ Add following into bash profile file.
 export PATH=$HOME/meme/bin:$HOME/meme/libexec/meme-5.5.2:$PATH
 ```
 
-### Install samtools
+**Install samtools**
 
 Install from conda or mamba:
 
@@ -240,12 +243,11 @@ make
 make install
 
 # Add following into bash profile file or .zshrc (if zsh used).
-
 # assuming you put samtools-1.17 folder under your home folder
 export PATH=$HOME/samtools/bin:$PATH
 ```
 
-### Install bedtools
+**Install bedtools**
 
 It is recommended to install bedtools via apt/yum or conda.
 
@@ -256,11 +258,8 @@ conda install -c bioconda bedtools
 or
 
 ```bash
-conda install bedtools
-
 # Debian/Ubuntu
 apt-get install bedtools
-
 # Fedora/Centos
 yum install BEDTools
 ```
@@ -275,13 +274,9 @@ make
 ```
 
 ### Python libraries
-
+The installation of python package has been included in `deploy_one_bash.sh`, and it will be automatically installed when the script is executed.
 ```bash
-pip install numpy
-pip install pandas
-pip install scipy
-pip install bio
-pip install biopython
+bash deploy_one_bash.sh
 ```
 
 ### R packages needed
