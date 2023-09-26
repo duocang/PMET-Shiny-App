@@ -49,7 +49,6 @@ tabPanel(
         user-select: none;
       }
 
-
       .close {
         color: #aaa;
         float: right;
@@ -104,7 +103,7 @@ tabPanel(
       )
     ),
     mainPanel(
-      add_busy_spinner(spin = "cube-grid"),
+      add_busy_spinner(spin = "fading-circle", position = "bottom-left"),
       tabsetPanel(
         type = "tabs",
         id = "heat_map_tabs",
