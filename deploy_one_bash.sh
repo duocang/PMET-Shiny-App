@@ -12,6 +12,12 @@ print_green(){
     printf "${GREEN}$1${NC}\n"
 }
 
+print_green_no_br(){
+    GREEN='\033[0;32m'
+    NC='\033[0m' # No Color
+    printf "${GREEN}$1${NC}"
+}
+
 print_orange(){
     ORANGE='\033[0;33m'
     NC='\033[0m' # No Color
@@ -46,13 +52,19 @@ print_middle(){
 
 echo ""
 echo ""
-print_middle "The purpose of this script is to help users quickly compile"
-print_middle "and download data of homotypic motif hits of 21 speices.  \n"
-print_middle "Please make sure you have correctly set up Shiny Server and"
-print_middle "Nginx.                                                  \n\n"
+print_middle "The purpose of this script is to                         \n"
+print_middle "  1. download data of homotypic motif hits of 21 speices   "
+print_middle "  2. compile binaries needed by Shiny app                  "
+print_middle "  3. install R package                                   \n"
+print_middle "Make sure you have correctly set up Shiny Server and Nginx "
+print_middle "                                                       \n\n"
 
 
 ############################# download homotypic dat ##############################
+# 询问用户是否开始下载
+print_green_no_br "Would you like to download data of homotypic motif hits? (Y/yes to confirm): "
+read -p "" answer
+
 urls=(
     "https://zenodo.org/record/8221143/files/Arabidopsis_thaliana.7z"
     "https://zenodo.org/record/8221143/files/Brachypodium_distachyon.7z"
@@ -76,8 +88,6 @@ urls=(
     "https://zenodo.org/record/8221143/files/Triticum_aestivum.7z"
     "https://zenodo.org/record/8221143/files/Zea_mays.7z")
 
-# 询问用户是否开始下载
-read -p "Would you like to download data of homotypic motif hits? (Y/yes to confirm): " answer
 
 if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
 
@@ -98,13 +108,15 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
         exit 1
     fi
 else
-    print_red "No data download\n"
+    print_red "No data download"
 fi
 
 
 ################################## compile binary #################################
 
-read -p "Would you like to compile binaries? (Y/yes to confirm): " answer
+print_green_no_br "\nWould you like to compile binaries? (Y/yes to confirm):"
+read -p " " answer
+
 if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
 
     cd PMETdev
@@ -204,4 +216,17 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
     print_green "DONE"
 else
     print_red "No data download"
+fi
+
+############################# install R packages ##############################
+print_green_no_br "\nWould you like to install R packages? (Y/yes to confirm): "
+# read -p "Would you like to install R packages? (Y/yes to confirm): " answer
+read -p " " answer
+
+
+if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
+    chmod a+x R/utils/install_packages.R
+    Rscript R/utils/install_packages.R
+else
+    print_red "Not to install R packages"
 fi
