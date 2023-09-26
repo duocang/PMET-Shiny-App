@@ -55,7 +55,8 @@ echo ""
 print_middle "The purpose of this script is to                         \n"
 print_middle "  1. download data of homotypic motif hits of 21 speices   "
 print_middle "  2. compile binaries needed by Shiny app                  "
-print_middle "  3. install R package                                   \n"
+print_middle "  3. install R package                                     "
+print_middle "  4. install python package                              \n"
 print_middle "Make sure you have correctly set up Shiny Server and Nginx "
 print_middle "                                                       \n\n"
 
@@ -229,4 +230,19 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
     Rscript R/utils/install_packages.R
 else
     print_red "Not to install R packages"
+fi
+
+
+############################# install python packages ##############################
+print_green_no_br "\nWould you like to install python packages? (Y/yes to confirm): "
+read -p " " answer
+
+if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
+    pip install numpy
+    pip install pandas
+    pip install scipy
+    pip install bio
+    pip install biopython
+else
+    print_red "Not to install python packages"
 fi
