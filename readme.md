@@ -37,12 +37,19 @@ This is a Shiny app developed for PMET.
    - install python packages
    - fetch data (Pre-computed homotypic motif hits) [[details](#index-data)]
    - compile binaries needed by Shiny app [[details](#compile)]
+   ```bash
+   bash deploy_one_bash.sh
+   ```
 5. email account [[details](#mail)]
    ```bash
    vim R/utils/send_mail.R
    ```
 6. CPU arranged for Shiny app [[details](#cpu)]
+   ```bash
+   vim R/global.R
 
+   # NCPU <- 6
+   ```
 
 
 ## <span id="index-data">Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
