@@ -26,10 +26,14 @@ This is a Shiny app developed for PMET.
 
 ## Shortcuts of deployment
 
-1. Install dependencies [[details](#tools)]
+1. Install tools [[details](#tools)]
+   > If the project is already running, skip this step.
 2. Install and configure Shiny Server and Nginx correctly [[details](#setup-shiny-server-and-nginx)]
+   > If the project is already running, skip this step.
 3. `git clone` this project in the folder of Shiny Server sites (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
+   > git pull to update code
 4. Run `deploy_one_bash.sh`
+   - install R package
    - fetch data (Pre-computed homotypic motif hits) [[details](#index-data)]
    - compile binaries needed by Shiny app [[details](#compile)]
 5. CPU arranged for Shiny app [[details](#cpu)]
@@ -282,97 +286,10 @@ pip install biopython
 
 ### R packages needed
 
-To avoid any inconvenience, I will provide you with the required R packages here.
+The installation of R package has been included in `deploy_one_bash.sh`, and it will be automatically installed when the script is executed.
 
-```R
-install.packages("devtools")
-install.packages("remotes")
-
-library(remotes)
-
-remotes::install_github("daattali/shinydisconnect")
-remotes::install_github("RinteRface/fullPage")
-remotes::install_github("dreamRs/shinybusy")
-remotes::install_github("merlinoa/shinyFeedback", build_vignettes = TRUE)
-remotes::install_github("daattali/shinycssloaders")
-remotes::install_github("dreamRs/shinyWidgets")
-
-# Used packages
-packages <- c(
-  "bslib",                # Bootstrap themes and styles
-  "data.table",           # efficient handling of large datasets
-  "DT",                   # interactive data tables
-  "dplyr",                # Provides powerful data manipulation and operations
-  "future",               # support for parallel and asynchronous programming
-  "ggasym",               # symmetric scatter plots and bubble charts
-  "ggplot2",              # creation of beautiful graphics
-  "ggpubr",               # graph publication-ready formatting and annotations
-  "glue",                 # string interpolation and formatting
-  "jsonify",              # JSON data processing and transformation
-  "kableExtra",           # creation of nice tables and adding formatting
-  "mailR",                # Interface to Apache Commons Email to send emails from R
-  "openxlsx",             # reading and writing Excel files
-  "promises",             # deferred evaluation and asynchronous programming
-  "reshape2",             # data reshaping and transformation
-  "rintrojs",             # interactive tour integration
-  "RinteRface/fullPage",  # Create full page scrollable web pages with Shiny and R Markdown
-  "rjson",                # Converts R object into JSON objects and vice-versa
-  "shiny",                # creation of interactive web applications
-  "shinyBS",              # Bootstrap styling
-  "shinybusy",            # Automated (or not) busy indicator for Shiny apps & other progress / notifications tools
-  "shinydashboard",       # creation of dashboard-style Shiny apps
-  "shinyFeedback",        # user feedback integration
-  "shinycssloaders",      # loading animation integration
-  "shinyjs",              # JavaScript operations
-  "shinythemes",          # theme customization
-  "shinyvalidate",        # form validation
-  "shinyWidgets",         # creation of interactive widgets
-  "scales",               # data scaling and transformation
-  "tibble",               # extended data frames
-  "tidyverse",            # a collection of R packages for data manipulation and visualization
-  "tictoc",               # simple and accurate timers
-  "zip",                  # creation and extraction of ZIP files
-  "fa"
-)
-
-
-installed_packages <- character()
-failed_packages    <- character()
-
-for (package in packages) {
-  if (require(package, character.only = TRUE)) {
-    installed_packages <- c(installed_packages, package)
-  } else {
-    tryCatch(
-      {
-        suppressMessages(install.packages(package, repos = "https://cran.r-project.org", dependencies = TRUE, type = "source"))
-        if (require(package, character.only = TRUE)) {
-          installed_packages <- c(installed_packages, package)
-        } else {
-          failed_packages <- c(failed_packages, package)
-          message(paste("Installation of", package, "failed."))
-        }
-      },
-      error = function(e) {
-        failed_packages <- c(failed_packages, package)
-        message(paste("Installation of", package, "failed."))
-      }
-    )
-  }
-}
-
-
-# Print installed packages
-cat("The installed packages are as follows:\n")
-print(installed_packages)
-
-# Print failed packages
-if (length(failed_packages) > 0) {
-  cat("\nThe following packages could not be installed:\n")
-  print(failed_packages)
-} else {
-  cat("\nAll packages were successfully installed.\n")
-}
+```bash
+bash deploy_one_bash.sh
 ```
 
 ![](www/figures/pmet_workflow_with_interval_option.png)

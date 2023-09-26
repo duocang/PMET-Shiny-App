@@ -10,6 +10,7 @@ ComdRunPmet <- function(input,
   pair_dir_name <- temp[length(temp)]
   recipient   <- input$email
   result_link <- paste0("https://bar.utoronto.ca/pmet_result/", paste0(pair_dir_name, ".zip"))
+  # result_link <- paste0("http://pmet.online:84/result/", paste0(pair_dir_name, ".zip"))
 
   switch(model,
     "promoters_pre" = {
