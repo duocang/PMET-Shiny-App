@@ -2,18 +2,18 @@
 # 1. remove shared motifs from each clusters (if exclusive.motifs is true)
 # 2. order heatmap (x and y) by groups or alphabetically (if exclusive.motifs and by.cluster are true)
 MotifPairPlotHomog <- function( pmet.split       = NULL,
-                                      motifs.list      = NULL,
-                                      counts           = "value",
-                                      exclusive.motifs = TRUE,
-                                      by.cluster       = FALSE,
-                                      show.cluster     = FALSE,
-                                      legend.title     = "Value",
-                                      nrow_            = 2,
-                                      ncol_            = 2,
-                                      show.axis.text   = TRUE,
-                                      diff.colors      = FALSE,
-                                      axis.lables      = NULL,
-                                      respective.plot  = FALSE) {
+                                motifs.list      = NULL,
+                                counts           = "value",
+                                exclusive.motifs = TRUE,
+                                by.cluster       = FALSE,
+                                show.cluster     = FALSE,
+                                legend.title     = "Value",
+                                nrow_            = 2,
+                                ncol_            = 2,
+                                show.axis.text   = TRUE,
+                                diff.colors      = FALSE,
+                                axis.lables      = NULL,
+                                respective.plot  = FALSE) {
 
   motifs.top     <- TopMotifsGenerator(motifs.list, by.cluster, exclusive.motifs)
   plot_data_list <- MotifPairDiagonal(pmet.split, motifs.top, counts)
@@ -64,10 +64,14 @@ MotifPairPlotHomog <- function( pmet.split       = NULL,
     p <- ggplot(output, aes(x = motif1, y = motif2, fill = value)) +
       geom_tile(color = "#c4d7d6", lwd = 0) +
       scale_fill_gradient2(
-        low = color.min, high = color.max, na.value = "white",
-        limits = c(value.min, value.max), name = legend.title) +
+        low      = color.min,
+        high     = color.max,
+        na.value = "white",
+        limits   = c(value.min, value.max),
+        name     = legend.title) +
       scale_y_discrete(limits = rev, labels = rev(axis_lables_)) +
-      theme_bw() + coord_fixed()
+      theme_bw() +
+      coord_fixed()
 
     if (show.axis.text) {
       p <- p + theme(
@@ -91,11 +95,46 @@ MotifPairPlotHomog <- function( pmet.split       = NULL,
   # create ggplot objects (end)
 
   if (respective.plot) {
+    inch_pre_motif <- 20 / length(motifs.top) * 1.5
+    font_size <- inch_pre_motif * 22
+
+    for (clu in names(plot_data_list)) {
+      p.list[[clu]] <- p.list[[clu]] +
+        ggtitle(clu) +
+        theme(
+          plot.title = element_text(size = 30),
+          # legend.title = element_blank(),
+          # legend.position = "top",
+          axis.line    = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.text.x  = element_text(angle = 90, size = font_size),
+          axis.text.y  = element_text(size = font_size),
+          legend.text  = element_text(size = 18),
+          legend.title = element_text(size = 20)
+        )
+    }
     return(p.list)
   } else {
+    inch_pre_motif <- 10 / length(motifs.top) * 1.3
+    font_size <- inch_pre_motif * 22
+
     # add title
     p.list <- lapply(names(plot_data_list), function(clu) {
-      p.list[[clu]] + ggtitle(clu)
+      p.list[[clu]] +
+        ggtitle(clu) +
+        theme(
+          plot.title = element_text(size = 22),
+          # legend.title = element_blank(),
+          # legend.position = "top",
+          # axis.line = element_blank(),
+          # axis.title.x = element_blank(),
+          # axis.title.y = element_blank(),
+          axis.text.x  = element_text(angle = 90, size = font_size),
+          axis.text.y  = element_text(size = font_size),
+          legend.text  = element_text(size = 15),
+          legend.title = element_text(size = 15)
+        )
     })
 
     p.list <- ggarrange(plotlist = p.list, ncol = ncol_, nrow = nrow_)

@@ -286,7 +286,6 @@ output$download.button <- downloadHandler(
     results  <- pmet.result.processed()
     clusters <- names(results$pmet_result) %>% sort()
 
-
     if (input$method == "Overlap") {
 
       motifs <- TopMotifsGenerator(pmet.result.processed()$motifs, by.cluster = FALSE, exclusive.motifs = TRUE)
@@ -332,7 +331,21 @@ output$download.button <- downloadHandler(
         p <- p[[input$method]]
       }
     }
-    ggsave(file, p, width = 20, height = 20, dpi = 320, units = "in")
+
+    # set size of saved plot
+    if (input$method == "Overlap") {
+      wid <- 20
+      hei <- 20
+    } else {
+      if (input$method == "All") {
+        wid <- 20
+        hei <- 10 * ceiling(length(clusters)/2)
+      } else if (input$method %in% clusters) {
+        wid <- 20
+        hei <- 20
+      }
+    }
+    ggsave(file, p, width = wid, height = hei, dpi = 320, units = "in")
   }
 )
 
