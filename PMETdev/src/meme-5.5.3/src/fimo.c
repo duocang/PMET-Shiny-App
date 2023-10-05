@@ -1162,8 +1162,8 @@ int main(int argc, char* argv[]) {
       &num_scanned_sequences,
       &num_scanned_positions,
       options.output_dirname,
-      5000,
-      5,
+      options.topn,
+      options.topk,
       promoterList);
 
   deletePromoterLenList(promoterList);
