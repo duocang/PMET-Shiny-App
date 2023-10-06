@@ -133,6 +133,9 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
 
     make distclean
 
+    aclocal
+    automake
+
     currentDir=$(pwd)
     echo $currentDir/build
 
