@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+# cmake_minimum_required(VERSION 3.12)
 project(pmetindex)
 
 # 设置编译参数
@@ -18,13 +18,8 @@ add_executable(pmetindex
   cFimoFile.cpp
   cMotifHit.cpp
   fastFileReader.cpp
-  cFimoFile.hpp
-  cMotifHit.hpp
-  fastFileReader.hpp
   # utils.cpp
 )
-# file(GLOB_RECURSE HEADERS "*.hpp")
-# file(GLOB_RECURSE SOURCES "*.cpp")
-# add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
+# target_link_libraries(${PROJECT_NAME} profiler unwind)
 target_link_libraries(${PROJECT_NAME})
