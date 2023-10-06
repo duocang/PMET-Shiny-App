@@ -13,5 +13,3 @@ sleep 1
 rm Makefile
 rm -rf CMake*
 rm -rf cmake_install.cmake
-
-mkdir -p test_result
