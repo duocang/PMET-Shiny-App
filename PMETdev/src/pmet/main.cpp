@@ -26,7 +26,7 @@
 #include "Output.hpp"
 #include "motif.hpp"
 #include "motifComparison.hpp"
-#include "utils.cpp"
+#include "utils.hpp"
 
 // take progress up by 5% of total runtime
 
@@ -68,6 +68,20 @@ int main(int argc, const char* argv[]) {
               "     [-f fimo_dir = 'fimohits']\n"
               "     [-s progress_file = 'progress.log']\n"
               "     [-o output_file = 'motif_found.txt']\n";
+
+
+      std::cout << "Usage: pmet [OPTIONS]" << std::endl;
+      std::cout << "Options:" << std::endl;
+      std::cout << "  -d <input_directory>           Set input directory.          Default is '.'."                       << std::endl;
+      std::cout << "  -g <genes_file>                Set genes file.               Default is 'input.txt'."               << std::endl;
+      std::cout << "  -i <ICthreshold>               Set IC threshold.             Default is 4."                         << std::endl;
+      std::cout << "  -p <promoter_lengths_file>     Set promoter lengths file.    Default is 'promoter_lengths.txt'."    << std::endl;
+      std::cout << "  -b <binomial_values_file>      Set binomial values file.     Default is 'binomial_thresholds.txt'." << std::endl;
+      std::cout << "  -c <information_content_file>  Set information content file. Default is 'IC.txt'."                  << std::endl;
+      std::cout << "  -s <progress_file>             Set progress log.             Default is 'progress.log'."            << std::endl;
+      std::cout << "  -o <output_file>               Set output file.              Default is 'motif_found.txt'."         << std::endl;
+
+
       return 0;
     } else if (!strcmp(argv[i], "-i"))
       ICthreshold = atof(argv[i + 1]);
@@ -119,43 +133,56 @@ int main(int argc, const char* argv[]) {
   std::map<std::string, std::vector<Output>>           results;  // key is cluster name, value is vector of pairwise motif comparisons;
   // results will be sotred serpately for each cluster to make later MTC stuff more efficient
 
-  // Reading inputs ---------------------------------------------------------------------
+  // ================================= Loading Inputs =================================
   writeProgress(progressFile, "Reading inputs...", 0.0);
 
-  if (!loadFiles(inputDir, genesFile, promotersFile, binThreshFile, ICFile, fimoDir, promSizes, topNthreshold, ICvalues,
-                 clusters, fimoFiles, results))
+  // If the files cannot be loaded, exit the program with an error code (1).
+  if (!loadFiles(inputDir, genesFile, promotersFile, binThreshFile, ICFile, fimoDir, promSizes, topNthreshold, ICvalues, clusters, fimoFiles, results))
     exit(1);
 
-  if (!validateInputs(promSizes, topNthreshold, ICvalues, clusters, fimoFiles))
-    exit(1);
+  // ================================ Validating Inputs ================================
 
-  // Got valid data to proceed
+  // Validate the inputs (promSizes, topNthreshold, ICvalues, clusters, fimoFiles).
+  // If any of the inputs are invalid, exit the program with an error code (1).
+  // Otherwise, proceed with the computations for each pair-wise comparison of fimo files.
+  if (!validateInputs(promSizes, topNthreshold, ICvalues, clusters, fimoFiles)) {
+    exit(1);
+  }
 
   // For each pair-wise comparison of fimo files
   long numClusters      = clusters.size();
   long numFimoFiles     = fimoFiles.size();
   long totalComparisons = (numFimoFiles * numFimoFiles - numFimoFiles) / 2;
 
+  // Create a vector to store all motif instances from fimo files
   std::vector<motif> allMotifs(numFimoFiles, motif());
 
+  // Initialize a flag to check if there are any missing values while reading the fimo files.
   bool missingValues = false;
 
   msgString << "Reading " << fimoFiles.size() << " FIMO files..." << std::endl;
   std::cout << msgString.str();
   writeProgress(progressFile, msgString.str(), inc);
 
-  for (long m = 0; m < numFimoFiles; ++m)  // read each file
+  // Read each fimo file and store the motif instances in the 'allMotifs' vector.
+  for (long m = 0; m < numFimoFiles; ++m)
     allMotifs[m].readFimoFile(fimoDir + fimoFiles[m], inputDir, ICvalues, topNthreshold, &missingValues);
   std::cout << "Done" << std::endl;
+
+  // If any missing values were encountered while reading the fimo files, exit the program with an error code (1).
   if (missingValues)
     exit(1);
 
-  // reseerve storage for results
+
+  // ============================ Reserve storage for results ============================
   for (std::map<std::string, std::vector<Output>>::iterator i = results.begin(); i != results.end(); i++)  // for each cluster
              //(i->second).resize(totalComparisons, motifComparison());
-    (i->second).reserve(totalComparisons);  // one element for each pairwise comparison
+    // For each cluster (i.e., each key in the 'results' map), reserve space in the vector
+    // to accommodate 'totalComparisons' elements. Each element in the vector will be of type 'motifComparison'.
+    // The purpose is to preallocate memory to reduce potential reallocations during vector resizing.
+    (i->second).reserve(totalComparisons);
 
-  // pair-wise comparisons ---------------------------------------------------------------------
+  // =============================== Pair-wise Comparisons ================================
   long numComplete = 0;
 
   msgString.str("");
@@ -166,56 +193,70 @@ int main(int argc, const char* argv[]) {
   std::cout << " 10%";
 
   motifComparison mComp;
-
+  // Loop through allMotifs to perform pair-wise comparisons
   for (std::vector<motif>::iterator motif1 = allMotifs.begin(); motif1 != allMotifs.end() - 1; ++motif1) {
+    // Nested loop to compare motif1 with all motifs that come after it in the allMotifs vector
     for (std::vector<motif>::iterator motif2 = motif1 + 1; motif2 != allMotifs.end(); ++motif2) {
       // do test on all clusters for this pair of fimo files
-
       // sets genesInUniverseWithBothMotifs, used in Coloc Test
-      mComp.findIntersectingGenes(*motif1, *motif2, ICthreshold, promSizes); 
-      // got shared genes so do test for each cluster
+      // Perform a test to find intersecting genes between motif1 and motif2 and store the result in genesInUniverseWithBothMotifs
+      mComp.findIntersectingGenes(*motif1, *motif2, ICthreshold, promSizes);
+
+      // Perform the colocTest for each cluster to assess co-localization of motif1 and motif2 in the genes of the cluster
+      // Store the results in the 'results' map under the cluster name as the key
       for (auto& cl : clusters) {
         mComp.colocTest(promSizes.size(), ICthreshold, cl.first, cl.second);
         results[cl.first].push_back(Output(motif1->getMotifName(), motif2->getMotifName(), mComp));
       }
-      // message
+
+      // Update and display progress message
       std::cout << "\b\b\b";
-      // progress goes from 10 to 90% in this loop
       double progVal = 0.1 + double(0.8 * ++numComplete) / totalComparisons;
       std::cout << std::setw(2) << long(progVal * 100) << "%";
     }
+
+    // Update and write progress information to a file after each motif1 has been compared with all motifs in the list
     msgString << "Perfomed " << numComplete << " of " << totalComparisons << " pair-wise comparisons" << std::endl;
     writeProgress(progressFile, msgString.str(), 0.0);
   }
 
-  // Applying correction and save result --------------------------------------------------------------
+  // ======================= Applying correction and save result ===============================
   std::ofstream outputFile;
   outputFile.open(outputDirName + outputFileName, std::ios_base::out);
+
+  // Check if the output file is successfully opened
   if (!outputFile.is_open()) {
     std::cout << "Error openning results file " << (outputDirName + outputFileName) << std::endl;
     exit(1);
   }
+
+  // Write headers to the output file
   Output::writeHeaders(outputFile);
 
   std::cout << std::endl << "Applying correction factors" << std::endl;
   writeProgress(progressFile, "Applying correction factors", 0.02);
-  // Multiple testing corrections
 
-  // per cluster. Bonferroni factor is size of cluster. Calculate  Benjamini-Hochberg FDR correction.
-  // map will be already sorted on sort on cluster name, sort members by motif1, then motif2
-  long globalBonferroniFactor = numClusters * totalComparisons;  // total number of tests performed
+  // Multiple testing corrections
+  // Perform correction for each cluster using the Benjamini-Hochberg FDR correction method.
+  // The Bonferroni factor for each cluster is equal to the size of the cluster multiplied by
+  // the total number of pairwise comparisons performed.
+  // The results are sorted based on cluster names, and then the motif comparisons are sorted
+  // in ascending order using the sortComparisons function.
+  long globalBonferroniFactor = numClusters * totalComparisons;  // Total number of tests performed
   for (std::map<std::string, std::vector<Output>>::iterator cl = results.begin(); cl != results.end(); cl++) {
     // cl->second is vector<motifComparison>
-    std::sort((cl->second).begin(), (cl->second).end(), sortComparisons); 
 
+    // Sort the motif comparisons for each cluster
+    std::sort((cl->second).begin(), (cl->second).end(), sortComparisons);
+
+    // Apply Benjamini-Hochberg FDR correction to the motif comparisons
     bhCorrection(cl->second);
 
-    // print sorted, correcgted compoarisons inb this cluster
+    // Print sorted, corrected comparisons in this cluster to the output file
     for (std::vector<Output>::iterator mc = std::begin(cl->second); mc != std::end(cl->second); mc++) {
       outputFile << cl->first << '\t';  // cluster name
       mc->printMe(globalBonferroniFactor, outputFile);
     }
-    // after each cluster completed
   }
   outputFile.close();
 
