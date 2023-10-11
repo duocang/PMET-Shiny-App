@@ -197,7 +197,7 @@ ProcessPmetResult <- function(pmet_result       = NULL,
     ### 3.1 Histogram of p_adj
     if (!is.null(histgram_dir)) {
       PmetHistogramPlot(
-        res   = pmet_filtered,
+        res   = pmet_result,
         ncols = 2,
         histgram_path = file.path(histgram_dir, "histgram_padj_after_filter.png"))
     } # if
@@ -236,7 +236,7 @@ ProcessPmetResult <- function(pmet_result       = NULL,
     ### 3.1 Histogram of p_adj
     if (!is.null(histgram_dir)) {
       PmetHistogramPlot(
-        res   = pmet_filtered,
+        res   = pmet.filtered,
         ncols = 2,
         histgram_path = file.path(histgram_dir, "histgram_padj_after_filter.png"))
     } # if
