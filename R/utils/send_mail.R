@@ -45,7 +45,8 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
 
   subject <- "PMET result is ready!"
   body <- paste(
-    "Dear PMET user,\n\n\n",
+    "\n\n\nDear PMET user,\n\n\n",
+    "Please copy and paste the link into a browser if cliking failed\n\n",
     result_link,
     "\nThe result will be kept in the server for a week, please download it as soon as possible.\n\n\n Thank you!",
     sep = "\n\n"

@@ -132,7 +132,7 @@ observeEvent(input$run_pmet_btn, {
   show_spinner()
   report_success(
     title = "PMET will take long time to complete.",
-    text ="You are safe to close this page and result will be sent via email.",
+    text ="You are safe to close this page and result will be sent via email. Do check your spam please.",
     button = "OK"
   )
 
