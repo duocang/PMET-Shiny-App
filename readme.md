@@ -2,7 +2,7 @@ This is a Shiny app developed for PMET.
 
 ![](www/figures/logo.png)
 
-## File tree
+## 1. File tree
 
 ```shell
 .
@@ -24,35 +24,24 @@ This is a Shiny app developed for PMET.
 └── readme.md
 ```
 
-## Shortcuts of deployment
+## 2. Quick deploy
 
 1. Install tools [[details](#tools)]
-   > If the project is already running, skip this step.
 2. Install and configure Shiny Server and Nginx correctly [[details](#setup-shiny-server-and-nginx)]
-   > If the project is already running, skip this step.
-3. `git clone` this project in the folder of Shiny Server sites (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
-   > git pull to update code
+3. `git clone` in the folder of Shiny Server (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
 4. Run `deploy_one_bash.sh`
+   - set email and CPU
+   - assign execute permissions
+   - download data of homotypic motif hits of 21 speices [[details](#index-data)]
+   - compile binaries needed by Shiny app [[details](#compile)]
    - install R packages
    - install python packages
-   - fetch data (Pre-computed homotypic motif hits) [[details](#index-data)]
-   - compile binaries needed by Shiny app [[details](#compile)]
-   ```bash
-   bash deploy_one_bash.sh
-   ```
-5. email account [[details](#mail)]
-   ```bash
-   vim R/utils/send_mail.R
-   ```
-6. CPU arranged for Shiny app [[details](#cpu)]
-   ```bash
-   vim R/global.R
+     
+     ```bash
+     bash deploy_one_bash.sh
+     ```
 
-   # NCPU <- 6
-   ```
-
-
-## <span id="index-data">Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
+## <span id="index-data">3. Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
 
 Given that the PMET indexing calculation takes a very long time, we have already performed pre-calculation for some plants and several common plant transcription factor databases.
 
@@ -96,7 +85,7 @@ data/indexing
 
 In the future, if there are more plants or new databases to be added to the shiny app, we just need to copy the new indexing results to the indexing directory. the PMET shiny app will automatically recognize the new additions without the need to change the code.
 
-## <span id="compile">PMET index and pair compile</span>
+## <span id="compile">4. PMET index and pair compile</span>
 
 There are a few tools that need to be compiled before deploying the Shiny app, and we provide a script that does all the work.
 If you don't really want to know the details, you can just run the following script.
@@ -111,9 +100,7 @@ bash binary_compile.sh
 
 After compilation, the executable will be saved in the `PMETdev/scripts` directory for the Shiny app to call.
 
-
-
-## <span id="setup-shiny-server-and-nginx">Setup Shiny server and nginx</span>
+## <span id="setup-shiny-server-and-nginx">Setup 5. Shiny server and nginx</span>
 
 Please follow [Shiny Server Deployment](https://cran.r-project.org/web/packages/ReviewR/vignettes/deploy_server.html) for more details.
 
@@ -154,62 +141,23 @@ After PMET calculation is completed, Shiny will generate a download button that 
 result_link <- paste0("http://127.0.0.1:84/result/", paste0(pmetPair_path_name, ".zip"))
 ```
 
-## <span id="cpu">CPU</span>
+## <span id="tools">6. Tools needed</span>
 
-Currently, PMET uses 6 CPU cores by default. If you have abundant computing resources, you can modify this parameter in `R/global.R`. It seems that 6 CPU cores should be sufficient for the performance.
-
-```bash
-# set CPU cores
-NCPU <- 6
-```
-
-<!-- <img src="https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181500980.png" style="zoom: 50%;" /> -->
-
-
-## <span id="mail"> Send emails</span>
-
-Given that the calculation of PMET takes a long time, we will send an email to notify the user after the PMET calculation is completed.
-
-We use the `send.mail` function from `mailR` package.
-
-```r
-send.mail(
-  from = sender,
-  to = recipient,
-  subject = subject,
-  body = body,
-  smtp = list(
-    host.name = "v095996.kasserver.com",
-    port = 587,
-    user.name = "",
-    passwd = "",
-    ssl = TRUE
-  ),
-  authenticate = TRUE,
-  send = TRUE,
-  # attach.files = emailFile,
-  encoding = "utf-8"
-)
-```
-
-## <span id="tools">Tools needed</span>
-
-**Install GNU Parallel**
+**6.1 Install GNU Parallel**
 
 GNU Parallel helps PMET index (FIMO and PMET index) to run in parallel mode.
 
 ```bash
 sudo apt-get install parallel
+
+# Put GNU Parallel silent
+parallel --citation
 ```
 
-Put GNU Parallel silent:
 
-```bash
- # Run once
- parallel --citation
-```
 
-**Install The MEME Suite (FIMO and fasta-get-markov)**
+**6.2 Install The MEME Suite (FIMO and fasta-get-markov)**
+
 ```bash
 # cd a folder you want to put the software
 wget https://meme-suite.org/meme/meme-software/5.5.2/meme-5.5.2.tar.gz
@@ -229,7 +177,7 @@ Add following into bash profile file.
 export PATH=$HOME/meme/bin:$HOME/meme/libexec/meme-5.5.2:$PATH
 ```
 
-**Install samtools**
+**6.3 Install samtools**
 
 Install from conda or mamba:
 
@@ -254,9 +202,7 @@ make install
 export PATH=$HOME/samtools/bin:$PATH
 ```
 
-**Install bedtools**
-
-It is recommended to install bedtools via apt/yum or conda.
+**6. 4 Install bedtools**
 
 ```bash
 conda install -c bioconda bedtools
@@ -271,27 +217,13 @@ apt-get install bedtools
 yum install BEDTools
 ```
 
-It is possible to compile the bedtools by running the following commands.
+or
 
 ```bash
 wget https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
 tar -zxvf bedtools-2.29.1.tar.gz
 cd bedtools2
 make
-```
-
-### Python libraries
-The installation of python package has been included in `deploy_one_bash.sh`, and it will be automatically installed when the script is executed.
-```bash
-bash deploy_one_bash.sh
-```
-
-### R packages needed
-
-The installation of R package has been included in `deploy_one_bash.sh`, and it will be automatically installed when the script is executed.
-
-```bash
-bash deploy_one_bash.sh
 ```
 
 ![](www/figures/pmet_workflow_with_interval_option.png)
