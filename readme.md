@@ -26,29 +26,33 @@ This is a Shiny app developed for PMET.
 
 ## 2. Quick deploy
 
-1. Install tools [[details](#tools)]
-2. Install and configure Shiny Server and Nginx correctly [[details](#setup-shiny-server-and-nginx)]
-3. `git clone` in the folder of Shiny Server (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
+1. Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
+2. Install `Shiny Server` and `Nginx` [[details](#setup-shiny-server-and-nginx)]
+3. `git clone` or `git pull` in the folder of Shiny Server (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
+
 4. Run `deploy_one_bash.sh`
+
    - set email and CPU
    - assign execute permissions
    - download data of homotypic motif hits of 21 speices [[details](#index-data)]
    - compile binaries needed by Shiny app [[details](#compile)]
    - install R packages
    - install python packages
-     
-     ```bash
-     bash deploy_one_bash.sh
-     ```
+   ```bash
+    bash deploy_one_bash.sh
+   ```
 
 ## <span id="index-data">3. Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
 
 Given that the PMET indexing calculation takes a very long time, we have already performed pre-calculation for some plants and several common plant transcription factor databases.
 
-The data can be accessed by running the script `deploy_one_bash.sh` from [Homotypic motifs from 4 databases in the promoters of 21 plant species](https://zenodo.org/record/8221143).
+The data can be accessed by running the script `deploy_one_bash.sh` from [Homotypic motifs from 5 databases in the promoters of 21 plant species](https://zenodo.org/record/8435321).
 
 ```bash
 bash deploy_one_bash.sh
+
+# ...
+# 3. Would you like to download data of homotypic motif hits? [y/N]: Y
 ```
 
 ```shell
@@ -56,10 +60,11 @@ bash deploy_one_bash.sh
 data/indexing
 |-- Arabidopsis_thaliana                      # species
 │   |-- CIS-BP2                               # motif database
-│   |-- Franco-Zorrilla_et_al_2014
-│   |-- Jaspar_plants_non_redundant_2022
-│   |-- PlantTFDB
-│   `-- universe.txt
+│   |-- Franco-Zorrilla_et_al_2014            # motif database
+│   |-- Jaspar_plants_non_redundant_2022      # motif database
+│   |-- PlantTFDB                             # motif database
+│   |-- Plant_Cistrome_DB                     # motif database
+│   `-- universe.txt                          # complete gene list
 |-- Brachypodium_distachyon
 |-- Brassica_napus
 |-- Glycine_max
@@ -102,9 +107,11 @@ After compilation, the executable will be saved in the `PMETdev/scripts` directo
 
 ## <span id="setup-shiny-server-and-nginx">Setup 5. Shiny server and nginx</span>
 
+**5.1 Shiny-server and nginx install**
+
 Please follow [Shiny Server Deployment](https://cran.r-project.org/web/packages/ReviewR/vignettes/deploy_server.html) for more details.
 
-**Shiny config**
+**5.2 Shiny config**
 
 Once Shiny Server is installed, you can access the Shiny Server welcome page by visiting your local IP address followed by port 3838 (127.0.0.1:3838 in your PC, if not in a server with a static IP ).
 
@@ -118,7 +125,7 @@ ln -s /home/shiny/pmet_nginx /srv/shiny-server
 
 ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202304181455329.png)
 
-**nginx config**
+**5.3 nginx config**
 
 Add the following in the end of `/etc/nginx/sites-enabled/default`
 
@@ -133,13 +140,13 @@ server {
 }
 ```
 
-**Download function based on nginx**
+<!-- **Download function based on nginx**
 
 After PMET calculation is completed, Shiny will generate a download button that is specifically for the PMET result archive. This functionality can be found in `utils/command_call_pmet.R` line 12.
 
 ```R
 result_link <- paste0("http://127.0.0.1:84/result/", paste0(pmetPair_path_name, ".zip"))
-```
+``` -->
 
 ## <span id="tools">6. Tools needed</span>
 
@@ -153,8 +160,6 @@ sudo apt-get install parallel
 # Put GNU Parallel silent
 parallel --citation
 ```
-
-
 
 **6.2 Install The MEME Suite (FIMO and fasta-get-markov)**
 

@@ -88,6 +88,7 @@ packages <- c(
   "tibble",               # extended data frames
   "tidyverse",            # a collection of R packages for data manipulation and visualization
   "tictoc",               # simple and accurate timers
+  "xfun",                 # Xie Yihui's functions
   "zip"                   # creation and extraction of ZIP files
 )
 
