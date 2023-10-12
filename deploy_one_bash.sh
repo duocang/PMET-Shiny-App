@@ -55,8 +55,7 @@ print_middle(){
     done <<< "$1"
 }
 
-echo ""
-echo ""
+echo -e "\n\n"
 print_middle "The purpose of this script is to                                      \n"
 print_middle "  1. set nginx link, email and CPU                                      "
 print_middle "  2. assign execute permissions to all users for bash and perl files    "
@@ -336,7 +335,7 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     # download and unzip
     for url in "${urls[@]}"; do
         filename=$(basename $url .tar.gz)
-        print_fluorescent_yellow "Downloading homotypic motifs hits of ${filename//_/ }"
+        print_orange "Downloading homotypic motifs hits of ${filename//_/ }"
 
         wget $url
         tar -xzvf  "$filename.tar.gz" -C data/indexing
@@ -349,28 +348,30 @@ fi
 
 ################################## 4. compile binary #################################
 
-print_green_no_br "\n4. Would you like to compile binaries? [Y/n]:"
+print_green_no_br "\n4. Would you like to compile binaries? [y/N]:"
 read -p " " answer
 answer=${answer:-N} # Default to 'N' if no input provided
 
 if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
 
+    print_fluorescent_yellow "Compiling... It takes minutes."
+
     cd PMETdev
 
-    rm scripts/pmetindex
-    rm scripts/pmetParallel_linux
-    rm scripts/pmet
-    rm scripts/fimo
+    rm -f scripts/pmetindex
+    rm -f scripts/pmetParallel_linux
+    rm -f scripts/pmet
+    rm -f scripts/fimo
 
     ############################# 4.1 fimo with pmet index ##############################
-    print_fluorescent_yellow "Compiling FIMO with PMET homotopic (index) binary..."
+    print_orange "Compiling FIMO with PMET homotopic (index) binary..."
     cd src/meme-5.5.3
 
-    make distclean
+    make distclean > /dev/null 2>&1
 
     # update congifure files according to different system
-    aclocal
-    automake
+    aclocal  > /dev/null 2>&1
+    automake > /dev/null 2>&1
 
     currentDir=$(pwd)
     echo $currentDir/build
@@ -383,37 +384,38 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     # compile
     chmod a+x ./configure
     # 抑制输出，但仍想在出现错误时得到反馈 Suppress output, but still want feedback when errors occur.
-    ./configure --prefix=$currentDir/build  --enable-build-libxml2 --enable-build-libxslt > /dev/null
-    make > /dev/null
-    make install > /dev/null
+    ./configure --prefix=$currentDir/build  --enable-build-libxml2 --enable-build-libxslt > /dev/null 2>&1
+    make         > /dev/null 2>&1
+    make install > /dev/null 2>&1
     cp build/bin/fimo ../../scripts/
-    make distclean
+    make distclean > /dev/null 2>&1
     rm -rf build
-    print_fluorescent_yellow "make distclean finished...\n"
+    # print_orange "make distclean finished...\n"
 
 
     ################################### 4.2 pmetindex ####################################
-    print_fluorescent_yellow "Compiling PMET homotopic (index) binary...\n"
+    print_orange "Compiling PMET homotopic (index) binary..."
     cd ../indexing
     chmod a+x build.sh
-    bash build.sh
+    bash build.sh > /dev/null 2>&1
     mv bin/pmetindex ../../scripts/
-
+    rm -rf bin/*
 
     ################################## 4.3 pmetParallel ##################################
-    print_fluorescent_yellow "Compiling PMET heterotypic (pair) binary...\n"
+    print_orange "Compiling PMET heterotypic (pair) binary..."
     cd ../pmetParallel
     chmod a+x build.sh
-    bash build.sh
+    bash build.sh > /dev/null 2>&1
     mv bin/pmetParallel_linux ../../scripts/
+    rm -rf bin/*
 
     # pmet
-    print_fluorescent_yellow "Compiling PMET heterotypic (pair) binary...\n"
+    print_orange "Compiling PMET heterotypic (pair) binary..."
     cd ../pmet
     chmod a+x build.sh
-    bash build.sh
+    bash build.sh  > /dev/null 2>&1
     mv bin/pmet ../../scripts/
-
+    rm -rf bin/*
 
     # back to home directory
     cd ../../..
@@ -431,11 +433,11 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     done
 
     if [ ! -z "$exists" ]; then
-        echo -e "\n\n"
+        echo -e "\n"
         print_green "Compilation Success:$exists"
     fi
     if [ ! -z "$not_exists" ]; then
-        echo -e "\n\n"
+        echo -e "\n"
         print_red "Compilation Failure:$not_exists"
     fi
 
@@ -456,6 +458,7 @@ read -p " " answer
 answer=${answer:-N} # Default to 'N' if no input provided
 
 if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
+    print_orange "Installing R packages... It takes minutes."
     chmod a+x R/utils/install_packages.R
     Rscript R/utils/install_packages.R
 else
@@ -469,11 +472,15 @@ read -p " " answer
 answer=${answer:-N} # Default to 'N' if no input provided
 
 if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
-    pip install numpy
-    pip install pandas
-    pip install scipy
-    pip install bio
-    pip install biopython
+    print_orange "Installing python packages... It takes minutes."
+    pip install numpy     > /dev/null 2>&1 || echo "Failed to install numpy"
+    pip install pandas    > /dev/null 2>&1 || echo "Failed to install pandas"
+    pip install scipy     > /dev/null 2>&1 || echo "Failed to install scipy"
+    pip install bio       > /dev/null 2>&1 || echo "Failed to install bio"
+    pip install biopython > /dev/null 2>&1 || echo "Failed to install biopython"
 else
     print_orange "No python packages installed"
 fi
+
+
+print_green "\nDONE"
