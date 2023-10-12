@@ -9,8 +9,12 @@ ComdRunPmet <- function(input,
   temp <- str_split(pair_dir, "/")[[1]]
   pair_dir_name <- temp[length(temp)]
   recipient   <- input$email
-  result_link <- paste0("https://bar.utoronto.ca/pmet_result/", paste0(pair_dir_name, ".zip"))
-  # result_link <- paste0("http://pmet.online:84/result/", paste0(pair_dir_name, ".zip"))
+
+  nginx_link <- readLines("data/nginx_link.txt")
+  nginx_link <- nginx_link[1]
+
+  result_link <- paste0(nginx_link, paste0(pair_dir_name, ".zip"))
+  print(result_link)
 
   switch(model,
     "promoters_pre" = {

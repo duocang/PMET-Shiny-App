@@ -58,7 +58,7 @@ print_middle(){
 echo ""
 echo ""
 print_middle "The purpose of this script is to                                      \n"
-print_middle "  1. set email and CPU                                                  "
+print_middle "  1. set nginx link, email and CPU                                      "
 print_middle "  2. assign execute permissions to all users for bash and perl files    "
 print_middle "  3. download data of homotypic motif hits of 21 speices                "
 print_middle "  4. compile binaries needed by Shiny app                               "
@@ -75,14 +75,40 @@ fi
 
 
 # ############################ 1. set email and CPU #############################
-print_green "1. Configurations of email and CPU\n"
+print_green "1. Configurations of nginx link, email and CPU\n"
 
+#################### 1.1 nginx
+nginx_link="data/nginx_link.txt"
+
+# 检查文件是否存在，并打印内容
+if [ -f "$nginx_link" ]; then
+    print_green_no_br "Nginx link: "
+    cat "$nginx_link"
+else
+    print_red "$nginx_link does not exist."
+fi
+
+# 询问用户是否处于调试模式
+print_fluorescent_yellow_no_br "Are you debugging? [y/N]: "
+read debug_mode
+debug_mode=${debug_mode:-N} # Default to 'N' if no input provided
+
+if [[ "$debug_mode" =~ ^[Yy]$ ]]; then
+    echo "http://pmet.online:84/result/" > "$nginx_link"
+    echo "Updated $nginx_link with: http://pmet.online:84/result/"
+else
+    echo "https://bar.utoronto.ca/pmet_result/" > "$nginx_link"
+    echo "New nginx lilnk: https://bar.utoronto.ca/pmet_result/"
+fi
+
+
+#################### 1.2 email
 credential_path="data/email_credential.txt"
 
 # 检查文件是否存在 Check if the file exists
 if [[ ! -f "$credential_path" ]]; then
     touch "$credential_path"
-    print_green "Creating 'data/email_credential.txt' for email dispatch."
+    print_green "\nCreating 'data/email_credential.txt' for email dispatch."
     print_green "A one-time input is required and subsequently, no further attention is needed."
     print_green "This file will not be tracked by Git."
 fi
@@ -98,7 +124,7 @@ if [[ $line_count -ne 2 ]]; then
     fi
 
     # 要求用户输入信息并将其存储到文件中 Ask the user to enter information and store it in a file
-    echo "Please enter new email information: "
+    echo "\nPlease enter new email information: "
     read -p  "    User name: " username
     read -sp "    Password : " password
     echo
@@ -120,16 +146,14 @@ else
         read -r password
     } < "$credential_path"
 
-    print_green "Please check the credential for email:"
+    print_green "\nPlease check the credential for email:"
 
     echo "    User name: $username"
     echo "    Password : $password"
 
     print_fluorescent_yellow_no_br "Is the above information correct? [Y/n]: "
     read is_correct
-
-    # Default to 'Y' if no input provided
-    is_correct=${is_correct:-Y}
+    is_correct=${is_correct:-Y} # Default to 'Y' if no input provided
 
     # wrong email
     if [[ "$is_correct" != "y" && "$is_correct" != "Y" ]]; then
@@ -147,8 +171,7 @@ else
     fi
 fi
 
-
-
+#################### 1.3 CPU
 
 # Function to get user input for CPU number
 get_cpu_number() {
@@ -213,7 +236,7 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     # 遍历 PMETdev/scripts 目录及其所有子目录中的 .sh 和 .pl 文件
     find . -type f \( -name "*.sh" -o -name "*.pl" \) -exec chmod a+x {} \;
 else
-    print_fluorescent_yellow "No assignment"
+    print_orange "No assignment"
 fi
 
 
@@ -296,7 +319,7 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
         rm "$filename.tar.gz"
     done
 else
-    print_fluorescent_yellow "No data downloaded"
+    print_orange "No data downloaded"
 fi
 
 
@@ -393,7 +416,7 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     fi
 
 else
-    print_fluorescent_yellow "No tools compiled"
+    print_orange "No tools compiled"
 fi
 
 ############# 4.5 Give execute permission to all users for the file. ##################
@@ -412,7 +435,7 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     chmod a+x R/utils/install_packages.R
     Rscript R/utils/install_packages.R
 else
-    print_red "No R packages installed"
+    print_orange "No R packages installed"
 fi
 
 
@@ -428,5 +451,5 @@ if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     pip install bio
     pip install biopython
 else
-    print_fluorescent_yellow "No python packages installed"
+    print_orange "No python packages installed"
 fi
