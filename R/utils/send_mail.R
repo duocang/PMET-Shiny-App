@@ -41,6 +41,11 @@
 library(emayili)
 
 SendResultMail <- function(recipient = NULL, result_link = NULL) {
+
+  email_credential <- readLines("data/email_credential.txt")
+  EMAIL_USERNAME <- email_credential[1]
+  EMAIL_PASSWORD <- email_credential[2]
+
   sender <- "result@pmet.simpleconstellation.com"
 
   subject <- "PMET result is ready!"
@@ -55,8 +60,8 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
   smtp <- server(
     host = "v095996.kasserver.com",
     port = 587,
-    username = "",
-    password = "",
+    username = EMAIL_USERNAME,
+    password = EMAIL_PASSWORD,
     use_ssl = TRUE
   )
 

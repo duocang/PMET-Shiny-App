@@ -67,7 +67,9 @@ suppressMessages({
 options(shiny.maxRequestSize = 30000 * 1024^2)
 plan(multisession)
 
-NCPU <- 6
+
+cpu_configuration <- readLines("data/cpu_configuration.txt")
+NCPU <- cpu_configuration[1]
 
 # to detect the pre-computed motif-DB data
 # when new daata comes, there is no need to change code.

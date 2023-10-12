@@ -91,3 +91,6 @@ result
 fimo
 pmet
 data/indexing
+
+data/cpu_configuration.txt
+data/email_credential.txt
