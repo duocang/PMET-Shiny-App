@@ -124,9 +124,21 @@ if [[ $line_count -ne 2 ]]; then
     fi
 
     # 要求用户输入信息并将其存储到文件中 Ask the user to enter information and store it in a file
-    echo "\nPlease enter new email information: "
-    read -p  "    User name: " username
-    read -sp "    Password : " password
+    echo -e "\nPlease enter new email information: "
+
+    while true; do
+        read -p  "    User name: " username
+        # 如果用户名不为空，则跳出循环 If username is not empty, break the loop
+        [[ -n "$username" ]] && break
+        print_red "    User name cannot be empty. Please try again."
+    done
+    while true; do
+        read -sp "    Password : " password
+        echo  # 添加一个新行，因为我们使用了-s参数 Add a newline because we used -s parameter
+        # 如果密码不为空，则跳出循环 If password is not empty, break the loop
+        [[ -n "$password" ]] && break
+        print_red "    Password cannot be empty. Please try again."
+    done
     echo
 
     # 存储信息到文件 Store information to file
@@ -158,10 +170,22 @@ else
     # wrong email
     if [[ "$is_correct" != "y" && "$is_correct" != "Y" ]]; then
         > "$credential_path"
+
         # 要求用户输入信息并将其存储到文件中 Ask the user to enter information and store it in a file
         echo "Please enter the correct email information: "
-        read -p  "User name: " username
-        read -sp "Password : " password
+        while true; do
+            read -p  "    User name: " username
+            # 如果用户名不为空，则跳出循环 If username is not empty, break the loop
+            [[ -n "$username" ]] && break
+            print_red "    User name cannot be empty. Please try again."
+        done
+        while true; do
+            read -sp "    Password : " password
+            echo  # 添加一个新行，因为我们使用了-s参数 Add a newline because we used -s parameter
+            # 如果密码不为空，则跳出循环 If password is not empty, break the loop
+            [[ -n "$password" ]] && break
+            print_red "    Password cannot be empty. Please try again."
+        done
         echo
 
         # 存储信息到文件
