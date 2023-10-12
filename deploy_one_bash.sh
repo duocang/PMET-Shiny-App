@@ -52,73 +52,122 @@ print_middle(){
 
 echo ""
 echo ""
-print_middle "The purpose of this script is to                         \n"
-print_middle "  1. download data of homotypic motif hits of 21 speices   "
-print_middle "  2. compile binaries needed by Shiny app                  "
-print_middle "  3. install R package                                     "
-print_middle "  4. install python package                              \n"
-print_middle "Make sure you have correctly set up Shiny Server and Nginx "
-print_middle "                                                       \n\n"
+print_middle "The purpose of this script is to                                      \n"
+print_middle "  1. assign execute permissions to all users for bash and perl files.   "
+print_middle "  2. download data of homotypic motif hits of 21 speices                "
+print_middle "  3. compile binaries needed by Shiny app                               "
+print_middle "  4. install R package                                                  "
+print_middle "  5. install python package                                           \n"
+print_middle "Make sure you have correctly set up Shiny Server and Nginx              "
+print_middle "                                                                    \n\n"
 
 
-############################# download homotypic dat ##############################
-# 询问用户是否开始下载
-print_green_no_br "Would you like to download data of homotypic motif hits? (Y/yes to confirm): "
-read -p "" answer
-
-urls=(
-    "https://zenodo.org/record/8221143/files/Arabidopsis_thaliana.7z"
-    "https://zenodo.org/record/8221143/files/Brachypodium_distachyon.7z"
-    "https://zenodo.org/record/8221143/files/Brassica_napus.7z"
-    "https://zenodo.org/record/8221143/files/Glycine_max.7z"
-    "https://zenodo.org/record/8221143/files/Hordeum_vulgare_goldenpromise.7z"
-    "https://zenodo.org/record/8221143/files/Hordeum_vulgare_Morex_V3.7z"
-    "https://zenodo.org/record/8221143/files/Hordeum_vulgare_R1.7z"
-    "https://zenodo.org/record/8221143/files/Hordeum_vulgare_v082214v1.7z"
-    "https://zenodo.org/record/8221143/files/Medicago_truncatula.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_indica_9311.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_indica_IR8.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_indica_MH63.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_indica_ZS97.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_japonica_Ensembl.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_japonica_Kitaake.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_japonica_Nipponbare.7z"
-    "https://zenodo.org/record/8221143/files/Oryza_sativa_japonica_V7.1.7z"
-    "https://zenodo.org/record/8221143/files/Solanum_lycopersicum.7z"
-    "https://zenodo.org/record/8221143/files/Solanum_tuberosum.7z"
-    "https://zenodo.org/record/8221143/files/Triticum_aestivum.7z"
-    "https://zenodo.org/record/8221143/files/Zea_mays.7z")
-
-
-if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
-
-    read -p "Do you have p7zip-full installed? (Y/yes to confirm): " answer
-    if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
-        mkdir -p data/indexing
-
-        for url in "${urls[@]}"; do
-            filename=$(basename $url .7z)
-            print_fluorescent_yellow "Downloading homotypic motifs hits of ${filename//_/ }"
-
-            wget $url
-            7za x "$filename.7z" -odata/indexing
-            rm "$filename.7z"
-        done
-    else
-        print_red "Please install p7zip-full first!"
-        exit 1
-    fi
-else
-    print_red "No data download"
+if [ -d .git ]; then
+    git config core.fileMode false
 fi
 
 
-################################## compile binary #################################
+############################ 1. assign execute permissions #############################
 
-print_green_no_br "\nWould you like to compile binaries? (Y/yes to confirm):"
+print_green "1. Would you like to assign execute permissions to all users for bash and perl files? [y/N]: "
+read -p "" answer
+
+if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
+    # 遍历 PMETdev/scripts 目录及其所有子目录中的 .sh 和 .pl 文件
+    find . -type f \( -name "*.sh" -o -name "*.pl" \) -exec chmod a+x {} \;
+else
+    print_fluorescent_yellow "No assignment"
+fi
+
+
+
+
+
+############################# 2. download homotypic data ##############################
+current_dir=$(pwd)
+
+# 拼接路径
+data_path="${current_dir}/data/indexing"
+
+# 询问用户是否开始下载
+print_green "\n2. Would you like to download data of homotypic motif hits? [y/N]: "
+print_green_no_br "Data path: $data_path"
+
+read -p "" answer
+
+urls=(
+    "https://zenodo.org/record/8435321/files/Arabidopsis_thaliana.tar.gz"
+    "https://zenodo.org/record/8435321/files/Brachypodium_distachyon.tar.gz"
+    "https://zenodo.org/record/8435321/files/Brassica_napus.tar.gz"
+    "https://zenodo.org/record/8435321/files/Glycine_max.tar.gz"
+    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_goldenpromise.tar.gz"
+    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_Morex_V3.tar.gz"
+    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_R1.tar.gz"
+    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_v082214v1.tar.gz"
+    "https://zenodo.org/record/8435321/files/Medicago_truncatula.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_9311.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_IR8.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_MH63.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_ZS97.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_Ensembl.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_Kitaake.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_Nipponbare.tar.gz"
+    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_V7.1.tar.gz"
+    "https://zenodo.org/record/8435321/files/Solanum_lycopersicum.tar.gz"
+    "https://zenodo.org/record/8435321/files/Solanum_tuberosum.tar.gz"
+    "https://zenodo.org/record/8435321/files/Triticum_aestivum.tar.gz"
+    "https://zenodo.org/record/8435321/files/Zea_mays.tar.gz")
+
+
+if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
+
+    mkdir -p data/indexing
+    # 检查目录是否存在 Check if the directory exists
+    if [ ! -d "$data_path" ]; then
+        echo "Directory $data_path does not exist. Exiting script."
+        exit 1
+    fi
+
+    # 检查目录是否为空 Check if the directory is empty
+    if [ "$(find "$data_path" -mindepth 1 -maxdepth 1 -type d)" ]; then
+        print_red "Directory data/indexing contains subdirectories.\n"
+
+        # 提示用户是否要清空目录 Prompts the user if they want to empty the directory
+        read -p "Do you want to clear the directory? [y/N]: " user_response
+
+        # 判断用户响应并处理 Determine user response and process
+        case $user_response in
+            [yY])
+                # delete all except .gitkeep
+                find "$data_path" -mindepth 1 ! -name '.gitkeep' -exec rm -r {} +
+                ;;
+            *)
+                echo "Exiting script."
+                exit 1
+                ;;
+        esac
+    fi
+
+    # download and unzip
+    for url in "${urls[@]}"; do
+        filename=$(basename $url .tar.gz)
+        print_fluorescent_yellow "Downloading homotypic motifs hits of ${filename//_/ }"
+
+        wget $url
+        tar -xzvf  "$filename.tar.gz" -C data/indexing
+        rm "$filename.tar.gz"
+    done
+else
+    print_fluorescent_yellow "No data downloaded"
+fi
+
+
+################################## 3. compile binary #################################
+
+print_green_no_br "\n3. Would you like to compile binaries? [y/N]:"
 read -p " " answer
 
-if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
+if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
 
     cd PMETdev
 
@@ -127,12 +176,13 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
     rm scripts/pmet
     rm scripts/fimo
 
-    ############################# fimo with pmet index ##############################
+    ############################# 3.1 fimo with pmet index ##############################
     print_fluorescent_yellow "Compiling FIMO with PMET homotopic (index) binary..."
     cd src/meme-5.5.3
 
     make distclean
 
+    # update congifure files according to different system
     aclocal
     automake
 
@@ -142,20 +192,21 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
     if [ -d "$currentDir/build" ]; then
         rm -rf "$currentDir/build"
     fi
-
     mkdir -p $currentDir/build
 
+    # compile
     chmod a+x ./configure
-    ./configure --prefix=$currentDir/build  --enable-build-libxml2 --enable-build-libxslt
-    make
-    make install
+    # 抑制输出，但仍想在出现错误时得到反馈 Suppress output, but still want feedback when errors occur.
+    ./configure --prefix=$currentDir/build  --enable-build-libxml2 --enable-build-libxslt > /dev/null
+    make > /dev/null
+    make install > /dev/null
     cp build/bin/fimo ../../scripts/
     make distclean
     rm -rf build
     print_fluorescent_yellow "make distclean finished...\n"
 
 
-    ################################### pmetindex ####################################
+    ################################### 3.2 pmetindex ####################################
     print_fluorescent_yellow "Compiling PMET homotopic (index) binary...\n"
     cd ../indexing
     chmod a+x build.sh
@@ -163,7 +214,7 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
     mv bin/pmetindex ../../scripts/
 
 
-    ################################## pmetParallel ##################################
+    ################################## 3.3 pmetParallel ##################################
     print_fluorescent_yellow "Compiling PMET heterotypic (pair) binary...\n"
     cd ../pmetParallel
     chmod a+x build.sh
@@ -178,57 +229,47 @@ if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
     mv bin/pmet ../../scripts/
 
 
+    # back to home directory
+    cd ../../..
 
-    cd ../../
-    pwd
-    ################### Check if the compilation was successful ########################
+    ################### 3.4 Check if the compilation was successful ########################
     exists=""
     not_exists=""
 
-    for file in scripts/pmetindex scripts/pmetParallel_linux scripts/pmet scripts/fimo; do
+    for file in PMETdev/scripts/pmetindex PMETdev/scripts/pmetParallel_linux PMETdev/scripts/pmet PMETdev/scripts/fimo; do
         if [ -f "$file" ]; then
-            exists="$exists $file"
+            exists="$exists\n    $file"
         else
-            not_exists="$not_exists $file"
+            not_exists="$not_exists\n    $file"
         fi
     done
 
     if [ ! -z "$exists" ]; then
-        echo
-        echo
-        echo
+        echo -e "\n\n"
         print_green "Compilation Success:$exists"
     fi
-
-
     if [ ! -z "$not_exists" ]; then
-        echo
-        echo
-        echo
+        echo -e "\n\n"
         print_red "Compilation Failure:$not_exists"
     fi
 
-
-    ############# Give execute permission to all users for the file. ##################
-    chmod a+x scripts/pmetindex
-    chmod a+x scripts/pmetParallel_linux
-    chmod a+x scripts/pmet
-    chmod a+x scripts/fimo
-
-    # print_green "\n\npmet, pmetParallel_linux, pmetindex and NEW fimo are ready in 'scripts' folder.\n"
-
-    print_green "DONE"
 else
-    print_red "No data download"
+    print_fluorescent_yellow "No tools compiled"
 fi
 
-############################# install R packages ##############################
-print_green_no_br "\nWould you like to install R packages? (Y/yes to confirm): "
-# read -p "Would you like to install R packages? (Y/yes to confirm): " answer
+############# 3.5 Give execute permission to all users for the file. ##################
+chmod a+x PMETdev/scripts/pmetindex
+chmod a+x PMETdev/scripts/pmetParallel_linux
+chmod a+x PMETdev/scripts/pmet
+chmod a+x PMETdev/scripts/fimo
+
+############################# 4. install R packages ##############################
+print_green_no_br "\n4. Would you like to install R packages? [y/N]: "
+# read -p "Would you like to install R packages? [y/N]: " answer
 read -p " " answer
 
 
-if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
+if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     chmod a+x R/utils/install_packages.R
     Rscript R/utils/install_packages.R
 else
@@ -236,11 +277,11 @@ else
 fi
 
 
-############################# install python packages ##############################
-print_green_no_br "\nWould you like to install python packages? (Y/yes to confirm): "
+############################# 5. install python packages ##############################
+print_green_no_br "\n5. Would you like to install python packages? [y/N]: "
 read -p " " answer
 
-if [ "$answer" == "Y" ] || [ "$answer" == "yes" ]; then
+if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
     pip install numpy
     pip install pandas
     pip install scipy
