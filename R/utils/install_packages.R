@@ -9,7 +9,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
   suppressMessages(install.packages("BiocManager", quiet = TRUE))
 }
 
-if (!require("pacman")) {
+if (!requireNamespace("pacman")) {
   suppressMessages(install.packages("pacman", quiet = TRUE))
 }
 
@@ -88,8 +88,7 @@ repos <- c("daattali/shinydisconnect",
            "dreamRs/shinybusy",
            "merlinoa/shinyFeedback",
            "daattali/shinycssloaders",
-           "dreamRs/shinyWidgets",
-           "测试/测试1")
+           "dreamRs/shinyWidgets")
 
 for (repo in repos) {
   if (repo == "merlinoa/shinyFeedback") {

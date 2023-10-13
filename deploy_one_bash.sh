@@ -23,6 +23,11 @@ print_orange(){
     NC='\033[0m' # No Color
     printf "${ORANGE}$1${NC}\n"
 }
+print_orange_no_br(){
+    ORANGE='\033[0;33m'
+    NC='\033[0m' # No Color
+    printf "${ORANGE}$1${NC}"
+}
 
 print_fluorescent_yellow(){
     FLUORESCENT_YELLOW='\033[1;33m'
@@ -63,6 +68,7 @@ print_middle "  3. download data of homotypic motif hits of 21 speices          
 print_middle "  4. compile binaries needed by Shiny app                               "
 print_middle "  5. install R package                                                  "
 print_middle "  6. install python package                                           \n"
+print_middle "  7. check needed tools                                               \n"
 print_middle "Make sure you have correctly set up Shiny Server and Nginx              "
 print_middle "                                                                    \n\n"
 
@@ -132,7 +138,7 @@ if [[ $line_count -ne 2 ]]; then
         print_red "    User name cannot be empty. Please try again."
     done
     while true; do
-        read -sp "    Password : " password
+        read -p "    Password : " password
         echo  # 添加一个新行，因为我们使用了-s参数 Add a newline because we used -s parameter
         # 如果密码不为空，则跳出循环 If password is not empty, break the loop
         [[ -n "$password" ]] && break
@@ -179,7 +185,7 @@ else
             print_red "    User name cannot be empty. Please try again."
         done
         while true; do
-            read -sp "    Password : " password
+            read -p "    Password : " password
             echo  # 添加一个新行，因为我们使用了-s参数 Add a newline because we used -s parameter
             # 如果密码不为空，则跳出循环 If password is not empty, break the loop
             [[ -n "$password" ]] && break
@@ -251,11 +257,12 @@ done
 
 ############################ 2. assign execute permissions #############################
 
-print_green "\n2. Would you like to assign execute permissions to all users for bash and perl files? [Y/n]: "
+print_green_no_br "\n2. Would you like to assign execute permissions to all users for bash and perl files? [Y/n]: "
 read -p "" answer
 answer=${answer:-Y} # Default to 'Y' if no input provided
 
 if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
+    print_orange "Assigning execute permissions..."
     # 遍历 PMETdev/scripts 目录及其所有子目录中的 .sh 和 .pl 文件
     find . -type f \( -name "*.sh" -o -name "*.pl" \) -exec chmod a+x {} \;
 else
@@ -274,33 +281,33 @@ data_path="${current_dir}/data/indexing"
 
 # 询问用户是否开始下载
 print_green "\n3. Would you like to download data of homotypic motif hits? [y/N]: "
-print_green_no_br "Data path: $data_path"
+print_orange_no_br "Data path: $data_path"
 
 read -p "" answer
 answer=${answer:-N} # Default to 'N' if no input provided
 
 urls=(
-    "https://zenodo.org/record/8435321/files/Arabidopsis_thaliana.tar.gz"
-    "https://zenodo.org/record/8435321/files/Brachypodium_distachyon.tar.gz"
-    "https://zenodo.org/record/8435321/files/Brassica_napus.tar.gz"
-    "https://zenodo.org/record/8435321/files/Glycine_max.tar.gz"
-    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_goldenpromise.tar.gz"
-    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_Morex_V3.tar.gz"
-    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_R1.tar.gz"
-    "https://zenodo.org/record/8435321/files/Hordeum_vulgare_v082214v1.tar.gz"
-    "https://zenodo.org/record/8435321/files/Medicago_truncatula.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_9311.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_IR8.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_MH63.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_indica_ZS97.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_Ensembl.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_Kitaake.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_Nipponbare.tar.gz"
-    "https://zenodo.org/record/8435321/files/Oryza_sativa_japonica_V7.1.tar.gz"
-    "https://zenodo.org/record/8435321/files/Solanum_lycopersicum.tar.gz"
-    "https://zenodo.org/record/8435321/files/Solanum_tuberosum.tar.gz"
-    "https://zenodo.org/record/8435321/files/Triticum_aestivum.tar.gz"
-    "https://zenodo.org/record/8435321/files/Zea_mays.tar.gz")
+    "http://pmet.online:84/result/Arabidopsis_thaliana.tar.gz"
+    "http://pmet.online:84/result/Brachypodium_distachyon.tar.gz"
+    "http://pmet.online:84/result/Brassica_napus.tar.gz"
+    "http://pmet.online:84/result/Glycine_max.tar.gz"
+    "http://pmet.online:84/result/Hordeum_vulgare_goldenpromise.tar.gz"
+    "http://pmet.online:84/result/Hordeum_vulgare_Morex_V3.tar.gz"
+    "http://pmet.online:84/result/Hordeum_vulgare_R1.tar.gz"
+    "http://pmet.online:84/result/Hordeum_vulgare_v082214v1.tar.gz"
+    "http://pmet.online:84/result/Medicago_truncatula.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_indica_9311.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_indica_IR8.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_indica_MH63.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_indica_ZS97.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_japonica_Ensembl.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_japonica_Kitaake.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_japonica_Nipponbare.tar.gz"
+    "http://pmet.online:84/result/Oryza_sativa_japonica_V7.1.tar.gz"
+    "http://pmet.online:84/result/Solanum_lycopersicum.tar.gz"
+    "http://pmet.online:84/result/Solanum_tuberosum.tar.gz"
+    "http://pmet.online:84/result/Triticum_aestivum.tar.gz"
+    "http://pmet.online:84/result/Zea_mays.tar.gz")
 
 
 if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
@@ -482,5 +489,31 @@ else
     print_orange "No python packages installed"
 fi
 
+
+################################ 7. check needed tools #################################
+print_green "\n7. Checking the existence of GNU Parallel, bedtools, samtools and MEME Suite "
+# List of tools to check
+tools=("parallel" "bedtools" "samtools" "fimo")
+
+# Assume all tools are installed until one is not found
+all_tools_found=true
+
+# Iterate over each tool and check if it is installed
+for tool in "${tools[@]}"; do
+    if ! command -v $tool &> /dev/null
+    then
+        print_red "$tool could not be found"
+        all_tools_found=false
+        # Optionally exit or continue to check other tools
+        # exit 1
+    fi
+done
+
+# If all tools were found, print a positive message
+if $all_tools_found; then
+    print_green "All tools were found!"
+else
+    print_red "Please install them and rerun the script"
+fi
 
 print_green "\nDONE"
