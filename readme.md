@@ -38,10 +38,11 @@ This is a Shiny app developed for PMET.
    - compile binaries needed by Shiny app [[details](#compile)]
    - install R packages
    - install python packages
+   - check needed tools
    ```bash
     bash deploy_one_bash.sh
    ```
-   ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202310130900293.png)
+   ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202310131936996.png)
 
 ## <span id="index-data">3. Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
 
