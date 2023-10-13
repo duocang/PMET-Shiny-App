@@ -3,24 +3,34 @@
 
 # 先确保 remotes 包已经安装 Make sure the remotes package is installed first
 if (!requireNamespace("remotes", quietly = TRUE)) {
-  suppressMessages(install.packages("remotes"))
+  suppressMessages(install.packages("remotes", quiet = TRUE))
+}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  suppressMessages(install.packages("BiocManager", quiet = TRUE))
+}
+
+if (!require("pacman")) {
+  suppressMessages(install.packages("pacman", quiet = TRUE))
 }
 
 
+options(install.packages.compile.from.source = "always")
+
+
 installed_packages <- character(0)
-failed_packages <- character(0)
+failed_packages    <- character(0)
 
-# 创建一个函数来检查和安装包 Create a function to check and install packages
-check_and_install <- function(repo, ...) {
-  package_name <- unlist(strsplit(repo, "/"))[2]
+##################################### BiocManager #####################################
+check_and_install_bioc <- function(package_name) {
 
-  # 如果包已经安装，直接添加到installed_packages If the package is already installed, add it to installed_packages
+  # 如果包没有安装，尝试用BiocManager来安装 If the package is not installed, try to install it using BiocManager
   if (requireNamespace(package_name, quietly = TRUE)) {
     installed_packages <<- c(installed_packages, package_name)
   } else {
     # 如果包未安装，尝试安装 If the package is not installed, try to install
     tryCatch({
-      remotes::install_github(repo, ...)
+      # 使用BiocManager来安装包 Use BiocManager to install the package
+      suppressMessages(BiocManager::install(package_name, ask = FALSE))
 
       # 检查是否安装成功 Check if installation was successful
       if (requireNamespace(package_name, quietly = TRUE)) {
@@ -38,12 +48,48 @@ check_and_install <- function(repo, ...) {
 }
 
 
+repos <- c("rtracklayer")
+
+for (repo in repos) {
+  check_and_install_bioc(repo)
+}
+
+#####################################   Github    #####################################
+
+# 创建一个函数来检查和安装包 Create a function to check and install packages
+check_and_install <- function(repo, ...) {
+  package_name <- unlist(strsplit(repo, "/"))[2]
+
+  # 如果包已经安装，直接添加到installed_packages If the package is already installed, add it to installed_packages
+  if (requireNamespace(package_name, quietly = TRUE)) {
+    installed_packages <<- c(installed_packages, package_name)
+  } else {
+    # 如果包未安装，尝试安装 If the package is not installed, try to install
+    tryCatch({
+      suppressMessages(remotes::install_github(repo, ...))
+
+      # 检查是否安装成功 Check if installation was successful
+      if (requireNamespace(package_name, quietly = TRUE)) {
+        installed_packages <<- c(installed_packages, package_name)
+      } else {
+        failed_packages <<- c(failed_packages, package_name)
+        message(paste("Installation of", package_name, "from", repo, "failed."))
+      }
+    },
+    error = function(e) {
+      failed_packages <<- c(failed_packages, package_name)
+      message(paste("Installation of", package_name, "from", repo, "failed."))
+    })
+  }
+}
+
 repos <- c("daattali/shinydisconnect",
            "RinteRface/fullPage",
            "dreamRs/shinybusy",
            "merlinoa/shinyFeedback",
            "daattali/shinycssloaders",
-           "dreamRs/shinyWidgets")
+           "dreamRs/shinyWidgets",
+           "测试/测试1")
 
 for (repo in repos) {
   if (repo == "merlinoa/shinyFeedback") {
@@ -53,7 +99,7 @@ for (repo in repos) {
   }
 }
 
-
+################################   install.packages    ################################
 # Used packages
 packages <- c(
   "bslib",                # Bootstrap themes and styles
@@ -85,6 +131,7 @@ packages <- c(
   "shinyvalidate",        # form validation
   "shinyWidgets",         # creation of interactive widgets
   "scales",               # data scaling and transformation
+  "seqinr",                # extract fasta's name
   "tibble",               # extended data frames
   "tidyverse",            # a collection of R packages for data manipulation and visualization
   "tictoc",               # simple and accurate timers
@@ -120,7 +167,7 @@ for (package in packages) {
 }
 
 
-
+############################## Installation summary ############################
 # Print installed packages
 cat("The installed packages are as follows:\n")
 print(sort(installed_packages))

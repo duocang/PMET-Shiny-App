@@ -18,7 +18,9 @@ suppressMessages({
     "reshape2",           # transforming and restructuring data in R.
     "rintrojs",           # creating interactive and guided tours in Shiny applications.
     "rjson",              # converts R object into JSON objects and vice-versa.
+    "rtracklayer",        # read gff3
     "scales",             # controlling the scaling of data in R graphics.
+    "seqinr",             # extract fasta's name
     "shiny",              # building interactive web applications in R.
     "shinyBS",            # adding additional Bootstrap functionality to Shiny applications.
     "shinybusy",          # Automated (or not) busy indicator for Shiny apps & other progress / notifications tools

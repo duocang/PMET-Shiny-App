@@ -15,12 +15,29 @@ intervals_ui <- function(id, height = 800, width = 850) {
         accept = ".meme"
       ),
       downloadLink(ns("demo_meme"), "Example motif DB")
-    ),
-    div(id = "peaks_div", style = "margin-bottom: 10px;",
-      fileInput(ns("genes"), "Clusters and intervals", multiple = FALSE, accept = ".txt"),
+    ), # end of meme div
+    div(id = "genes_div", style = "margin-bottom: 10px;",
+      shinyjs::disabled(
+        div(id= ns("gene_fileinput"),
+          fileInput(ns("genes"), "Clusters and intervals", multiple = FALSE, accept = ".txt")
+        )
+      ),
       # example gene list
-      downloadLink(ns("demo_genes"), "Example peaks (intervals)")
-    ),
+      downloadLink(ns("demo_genes"), "Example peaks (intervals)"),
+      # missing gene
+      shinyjs::hidden(
+        actionLink(ns("genes_not_found_link"),
+                      "Intervals not found",
+                      icon = icon("info-circle"),
+                      style = "color: #F89406;font-weight: bold; font-size: 14px;")
+      )
+    ), # end of genes_div
+    bsTooltip(id = ns("gene_fileinput"),
+          title = "Please upload a Genomic interval set",
+          placement = "top",
+          trigger = "hover",
+          options = list(delay = list(show = 500, hide = 100))
+    ), # end of tooltip
     # parameters
     div(id = "parameters_div", style = "margin-bottom: 10px;",
       div("Parameters", style = "font-size: 16px; font-weight: bold;"),
@@ -65,6 +82,8 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
   moduleServer(
     id,
     function(input, output, session) {
+      ns <- session$ns
+
       # self uploaded genome fasta  --------------------------------------------------
       observeEvent(input$fasta, {
 
@@ -100,6 +119,14 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
       }, ignoreInit = T)
 
       # self genes uploaded -----------------------------------------------------------
+      # eable gene upload after genomic file uploaded
+      observe({
+        req(input$fasta$datapath)
+        shinyjs::enable("gene_fileinput")
+        removeTooltip(session, ns("gene_fileinput"))
+      })
+
+      genes_not_found  <- reactiveVal(NULL) # store genes not found for download handler
       observeEvent(input$genes, {
 
         req(input$genes, input$genes != "")
@@ -107,36 +134,72 @@ intervals_server <- function(id, job_id, trigger, mode, navbar) {
         # copy uploaded genes to result folder for PMET to run in the back
         TempToLocal("result", job_id, input$genes)
 
-        inputs <- reactiveValuesToList(input)
-        genes_status <- CheckGeneFile(input$genes$datapath, mode = "intervals")
+        # it takes time to find which intervals are not presetn so we show red first
+        showFeedbackDanger(
+          "genes",
+          text = "Processing... Wait!",
+          color = "#d9534f",
+          icon = shiny::icon("exclamation-sign", lib = "glyphicon"),
+          session = shiny::getDefaultReactiveDomain()
+        )
+
+        # inputs <- reactiveValuesToList(input)
+        genes_status <- CheckGeneFile(input$genes$datapath, mode = "intervals", premade = input$fasta$datapath)
 
         hideFeedback(inputId = "genes")
-        switch(genes_status,
-          "OK" = {
-            hideFeedback(inputId = "genes")
-            showFeedbackSuccess(inputId = "genes")
-          },
-          "NO_CONTENT" = {
-            hideFeedback(inputId = "genes")
-            showFeedbackDanger(inputId = "genes", text = "No content in the file")
-          },
-          "WORNG_COLUMN_NUMBER" = {
-            hideFeedback(inputId = "genes")
-            showFeedbackDanger( inputId = "genes", text = "Only cluster and interval columns are allowed")
-          },
-          "GENE_WRONG_FORMAT" = {
-            hideFeedback(inputId = "genes")
-            showFeedbackDanger( inputId = "genes", text = "Wrong format of uploaded file")
-          },
-          "intervals_wrong_format" = {
-            hideFeedback(inputId = "genes")
-            showFeedbackDanger( inputId = "genes", text = "Genomic intervals pattern: chromosome:number-number.")
-          },
-          "no_valid_genes" = {
-            hideFeedback(inputId = "genes")
-            showFeedbackDanger(inputId = "genes", text = "No valid genes available in the uploaded file")
-          })
+        if (length(genes_status) == 3) {
+          genes_not_found(genes_status[[3]])
+          shinyjs::show("genes_not_found_link")
+          showFeedbackWarning(
+            inputId = "genes",
+            text = paste(genes_status[[1]], "out of", genes_status[[2]], "genes are not found"))
+        } else {
+          shinyjs::hide("genes_not_found_link")
+          switch(genes_status,
+            "OK" = {
+              showFeedbackSuccess(inputId = "genes")
+            },
+            "NO_CONTENT" = {
+              showFeedbackDanger(inputId = "genes", text = "No content in the file")
+            },
+            "WORNG_COLUMN_NUMBER" = {
+              showFeedbackDanger(inputId = "genes", text = "Only cluster and interval columns are allowed")
+            },
+            "GENE_WRONG_FORMAT" = {
+              showFeedbackDanger(inputId = "genes", text = "Wrong format of uploaded file")
+            },
+            "intervals_wrong_format" = {
+              showFeedbackDanger(inputId = "genes", text = "Genomic intervals pattern: chromosome:number-number.")
+            },
+            "no_valid_genes" = {
+              showFeedbackDanger(inputId = "genes", text = "No valid genes available in the uploaded file")
+            }
+          )
+        }
       }, ignoreInit = T)
+
+      # modal dialog shown, when link clicked (genes not found are not null)
+      observeEvent(input$genes_not_found_link, {
+        if (!is.null(genes_not_found())) {
+          Sys.sleep(0.5)
+          showModal(modalDialog(
+            title = "Intervals not found:",
+            DT::renderDataTable({ genes_not_found() }),
+            footer = tagList(
+              downloadButton(ns("genes_not_found_down_btn"), "Download"),
+              modalButton("Cancel"))
+          )) # end of showModal
+        }
+      }, ignoreInit = T)
+
+      # Download genes not found when button clicked -----------------------------------
+      output$genes_not_found_down_btn <- downloadHandler(
+        filename = function() {
+          "intervals_not_found.txt"
+        },
+        content = function(file) {
+          write.table(genes_not_found(), file, quote = FALSE, row.names = FALSE) }
+      ) # downLoadHandler end
 
       output$demo_intervals_fa <- downloadHandler(
         filename = function() {

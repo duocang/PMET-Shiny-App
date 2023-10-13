@@ -64,6 +64,28 @@ body {
   float: right;
 }
 
+#intervals-genes_progress {
+  height: 14px;
+}
+#intervals-genes_progress>div {
+  line-height: 15px;
+}
+
+#intervals-genes_not_found_link {
+  float: right;
+}
+
+#promoters-genes_progress {
+  height: 14px;
+}
+#promoters-genes_progress>div {
+  line-height: 15px;
+}
+
+#promoters-genes_not_found_link {
+  float: right;
+}
+
 
 /* parameters font size */
 #intervals-max_match-label {
