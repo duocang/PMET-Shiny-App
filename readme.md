@@ -8,19 +8,19 @@ This is a Shiny app developed for PMET.
 .
 ├── PMETdev              # PMET/PMET_index (C/C++ source code)
 ├── R                    # R code of Shiny app
-│   ├── app.R            # integrate all UIs and Servers
+│   ├── app.R            # integrate UIs and Servers
 │   ├── global.R         # packages and configs needed in shiny app
-│   ├── module           # modulaity of UIs, shiny heatmap (ggplot) and data-table view
-│   ├── server           # server side of shiny
-│   ├── ui               # UI-side of shiny
-│   └── utils            # R functions
-├── data                 # demo data for PMETindex and PMET
+│   ├── module           # modulaity of heatmap (ggplot) and data-table view
+│   ├── server
+│   ├── ui
+│   └── utils
+├── data
 │   ├── indexing         # Pre-computed homotypic motif hits
+├── deploy_one_b    *    # bash toquick deply
 ├── result               # result of Shiny app
-│   ├── indexing         # newly generated homotypic motif hits as user requested
 ├── www                  # JS with D3 for heatmap, used in tab_visualize.R
-├── PMET-Shiny-App.Rproj # project file for RStudio (development only)
-├── app.R                # start shiny app (Run with Rscript app.R, development only)
+├── PMET-Shiny-App.Rproj
+├── app.R                # local shiny app (Run with Rscript app.R)
 └── readme.md
 ```
 
