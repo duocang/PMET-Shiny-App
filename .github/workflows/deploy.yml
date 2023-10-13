@@ -1,0 +1,39 @@
+name: Test Deployment
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, ubuntu-20.04, macOS-latest, windows-latest]
+        python-version: [3.7, 3.8, 3.9]
+        r-version: [4.2, 4.1]
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Setup R
+      uses: r-lib/actions/setup-r@v1
+      with:
+        r-version: ${{ matrix.r-version }}
+
+    - name: Install System Dependencies
+      run: |
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          # Add steps to install dependencies on Windows
+        elif [[ "${{ runner.os }}" == "macOS" ]]; then
+          # Add steps to install dependencies on macOS
+        elif [[ "${{ runner.os }}" == "Linux" ]]; then
+          # Add steps to install dependencies on Linux
+        fi
+
+    - name: Run Deployment Script
+      run: bash deploy_one_bash.sh

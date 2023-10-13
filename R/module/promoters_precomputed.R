@@ -1,6 +1,6 @@
 promoters_pre_ui <- function(id, height = 800, width = 850) {
-    tags$head(
-    )
+  tags$head(
+  )
   ns <- NS(id)
   # motif database
   div(
@@ -11,7 +11,6 @@ promoters_pre_ui <- function(id, height = 800, width = 850) {
       selectInput(inputId = ns("premade"), label = "Motif database", NULL)
     ),
     div(id = ns("genes_div"), style = "margin-bottom: 10px;",
-      # uiOutput(ns("genes_uiOutput"))
       shinyjs::disabled(
         div(id= ns("gene_fileinput"),
           fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt")
@@ -19,8 +18,12 @@ promoters_pre_ui <- function(id, height = 800, width = 850) {
       ),
       # example gene list
       downloadLink(ns("demo_genes"), "Example gene for Arabidopsis thaliana"),
+      # missing gene
       shinyjs::hidden(
-        actionLink(ns("genes_not_found_link"), "Genes not found", icon = icon("info-circle"), style = "color: #F89406;font-weight: bold; font-size: 14px;")
+        actionLink(ns("genes_not_found_link"),
+                      "Genes not found",
+                      icon = icon("info-circle"),
+                      style = "color: #F89406;font-weight: bold; font-size: 14px;")
       )
     ),# end of genes_div
     bsTooltip(id = ns("gene_fileinput"),
@@ -178,6 +181,7 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
         }
       })
 
+      # self genes uploaded -----------------------------------------------------------
       # eable gene upload
       observe({
         req(input$premade, input$species)
@@ -185,7 +189,6 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
         removeTooltip(session, ns("gene_fileinput"))
       })
 
-      # self genes uploaded -----------------------------------------------------------
       genes_not_found  <- reactiveVal(NULL) # store genes not found for download handler
       observeEvent(input$genes, {
         req(input$premade)
@@ -193,8 +196,16 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
         # copy uploaded genes to result folder for PMET to run in the back
         TempToLocal("result", job_id, input[["genes"]])
 
-        inputs <- reactiveValuesToList(input)
+        # it takes time to find which intervals are not presetn so we show red first
+        showFeedbackDanger(
+          "genes",
+          text = "Processing... Wait!",
+          color = "#d9534f",
+          icon = shiny::icon("exclamation-sign", lib = "glyphicon"),
+          session = shiny::getDefaultReactiveDomain()
+        )
 
+        # inputs <- reactiveValuesToList(input)
         genes_status <- CheckGeneFile(input$genes$datapath, mode = "promoters_pre", input$premade)
 
         hideFeedback(inputId = "genes")
@@ -214,10 +225,10 @@ promoters_pre_server <- function(id, job_id, tutorial_trigger, mode, navbar) {
               showFeedbackDanger(inputId = "genes", text = "No content in the file")
             },
             "WORNG_COLUMN_NUMBER" = {
-              showFeedbackDanger( inputId = "genes", text = "Only cluster and interval columns are allowed")
+              showFeedbackDanger(inputId = "genes", text = "Only cluster and interval columns are allowed")
             },
             "GENE_WRONG_FORMAT" = {
-              showFeedbackDanger( inputId = "genes", text = "Wrong format of uploaded file")
+              showFeedbackDanger(inputId = "genes", text = "Wrong format of uploaded file")
             },
             "no_valid_genes" = {
               showFeedbackDanger(inputId = "genes", text = "No valid genes available in the uploaded file")

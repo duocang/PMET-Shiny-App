@@ -36,33 +36,33 @@ CheckGeneFile <- function(gene_file_path = NULL, mode = NULL, premade = NULL) {
 
   colnames(genes_uploaded) <- c("cluster", "gene")
   # Perform checks based on the sequence type
+
   switch(mode,
     "intervals" = {
-      # valid_rows <- grep("^\\d+_\\d+-\\d+$", genes_uploaded[, "gene"], invert = FALSE)  # 使用正则表达式匹配符合格式的行
-      # if (length(valid_rows) != nrow(genes_uploaded)) {
-      #   return("intervals_wrong_format")
-      # } else {
-      #   return("OK")
-      # }
-      return("OK")
+      genes_universe  <- read.fasta(premade) %>% names() %>% as.data.frame() %>% `colnames<-`(c("gene"))
     },
     "promoters_pre" = {
       # if motif DB selected, check the uploaded genes with the gene list in our folder, named universe.txt
-      genes_universe <- file.path(premade, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
-
-      genes_present <-  dplyr::inner_join(genes_uploaded, genes_universe, by = "gene")
-      genes_not_found <- setdiff(genes_uploaded, genes_present)
-
-      # no genes available in the uploaded file
-      if (nrow(genes_not_found) == nrow(genes_uploaded)) {
-        return("no_valid_genes")
-      } else if (nrow(genes_uploaded) != nrow(genes_present)) {
-        return(list(nrow(genes_not_found), nrow(genes_uploaded), genes_not_found))
-      } else {
-        return("OK")
-      }
+      genes_universe  <- file.path(premade, "universe.txt") %>% read.table() %>% `colnames<-`(c("gene"))
     },
     "promoters" = {
-      return("OK")
+      genes_universe  <- rtracklayer::import(premade)  %>%
+        subset(type == "gene") %>%
+        `$`(ID) %>%
+        str_remove("gene:") %>%
+        as.data.frame() %>%
+        `colnames<-`(c("gene"))
     }) # end of switch
+
+    genes_present   <-  dplyr::inner_join(genes_uploaded, genes_universe, by = "gene")
+    genes_not_found <- setdiff(genes_uploaded, genes_present)
+
+    # no genes available in the uploaded file
+    if (nrow(genes_not_found) == nrow(genes_uploaded)) {
+      return("no_valid_genes")
+    } else if (nrow(genes_uploaded) != nrow(genes_present)) {
+      return(list(nrow(genes_not_found), nrow(genes_uploaded), genes_not_found))
+    } else {
+      return("OK")
+    }
 }
