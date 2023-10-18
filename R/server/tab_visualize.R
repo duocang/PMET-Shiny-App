@@ -338,8 +338,8 @@ output$download.button <- downloadHandler(
       hei <- 20
     } else {
       if (input$method == "All") {
-        wid <- 20
-        hei <- 10 * ceiling(length(clusters)/2)
+        wid <- 30
+        hei <- 15 * ceiling(length(clusters)/2)
       } else if (input$method %in% clusters) {
         wid <- 20
         hei <- 20
