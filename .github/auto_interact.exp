@@ -1,0 +1,50 @@
+#!/usr/bin/expect -f
+
+# 启动你的脚本
+spawn ./deploy_one_bash.sh
+
+# ############################ 1. set email and CPU #############################
+
+
+#################### 1.1 nginx
+expect "Are you debugging? [y/N]: "
+send "N\r"
+
+#################### 1.2 email
+expect "    User name: "
+send "alice\r"
+
+expect "    Password : "
+send "alice\r"
+
+#################### 1.3 CPU
+expect "Do you want to modify the CPU number? [y/N]: "
+send "N\r"
+
+############################ 2. assign execute permissions #############################
+expect "\n2. Would you like to assign execute permissions to all users for bash and perl files? [Y/n]: "
+send "Y\r"
+
+
+############################# 3. download homotypic data ##############################
+expect "\n3. Would you like to download data of homotypic motif hits? [y/N]: "
+send "N\r"
+
+
+################################## 4. compile binary #################################
+expect "\n4. Would you like to compile binaries? [y/N]:"
+send "y\r"
+
+
+############################# 5. install R packages ##############################
+expect "\n6. Would you like to install python packages? [y/N]: "
+send "y\r"
+
+
+############################# 6. install python packages ##############################
+expect "\n6. Would you like to install python packages? [y/N]: "
+send "y\r"
+
+
+# 等待脚本结束
+expect eof
