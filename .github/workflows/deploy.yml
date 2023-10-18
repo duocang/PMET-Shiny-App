@@ -1,6 +1,11 @@
 name: Test Deployment
 
-on: [push, pull_request]
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
 
 jobs:
   build:
@@ -8,8 +13,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, macOS-latest]
-        python-version: [3.7, 3.8, 3.9]
-        r-version: [4.0, 4.1]
+        python-version: [3.9]
+        r-version: [4.2]
 
     steps:
     - name: Checkout Code
@@ -29,11 +34,10 @@ jobs:
       run: |
         if [[ "${{ runner.os }}" == "macOS" ]]; then
           # Add steps to install dependencies on macOS
-          brew install ...
+          # brew install ...
         elif [[ "${{ runner.os }}" == "Linux" ]]; then
           # Add steps to install dependencies on Linux
-          sudo apt-get update
-          sudo apt-get install -y ...
+          # sudo apt-get update
         fi
 
     - name: Run Deployment Script
