@@ -49,5 +49,16 @@ expect "6. Would you like to install python packages? \[y/N\]: "
 send "y\r"
 
 
+################################ 7. check needed tools #################################
+expect {
+    "Would you like to install missing tools? \[Y/n\]: " {
+        send "N\r"  # 这里你可以选择发送"N\r"或"Y\r"，取决于你是否真的想在这个阶段自动安装这些工具
+    }
+    timeout {
+        # 如果超时了并且没有看到上述的提示，这里什么也不做
+    }
+}
+
+
 # 等待脚本结束
 expect eof
