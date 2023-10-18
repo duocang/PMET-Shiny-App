@@ -6,31 +6,30 @@ This is a Shiny app developed for PMET.
 
 ```shell
 .
-├── PMETdev              # PMET/PMET_index (C/C++ source code)
-├── R                    # R code of Shiny app
-│   ├── app.R            # integrate UIs and Servers
-│   ├── global.R         # packages and configs needed in shiny app
-│   ├── module           # modulaity of heatmap (ggplot) and data-table view
+├── PMETdev                    # PMET/PMET_index (C/C++ source code)
+├── R                          # R code of Shiny app
+│   ├── app.R                  # integrate UIs and Servers
+│   ├── global.R               # packages and configs needed in shiny app
+│   ├── module                 # modulaity of heatmap (ggplot) and data-table view
 │   ├── server
 │   ├── ui
 │   └── utils
 ├── data
-│   ├── indexing         # Pre-computed homotypic motif hits
-├── deploy_one_b    *    # bash toquick deply
-├── result               # result of Shiny app
-├── www                  # JS with D3 for heatmap, used in tab_visualize.R
+│   ├── indexing               # Pre-computed homotypic motif hits
+├── deploy_one_bash.sh    *    # bash toquick deply
+├── result                     # result of Shiny app
+├── www                        # JS with D3 for heatmap, used in tab_visualize.R
 ├── PMET-Shiny-App.Rproj
-├── app.R                # local shiny app (Run with Rscript app.R)
+├── app.R                      # local shiny app (Run with Rscript app.R)
 └── readme.md
 ```
 
-## 2. Quick deploy
+## 2. Quick deployment
 
-1. Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
-2. Install `Shiny Server` and `Nginx` [[details](#setup-shiny-server-and-nginx)]
-3. `git clone` or `git pull` in the folder of Shiny Server (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
+1. Install `Shiny Server` and `Nginx` [[details](#setup-shiny-server-and-nginx)]
+2. `git clone` or `git pull` in the folder of Shiny Server (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
 
-4. Run `deploy_one_bash.sh`
+3. Run `deploy_one_bash.sh`
 
    - set email and CPU
    - assign execute permissions
@@ -38,7 +37,7 @@ This is a Shiny app developed for PMET.
    - compile binaries needed by Shiny app [[details](#compile)]
    - install R packages
    - install python packages
-   - check needed tools
+   - Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
    ```bash
     bash deploy_one_bash.sh
    ```
