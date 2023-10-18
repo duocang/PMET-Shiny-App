@@ -34,14 +34,15 @@ jobs:
       run: |
         if [[ "${{ runner.os }}" == "macOS" ]]; then
           # Add steps to install dependencies on macOS
-          # brew install ...
+          brew install expect
           echo "Runing test for MacOS"
         elif [[ "${{ runner.os }}" == "Linux" ]]; then
           # Add steps to install dependencies on Linux
           sudo apt-get update
+          sudo apt-get -y install expect
         else
           echo "OS not supported"
         fi
 
-    - name: Run Deployment Script
-      run: bash deploy_one_bash.sh
+    - name: Run Deployment Script via expect
+      run: ./.github/auto_interact.exp
