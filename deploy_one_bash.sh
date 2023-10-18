@@ -256,8 +256,8 @@ done
 
 
 ############################ 2. assign execute permissions #############################
-
-print_green_no_br "\n2. Would you like to assign execute permissions to all users for bash and perl files? [Y/n]: "
+echo ""
+print_green_no_br "2. Would you like to assign execute permissions to all users for bash and perl files? [Y/n]: "
 read -p "" answer
 answer=${answer:-Y} # Default to 'Y' if no input provided
 
@@ -270,9 +270,6 @@ else
 fi
 
 
-
-
-
 ############################# 3. download homotypic data ##############################
 current_dir=$(pwd)
 
@@ -280,11 +277,13 @@ current_dir=$(pwd)
 data_path="${current_dir}/data/indexing"
 
 # 询问用户是否开始下载
-print_green "\n3. Would you like to download data of homotypic motif hits? [y/N]: "
-print_orange_no_br "Data path: $data_path"
+echo ""
+print_green_no_br "3. Would you like to download data of homotypic motif hits? [y/N]: "
 
 read -p "" answer
 answer=${answer:-N} # Default to 'N' if no input provided
+
+print_orange "Data path: $data_path"
 
 urls=(
     "http://pmet.online:84/result/Arabidopsis_thaliana.tar.gz"
@@ -354,8 +353,8 @@ fi
 
 
 ################################## 4. compile binary #################################
-
-print_green_no_br "\n4. Would you like to compile binaries? [y/N]:"
+echo ""
+print_green_no_br "4. Would you like to compile binaries? [y/N]:"
 read -p " " answer
 answer=${answer:-N} # Default to 'N' if no input provided
 
@@ -459,7 +458,8 @@ chmod a+x PMETdev/scripts/pmet
 chmod a+x PMETdev/scripts/fimo
 
 ############################# 5. install R packages ##############################
-print_green_no_br "\n5. Would you like to install R packages? [y/N]: "
+echo ""
+print_green_no_br "5. Would you like to install R packages? [y/N]: "
 # read -p "Would you like to install R packages? [y/N]: " answer
 read -p " " answer
 answer=${answer:-N} # Default to 'N' if no input provided
@@ -474,7 +474,8 @@ fi
 
 
 ############################# 6. install python packages ##############################
-print_green_no_br "\n6. Would you like to install python packages? [y/N]: "
+echo ""
+print_green_no_br "6. Would you like to install python packages? [y/N]: "
 read -p " " answer
 answer=${answer:-N} # Default to 'N' if no input provided
 
@@ -491,7 +492,8 @@ fi
 
 
 ################################ 7. check needed tools #################################
-print_green "\n7. Checking the existence of GNU Parallel, bedtools, samtools and MEME Suite "
+echo ""
+print_green "7. Checking the existence of GNU Parallel, bedtools, samtools and MEME Suite "
 # List of tools to check
 tools=("parallel" "bedtools" "samtools" "fimo")
 
