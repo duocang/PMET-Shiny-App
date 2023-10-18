@@ -67,7 +67,7 @@ print_middle "  2. assign execute permissions to all users for bash and perl fil
 print_middle "  3. download data of homotypic motif hits of 21 speices                "
 print_middle "  4. compile binaries needed by Shiny app                               "
 print_middle "  5. install R package                                                  "
-print_middle "  6. install python package                                           \n"
+print_middle "  6. install python package                                             "
 print_middle "  7. check needed tools                                               \n"
 print_middle "Make sure you have correctly set up Shiny Server and Nginx              "
 print_middle "                                                                    \n\n"

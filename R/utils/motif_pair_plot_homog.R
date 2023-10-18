@@ -97,7 +97,7 @@ MotifPairPlotHomog <- function( pmet.split       = NULL,
   if (respective.plot) {
     inch_pre_motif <- 20 / length(motifs.top) * 1.5
     inch_pre_motif <- ifelse(inch_pre_motif > 1, 1, inch_pre_motif)
-    font_size <- inch_pre_motif * 22
+    font_size <- inch_pre_motif * 12
 
     for (clu in names(plot_data_list)) {
       p.list[[clu]] <- p.list[[clu]] +
@@ -117,9 +117,9 @@ MotifPairPlotHomog <- function( pmet.split       = NULL,
     }
     return(p.list)
   } else {
-    inch_pre_motif <- 10 / length(motifs.top) * 1.3
+    inch_pre_motif <- 10 / length(motifs.top)
     inch_pre_motif <- ifelse(inch_pre_motif > 1, 1, inch_pre_motif)
-    font_size <- inch_pre_motif * 22
+    font_size <- inch_pre_motif * 50
 
     # add title
     p.list <- lapply(names(plot_data_list), function(clu) {
