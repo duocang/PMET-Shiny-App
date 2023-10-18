@@ -129,7 +129,7 @@ if [[ $line_count -ne 2 ]]; then
     fi
 
     # 要求用户输入信息并将其存储到文件中 Ask the user to enter information and store it in a file
-    echo -e "\nPlease enter new email information: "
+    print_fluorescent_yellow "\nPlease enter new email information: "
 
     while true; do
         read -p  "    User name: " username
