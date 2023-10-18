@@ -25,22 +25,22 @@ expect "Do you want to modify the CPU number? \[y/N\]: "
 send "N\r"
 
 ############################ 2. assign execute permissions #############################
-expect "\n2. Would you like to assign execute permissions to all users for bash and perl files? \[Y/n\]: "
+expect "2. Would you like to assign execute permissions to all users for bash and perl files? \[Y/n\]: "
 send "Y\r"
 
 
 ############################# 3. download homotypic data ##############################
-expect "\n3. Would you like to download data of homotypic motif hits? \[y/N\]: "
+expect "3. Would you like to download data of homotypic motif hits? \[y/N\]: "
 send "N\r"
 
 
 ################################## 4. compile binary #################################
-expect "\n4. Would you like to compile binaries? \[y/N\]:"
+expect "4. Would you like to compile binaries? \[y/N\]:"
 send "y\r"
 
 
 ############################# 5. install R packages ##############################
-expect "\n6. Would you like to install python packages? \[y/N\]: "
+expect "5. Would you like to install R packages? [y/N]: "
 send "y\r"
 
 
