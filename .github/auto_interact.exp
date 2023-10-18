@@ -40,7 +40,7 @@ send "y\r"
 
 
 ############################# 5. install R packages ##############################
-expect "5. Would you like to install R packages? [y/N]: "
+expect "5. Would you like to install R packages? \[y/N\]: "
 send "y\r"
 
 
