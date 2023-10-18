@@ -45,7 +45,7 @@ send "y\r"
 
 
 ############################# 6. install python packages ##############################
-expect "\n6. Would you like to install python packages? \[y/N\]: "
+expect "6. Would you like to install python packages? \[y/N\]: "
 send "y\r"
 
 
