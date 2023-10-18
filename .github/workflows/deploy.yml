@@ -44,8 +44,11 @@ jobs:
           echo "OS not supported"
         fi
 
-    - name: Grant execute permissions
+    - name: Grant execute permissions to expect file
       run: chmod +x ./.github/auto_interact.exp
+
+    - name: Grant execute permissions to bash file
+      run: chmod +x ./deploy_one_bash.sh
 
     - name: Run Deployment Script via expect
       run: ./.github/auto_interact.exp
