@@ -35,9 +35,12 @@ jobs:
         if [[ "${{ runner.os }}" == "macOS" ]]; then
           # Add steps to install dependencies on macOS
           # brew install ...
+          echo "Runing test for MacOS"
         elif [[ "${{ runner.os }}" == "Linux" ]]; then
           # Add steps to install dependencies on Linux
-          # sudo apt-get update
+          sudo apt-get update
+        else
+          echo "OS not supported"
         fi
 
     - name: Run Deployment Script
