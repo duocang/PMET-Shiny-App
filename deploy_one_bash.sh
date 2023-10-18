@@ -496,6 +496,7 @@ echo ""
 print_green "7. Checking the existence of GNU Parallel, bedtools, samtools and MEME Suite "
 # List of tools to check
 tools=("parallel" "bedtools" "samtools" "fimo")
+missing_tools=()  # Initialize an empty array to store missing tools
 
 # Assume all tools are installed until one is not found
 all_tools_found=true
@@ -506,6 +507,8 @@ for tool in "${tools[@]}"; do
     then
         print_red "$tool could not be found"
         all_tools_found=false
+
+        missing_tools+=($tool)  # Add the missing tool to the array
         # Optionally exit or continue to check other tools
         # exit 1
     fi
@@ -515,7 +518,84 @@ done
 if $all_tools_found; then
     print_green "All tools were found!"
 else
+    echo ""
     print_red "Please install them and rerun the script"
+
+    echo ""
+    print_fluorescent_yellow_no_br "Would you like to install missing tools? [Y/n]: "
+    read -p " " answer
+    answer=${answer:-Y} # Default to 'N' if no input provided
+
+    if [ "$answer" == "Y" ] || [ "$answer" == "y" ]; then
+        # # Install the missing tools
+        # print_red "The following tools are missing:"
+        for tool in "${missing_tools[@]}"; do
+            if [ "$tool" == "parallel" ]; then
+                sudo apt-get install parallel
+                parallel --citation
+            fi
+            if [ "$tool" == "bedtools" ]; then
+                if [[ "$(uname)" == "Darwin" ]]; then
+                    brew install bedtools
+                elif [[ -f /etc/os-release ]]; then
+                    . /etc/os-release
+                    case $ID in
+                        centos|fedora|rhel)
+                            yum install BEDTools
+                            ;;
+                        debian|ubuntu)
+                            apt-get update && apt-get install bedtools
+                            ;;
+                        *)
+                            echo "Unsupported Linux distribution"
+                            ;;
+                    esac
+                else
+                    echo "Unsupported OS"
+                fi
+            fi
+
+            if [ "$tool" == "samtools" ]; then
+                echo "发腮发发"
+                mkdir -p ./tools
+
+                cd ./tools
+                wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
+                tar -xjf samtools-1.17.tar.bz2
+
+                cd samtools-1.17
+                ./configure --prefix=$(pwd)
+                make
+                make install
+
+                echo "export PATH=$(pwd)/bin:\$PATH" >> ~/.bashrc
+                source ~/.bashrc
+
+                cd ..
+                rm samtools-1.17.tar.bz2
+            fi
+
+
+            if [ "$tool" == "fimo" ]; then
+                echo "发腮发发"
+                mkdir -p ./tools
+
+                cd ./tools
+                wget https://meme-suite.org/meme/meme-software/5.5.2/meme-5.5.2.tar.gz
+                tar zxf meme-5.5.2.tar.gz
+
+                cd meme-5.5.2
+                ./configure --prefix=$(pwd) --enable-build-libxml2 --enable-build-libxslt
+                make
+                make install
+
+                echo "export PATH=$(pwd)/bin:\$PATH" >> ~/.bashrc
+                source ~/.bashrc
+                cd ..
+                rm meme-5.5.2.tar.gz
+            fi
+        done
+    fi
 fi
 
 print_green "\nDONE"
