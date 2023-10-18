@@ -37,7 +37,7 @@ This is a Shiny app developed for PMET.
    - compile binaries needed by Shiny app [[details](#compile)]
    - install R packages
    - install python packages
-   - cInstall tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
+   - Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
    ```bash
     bash deploy_one_bash.sh
    ```
