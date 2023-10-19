@@ -6,21 +6,21 @@ This is a Shiny app developed for PMET.
 
 ```shell
 .
-├── PMETdev                    # PMET/PMET_index (C/C++ source code)
-├── R                          # R code of Shiny app
-│   ├── app.R                  # integrate UIs and Servers
-│   ├── global.R               # packages and configs needed in shiny app
-│   ├── module                 # modulaity of heatmap (ggplot) and data-table view
+├── PMETdev
+├── R
+│   ├── app.R
+│   ├── global.R
+│   ├── module
 │   ├── server
 │   ├── ui
 │   └── utils
 ├── data
-│   ├── indexing               # Pre-computed homotypic motif hits
-├── deploy_one_bash.sh    *    # bash toquick deply
-├── result                     # result of Shiny app
-├── www                        # JS with D3 for heatmap, used in tab_visualize.R
+│   ├── indexing
+├── deploy_one_bash.sh    *    # ONLY to run this bash to deploy
+├── result
+├── www
 ├── PMET-Shiny-App.Rproj
-├── app.R                      # local shiny app (Run with Rscript app.R)
+├── app.R
 └── readme.md
 ```
 
@@ -31,17 +31,17 @@ This is a Shiny app developed for PMET.
 
 3. Run `deploy_one_bash.sh`
 
-   - set email and CPU
-   - assign execute permissions
-   - download data of homotypic motif hits of 21 speices [[details](#index-data)]
-   - compile binaries needed by Shiny app [[details](#compile)]
-   - install R packages
-   - install python packages
-   - Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
+   - 1. set email and CPU
+   - 2. assign execute permissions
+   - 3. download data of homotypic motif hits of 21 speices [[details](#index-data)]
+   - 4. compile binaries needed by Shiny app [[details](#compile)]
+   - 5. install R packages
+   - 6. install python packages
+   - 7. Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
    ```bash
     bash deploy_one_bash.sh
    ```
-   ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202310131936996.png)
+   ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202310190148145.png)
 
 ## <span id="index-data">3. Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
 
@@ -166,25 +166,25 @@ parallel --citation
 
 ```bash
 # cd a folder you want to put the software
+mkdir -p ./tools
+
+cd ./tools
 wget https://meme-suite.org/meme/meme-software/5.5.2/meme-5.5.2.tar.gz
-
 tar zxf meme-5.5.2.tar.gz
+
 cd meme-5.5.2
-./configure --prefix=$HOME/meme --enable-build-libxml2 --enable-build-libxslt
+./configure --prefix=$(pwd) --enable-build-libxml2 --enable-build-libxslt
 make
-make test
 make install
+
+echo "export PATH=$(pwd)/bin:\$PATH" >> ~/.bashrc
+source ~/.bashrc
+cd ..
+rm meme-5.5.2.tar.gz
 ```
 
-Add following into bash profile file.
-
-```bash
-# assuming you put meme folder under your home folder
-export PATH=$HOME/meme/bin:$HOME/meme/libexec/meme-5.5.2:$PATH
-```
 
 **6.3 Install samtools**
-
 Install from conda or mamba:
 
 ```bash
@@ -193,29 +193,26 @@ conda install -c bioconda samtools
 
 Install from source:
 
-> assuming you create a directory named `samtools` in home directory (~) and install samtools there.
-
 ```bash
-wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
+mkdir -p ./tools
 
-cd samtools-1.17    # and similarly for bcftools and htslib
-./configure --prefix=$HOME/samtools
+cd ./tools
+wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
+tar -xjf samtools-1.17.tar.bz2
+
+cd samtools-1.17
+./configure --prefix=$(pwd)
 make
 make install
-
 # Add following into bash profile file or .zshrc (if zsh used).
-# assuming you put samtools-1.17 folder under your home folder
-export PATH=$HOME/samtools/bin:$PATH
+echo "export PATH=$(pwd)/bin:\$PATH" >> ~/.bashrc
+source ~/.bashrc
+
+cd ..
+rm samtools-1.17.tar.bz2
 ```
 
 **6. 4 Install bedtools**
-
-```bash
-conda install -c bioconda bedtools
-```
-
-or
-
 ```bash
 # Debian/Ubuntu
 apt-get install bedtools
