@@ -89,7 +89,7 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
 
     var svgHeatmap = DrawHeatmap( data       = pmet.data,
                                   svgID      = "#d3Temp",
-                                  heatmapID  = pmet.method,
+                                  heatmapID  = pmet.method[0],
                                   valMax     = valMax,
                                   valMin     = valMin,
                                   colorIndex = -1,          // different clolors for different clusters
@@ -131,8 +131,14 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       return str.length > max ? str.length : max;
     }, 0);
     console.log(maxLength)
+
+    if (colorIndex == -1) {
+      var topMargin = 20 * clusters.length
+    } else {
+      var topMargin = 40;
+    }
     // Consider 1 `pt` to be approximately 0.75 `px`.
-    var margin = { top: 50, right: 0, bottom: maxLength * 8 , left: maxLength * 8 },
+    var margin = { top: topMargin, right: 0, bottom: maxLength * 8 , left: maxLength * 8 },
         cellSize = 12;
         col_number = motifs.length,
         row_number = motifs.length,
@@ -144,7 +150,7 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     var hcrow = GenerateArray(row_number),
         hccol = GenerateArray(col_number);
 
-    var colorsMin = ["#fde7e7", "#a2d5f5", "#baeed3", "#f9cb8b", "#f2d1ea", "#47484c"],
+    var colorsMin = ["#fde7e7", "#a2d5f5", "#baeed3", "#fcead0", "#f2d1ea", "#47484c"],
         colorsMax = ["#a61b29", "#11659a", "#1a6840", "#f9a633", "#cd47aa", "#2f2f35"];
 
     if (colorIndex == -1) {
@@ -346,40 +352,86 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       var legendNums = GenerateRange(valMin, valMax, 5);
     }
 
+    var fontSize = cellSize + 3;
+
     var legend = svg.selectAll(".legend")
       .data(legendNums)
       .enter().append("g")
       .attr("class", "legend");
 
-    legend.append("rect")
-      .attr("x", function (d, i) { return 15 * i+30; })
-      // .attr("y", height + (cellSize * 2))
-      .attr("y", -15)
-      .attr("width", 17)
-      .attr("height", cellSize)
-      .style("fill", function (d, i) { return myColor(legendNums[i]); });
+    if (heatmapID == "Overlap") {
 
-    // add title for legend
-    legend.append("text")
-      .attr("width", 15)
-      .attr("x", 20)
-      .attr("y", -22)
-      .text("-log10(p-val)")
-      .attr("font-family", "Consolas, courier")
-      .attr("font-size", "12px")
-      .attr("fill", "#aaa")
+      for (let clusterIndex = 0; clusterIndex < clusters.length; clusterIndex++) {
 
-    legend.append("text")
-      .attr("class", "mono")
-      .text(function (d) {
-        // only show min and max values of legend
-        if (d === legendNums[0] || d === legendNums[4]) {
-          return d;
-        }
-      })
-      .attr("width", 15)
-      .attr("x", function (d, i) { return 29 * i; })
-      .attr("y", -5);
+          var colorCluster = d3.scale.linear()
+            .range([colorsMin[clusterIndex], colorsMax[clusterIndex]])
+            .domain([valMin, valMax])
+
+          legend.append("rect")
+            .attr("x", function (d, i) { return 15 * i; })
+            .attr("y", -cellSize*2.2 - cellSize * clusterIndex)
+            .attr("width", cellSize + 4)
+            .attr("height", cellSize)
+            .style("fill", function (d, i) { return colorCluster(legendNums[i]); });
+
+          legend.append("text")
+            .attr("class", "mono")
+            .text(clusters[clusterIndex])
+            .style("font-size", fontSize * 1.2 + "px")  // 设置字体大小为3倍
+            .style("font-weight", "bold")  // 加粗字体
+            .style("fill", colorsMax[clusterIndex])  // 设置字体颜色为红色
+            .attr("x", function (d, i) { return (cellSize + 4) * 4 + 40; })
+            .attr("y", -cellSize * (clusterIndex + 1) - 5);
+      }
+      // add title for legend
+      legend.append("text")
+        .attr("width", fontSize)
+        .attr("x", 0)
+        .attr("y", -cellSize*(2 + clusters.length))
+        .text("-log10(p-val)")
+        .attr("font-family", "Consolas, courier")
+        .attr("font-size", "12px")
+        .attr("fill", "#aaa")
+      console.log(heatmapID)
+    } else {
+      legend.append("rect")
+        .attr("x", function (d, i) { return 15 * i; })
+        .attr("y", -cellSize*2.2)
+        .attr("width", cellSize + 4)
+        .attr("height", cellSize)
+        .style("fill", function (d, i) { return myColor(legendNums[i]); });
+
+      // add title for legend
+      legend.append("text")
+        .attr("width", fontSize)
+        .attr("x", 0)
+        .attr("y", -cellSize*2.7)
+        .text("-log10(p-val)")
+        .attr("font-family", "Consolas, courier")
+        .attr("font-size", "12px")
+        .attr("fill", "#aaa")
+
+      legend.append("text")
+        .attr("class", "mono")
+        .text(heatmapID)
+        .style("font-size", fontSize * 1.2 + "px")  // 设置字体大小为3倍
+        .style("font-weight", "bold")  // 加粗字体
+        .style("fill", colorsMax[colorIndex])  // 设置字体颜色为红色
+        .attr("x", function (d, i) { return (cellSize + 4) * 4 + 40; })
+        .attr("y", -cellSize * 1.2);
+
+    }
+      legend.append("text")
+        .attr("class", "mono")
+        .text(function (d) {
+          // only show min and max values of legend
+          if (d === legendNums[0] || d === legendNums[4]) {
+            return Math.floor(d);
+          }
+        })
+        .attr("width", fontSize)
+        .attr("x", function (d, i) { return (cellSize + 4) * i; })
+        .attr("y", -5);
   }
 
 });
