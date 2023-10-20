@@ -132,18 +132,28 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     }, 0);
     console.log(maxLength)
 
-    if (colorIndex == -1) {
+    // top margin automatically fit heatmap in overlap mode because heatmap with overlap can have many
+    // catagory ledgeds
+    if (colorIndex == -1) { // overlap heatmap
       var topMargin = 20 * clusters.length
-    } else {
+    } else {                // non-overlap heatmap
       var topMargin = 40;
+    }
+
+    if (motifs.length < 7 && motifs.length > 4) {
+      var cellSizeBigger = 25
+    } else if (motifs.length <= 4) {
+      var cellSizeBigger = 50
+    } else {
+      var cellSizeBigger = 20
     }
     // Consider 1 `pt` to be approximately 0.75 `px`.
     var margin = { top: topMargin, right: 0, bottom: maxLength * 8 , left: maxLength * 8 },
-        cellSize = 12;
+        cellSize = cellSizeBigger;
         col_number = motifs.length,
         row_number = motifs.length,
-        width = cellSize * col_number, // - margin.left - margin.right,
-        height = cellSize * row_number, // - margin.top - margin.bottom,
+        width    = cellSize * col_number, // - margin.left - margin.right,
+        height   = cellSize * row_number, // - margin.top - margin.bottom,
         rowLabel = motifs,
         colLabel = motifs;
 
@@ -199,9 +209,9 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       .on("mouseover", function (d) { d3.select(this).classed("text-hover", true); })
       .on("mouseout", function (d) { d3.select(this).classed("text-hover", false); })
       .on("click", function (d, i) {
-        // rowSortOrder = !rowSortOrder;
-        // sortbylabel("r", i, rowSortOrder);
-        // d3.select("#order").property("selectedIndex", 4).node().focus();
+        rowSortOrder = !rowSortOrder;
+        sortbylabel("r", i, rowSortOrder);
+        d3.select("#order").property("selectedIndex", 4).node().focus();
       })
       ;
 
@@ -219,15 +229,7 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       .attr("class"  , function (d, i) { return "colLabel mono c" + (i + 1) + " colLabel-" + heatmapID; })
       .on("mouseover", function (d   ) { d3.select(this).classed("text-hover", true); })
       .on("mouseout" , function (d   ) { d3.select(this).classed("text-hover", false); })
-      .on("click"    , function (d, i) {
-        // console.log("x: " + 0 + "          y: " + (hccol.indexOf(i + 1) * cellSize) + "        label: " + d)
-        // colSortOrder = !colSortOrder;
-        // sortbylabel("c", i, colSortOrder);
-        // d3.select("#order").property("selectedIndex", 4).node().focus();;
-      })
       ;
-
-
 
     var heatMap = svg.append("g").attr("class", "g3")
       .selectAll(".cellg")
@@ -268,11 +270,9 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
           .append("div")
           .attr("class", "modal")
           .style("display", "block");
-
         // Create a modal content container
         var modalContent = modal.append("div")
           .attr("class", "modal-content");
-
         // Add a close button to the modal content container
         modalContent.append("span")
           .attr("class", "close")
@@ -286,9 +286,9 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
           .attr("class", "cluster-text")
           .text("Cluster: " + d.cluster);
         modalContent.append("p")
-          .html("Motif 1: <span class='bold-text'>" + d.motif1 + "</span>");
+          .html("Motif 1: <span class='bold-text'>" + motifs[d.motif1 - 1] + "</span>");
         modalContent.append("p")
-          .html("Motif 2: <span class='bold-text'>" + d.motif2 + "</span>");
+          .html("Motif 2: <span class='bold-text'>" + motifs[d.motif2 - 1] + "</span>");
         modalContent.append("p")
           .text("Gene number: " + d.gene_num);
 
@@ -319,11 +319,10 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
         d3.select(this).classed("cell-hover", true);
         d3.selectAll(".rowLabel-" + heatmapID).classed("text-highlight", function (r, ri) { return ri == (d.motif2 - 1); });
         d3.selectAll(".colLabel-" + heatmapID).classed("text-highlight", function (c, ci) { return ci == (d.motif1 - 1); });
-
         //Update the tooltip position and value
         d3.select("#tooltip")
-          .style("left", (d3.event.pageX - 320) + "px")
-          .style("top" , (d3.event.pageY - 320) + "px")
+          .style("left", (d3.event.pageX - 340) + "px")
+          .style("top" , (d3.event.pageY - 220) + "px")
           .select("#value")
           .html("<b>motif x</b>: "       + motifs[d.motif1 - 1] + "<br>" +
                 "<b>motif y</b>: "       + motifs[d.motif2 - 1] + "<br>" +
@@ -352,6 +351,8 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       var legendNums = GenerateRange(valMin, valMax, 5);
     }
 
+    // manuallyh set cell sieze to 12 in case the number cahnged when too few motifs
+    cellSize = 12;
     var fontSize = cellSize + 3;
 
     var legend = svg.selectAll(".legend")
@@ -368,20 +369,20 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
             .domain([valMin, valMax])
 
           legend.append("rect")
-            .attr("x", function (d, i) { return 15 * i; })
-            .attr("y", -cellSize*2.2 - cellSize * clusterIndex)
-            .attr("width", cellSize + 4)
-            .attr("height", cellSize)
-            .style("fill", function (d, i) { return colorCluster(legendNums[i]); });
-
+            .attr("x"     , function (d, i) { return cellSize * i; })
+            .attr("y"     , -cellSize* (2+clusterIndex))
+            .attr("width" ,  cellSize)
+            .attr("height",  cellSize)
+            .style("fill" , function (d, i) { return colorCluster(legendNums[i]); });
+          // add catagory/cluster on top of heamap
           legend.append("text")
             .attr("class", "mono")
             .text(clusters[clusterIndex])
-            .style("font-size", fontSize * 1.2 + "px")  // 设置字体大小为3倍
-            .style("font-weight", "bold")  // 加粗字体
-            .style("fill", colorsMax[clusterIndex])  // 设置字体颜色为红色
-            .attr("x", function (d, i) { return (cellSize + 4) * 4 + 40; })
-            .attr("y", -cellSize * (clusterIndex + 1) - 5);
+            .style("font-size", fontSize + "px")
+            .style("font-weight", "bold")
+            .style("fill", colorsMax[clusterIndex])
+            .attr("x"    , function (d, i) { return cellSize * 6; })
+            .attr("y"    , -cellSize * (clusterIndex + 1.2));
       }
       // add title for legend
       legend.append("text")
@@ -395,11 +396,11 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       console.log(heatmapID)
     } else {
       legend.append("rect")
-        .attr("x", function (d, i) { return 15 * i; })
-        .attr("y", -cellSize*2.2)
-        .attr("width", cellSize + 4)
+        .attr("x"     , function (d, i) { return cellSize * i; })
+        .attr("y"     , -cellSize*2)
+        .attr("width" , cellSize)
         .attr("height", cellSize)
-        .style("fill", function (d, i) { return myColor(legendNums[i]); });
+        .style("fill" , function (d, i) { return myColor(legendNums[i]); });
 
       // add title for legend
       legend.append("text")
@@ -414,24 +415,23 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
       legend.append("text")
         .attr("class", "mono")
         .text(heatmapID)
-        .style("font-size", fontSize * 1.2 + "px")  // 设置字体大小为3倍
-        .style("font-weight", "bold")  // 加粗字体
-        .style("fill", colorsMax[colorIndex])  // 设置字体颜色为红色
-        .attr("x", function (d, i) { return (cellSize + 4) * 4 + 40; })
-        .attr("y", -cellSize * 1.2);
+        .style("font-size", fontSize * 1.2 + "px")
+        .style("font-weight", "bold")
+        .style("fill", colorsMax[colorIndex])
+        .attr("x"    , function (d, i) { return cellSize * 6; })
+        .attr("y"    , -cellSize * 1.2);
 
     }
-      legend.append("text")
-        .attr("class", "mono")
-        .text(function (d) {
-          // only show min and max values of legend
-          if (d === legendNums[0] || d === legendNums[4]) {
-            return Math.floor(d);
-          }
-        })
-        .attr("width", fontSize)
-        .attr("x", function (d, i) { return (cellSize + 4) * i; })
-        .attr("y", -5);
+    legend.append("text")
+      .attr("class", "mono")
+      .text(function (d) {
+        // only show min and max values of legend
+        if (d === legendNums[0] || d === legendNums[4]) {
+          return Math.floor(d);
+        }
+      })
+      // .attr("width", fontSize)
+      .attr("x", function (d, i) { return cellSize * i; })
+      .attr("y", 0);
   }
-
 });
