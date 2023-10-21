@@ -150,9 +150,13 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     }
 
     if (motifs.length < 7 && motifs.length > 4) {
-      var cellSizeBigger = 25
-    } else if (motifs.length <= 4) {
+      var cellSizeBigger = 30
+    } else if (motifs.length <= 4 && motifs.length > 2) {
       var cellSizeBigger = 50
+    } else if (motifs.length == 2) {
+      var cellSizeBigger = 70
+    } else if (motifs.length == 1) {
+      var cellSizeBigger = 140
     } else {
       var cellSizeBigger = 20
     }
