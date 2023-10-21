@@ -1,6 +1,12 @@
 
 .tab-content {
-  padding-top: 80px;
+  padding-top: 70px;
+  margin-top: -20px;
+}
+
+#d3Temp {
+  margin-top: -30px;
+  margin-left: -20px
 }
 
 body {

@@ -135,7 +135,16 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     // top margin automatically fit heatmap in overlap mode because heatmap with overlap can have many
     // catagory ledgeds
     if (colorIndex == -1) { // overlap heatmap
-      var topMargin = 20 * clusters.length
+      if (clusters.length >= 4) {
+        var topMargin = 20 * clusters.length
+      } else if (clusters.length == 3) {
+        var topMargin = 25 * clusters.length
+      } else if (clusters.length == 2) {
+        var topMargin = 30 * clusters.length
+      } else {
+        var topMargin = 20;
+      }
+
     } else {                // non-overlap heatmap
       var topMargin = 40;
     }
