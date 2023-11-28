@@ -1,8 +1,7 @@
-COLORS <- c("#ed3333", "#8b2671", "#11659a", "#1a6840",
-            "#f9a633", "#2f2f35", "#5c2223", "#ec8aa4",
-            "#813c85", "#74759b", "#101f30", "#1661ab",
-            "#126e82", "#1ba784", "#43b244", "#fed71a",
-            "#e8b004", "#ffa60f", "#954416", "#f2481b")
+COLORS <- c("#ed3333", "#1a94bc", "#40a070", "#fc6315",
+            "#f9a633", "#813c85", "#2f2f35",
+            "#ed3333", "#1a94bc", "#40a070", "#fc6315",
+            "#f9a633", "#813c85", "#2f2f35")
 
 # Get lower triangle of the correlation matrix
 GetLowerTriangle <- function(cormat) {
@@ -273,7 +272,7 @@ ProcessPmetResult <- function(pmet_result       = NULL,
 
 #' Generate Top Motifs List
 #'
-#' This function generates a list of top motifs based on the input motif list. 
+#' This function generates a list of top motifs based on the input motif list.
 #' The generated list can be further processed for analysis.
 #'
 #' @param motifs.list A list of motifs.
