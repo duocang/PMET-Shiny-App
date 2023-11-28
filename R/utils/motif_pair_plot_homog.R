@@ -28,11 +28,20 @@ MotifPairPlotHomog <- function( pmet.split       = NULL,
   # ledgent color setting
   colors <- list(
     c("#fac3c3", "#ed3333"),
-    c("#a2d5f5", "#11659a"),
-    c("#baeed3", "#1a6840"),
+    c("#a2d5f5", "#1a94bc"),
+    c("#baeed3", "#40a070"),
+    c("#fda67a", "#fc6315"),
     c("#f9cb8b", "#f9a633"),
     c("#bb7fa9", "#8b2671"),
-    c("#47484c", "#2f2f35") )[1:length(pmet.split)]
+    c("#47484c", "#2f2f35"),
+    c("#fac3c3", "#ed3333"),
+    c("#a2d5f5", "#1a94bc"),
+    c("#baeed3", "#40a070"),
+    c("#fda67a", "#fc6315"),
+    c("#f9cb8b", "#f9a633"),
+    c("#bb7fa9", "#8b2671"),
+    c("#47484c", "#2f2f35")
+    )[1:length(pmet.split)]
   names(colors) <- names(pmet.split)
 
   # If parameters "by.cluster" and exclusive.motifs are set to TRUE, motifs

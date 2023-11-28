@@ -173,8 +173,8 @@ Shiny.addCustomMessageHandler('jsondata', function (pmet) {
     var hcrow = GenerateArray(row_number),
         hccol = GenerateArray(col_number);
 
-    var colorsMin = ["#fde7e7", "#a2d5f5", "#baeed3", "#fcead0", "#f2d1ea", "#47484c"],
-        colorsMax = ["#a61b29", "#11659a", "#1a6840", "#f9a633", "#cd47aa", "#2f2f35"];
+    var colorsMin = ["#fac3c3", "#a2d5f5", "#baeed3", "#fda67a", "#f9cb8b", "#bb7fa9", "#47484c", "#fac3c3", "#a2d5f5", "#baeed3", "#fda67a", "#f9cb8b", "#bb7fa9", "#47484c"],
+        colorsMax = ["#ed3333", "#1a94bc", "#40a070", "#fc6315", "#f9a633", "#8b2671", "#2f2f35", "#ed3333", "#1a94bc", "#40a070", "#fc6315", "#f9a633", "#8b2671", "#2f2f35"];
 
     if (colorIndex == -1) {
       var myColor = d3.scale.linear()
