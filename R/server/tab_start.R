@@ -85,12 +85,12 @@ observe({
       req(file.exists(input$`promoters_pre-genes`$datapath))
       req(input$`promoters_pre-premade`)
 
-
       gene_file_status <-  CheckGeneFile( input$`promoters_pre-genes`$datapath,
                                           "promoters_pre",
                                           premade = input$`promoters_pre-premade`)
 
-      all(gene_file_status == "OK") | (length(gene_file_status) == 3)
+      # all(gene_file_status == "OK") | (length(gene_file_status) == 3)
+      !identical(gene_file_status, "no_valid_genes")
     },
     "promoters" = {
       req(input$`promoters-genes`)
@@ -99,20 +99,25 @@ observe({
         input$`promoters-gff3`,
         input$`promoters-meme` ,
         input$`promoters-genes`)
+      # check if all files uploaded and not null
       files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
-      gene_file_status    <- CheckGeneFile(input$`promoters-genes`$datapath, "promoters")
+      # check if genes exist in the gene list
+      gene_file_status    <- CheckGeneFile(input$`promoters-genes`$datapath, "promoters", input$`intervals-fasta`$datapath)
 
-      files_upload_status &&  gene_file_status == "OK"
+      # file all uploaded, all genes exist or some genes exist
+      files_upload_status &&  !identical(gene_file_status, "no_valid_genes")
     },
     "intervals" = {
       req(input$`intervals-genes`)
       inputs              <- list(input$`intervals-fasta`,
                                   input$`intervals-meme`,
                                   input$`intervals-genes`)
+      # check if all files uploaded and not null
       files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
-      gene_file_status    <- CheckGeneFile(input$`intervals-genes`$datapath, "intervals")
+      gene_file_status    <- CheckGeneFile(input$`intervals-genes`$datapath, "intervals", input$`intervals-fasta`$datapath)
 
-      files_upload_status &&  gene_file_status == "OK"
+      # file all uploaded, all peaks exist or some peaks exist
+      files_upload_status &&  !identical(gene_file_status, "no_valid_genes")
     }
   )
   # show run buttion if all files uploaded and email valid
