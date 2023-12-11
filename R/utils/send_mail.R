@@ -45,8 +45,11 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
   email_credential <- readLines("data/email_credential.txt")
   EMAIL_USERNAME <- email_credential[1]
   EMAIL_PASSWORD <- email_credential[2]
+  EMAIL_ADDRESS  <- email_credential[3]
+  EMAIL_SERVER   <- email_credential[4]
+  EMAIL_PORT     <- email_credential[5]
 
-  sender <- "result@pmet.simpleconstellation.com"
+  sender <- EMAIL_ADDRESS
 
   subject <- "PMET result is ready!"
   body <- paste(
@@ -58,8 +61,8 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
   )
 
   smtp <- server(
-    host = "v095996.kasserver.com",
-    port = 587,
+    host = EMAIL_SERVER,
+    port = EMAIL_PORT,
     username = EMAIL_USERNAME,
     password = EMAIL_PASSWORD,
     use_ssl = TRUE
