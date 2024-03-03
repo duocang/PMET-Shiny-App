@@ -1,106 +1,114 @@
-
-
-
-# 先确保 remotes 包已经安装 Make sure the remotes package is installed first
-if (!requireNamespace("remotes", quietly = TRUE)) {
-  suppressMessages(install.packages("remotes", quiet = TRUE))
-}
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  suppressMessages(install.packages("BiocManager", quiet = TRUE))
-}
-
-if (!requireNamespace("pacman")) {
-  suppressMessages(install.packages("pacman", quiet = TRUE))
-}
-
-
+# 设置 CRAN 仓库
+r <- getOption("repos")
+r["CRAN"] <- "http://cran.us.r-project.org"
+options(repos = r)
 options(install.packages.compile.from.source = "always")
 
+################################ install basic packages #################################
+# 1. remotes and devtools
+# 2. BiocManager
+# 3. pak
+# 定义一个辅助函数来安装包并在失败时终止程序
+install_and_check_func <- function(package) {
+  if (!requireNamespace(package, quietly = TRUE)) {
+    suppressMessages(install.packages(package, quiet = TRUE))
+    if (!requireNamespace(package, quietly = TRUE)) {
+      stop(paste("Failed to install", package, ". Terminating the program."))
+    }
+  }
+}
 
-installed_packages <- character(0)
-failed_packages    <- character(0)
+# 安装 devtools remotes 和 BiocManager 包
+install_and_check_func("devtools")
+install_and_check_func("remotes")
+install_and_check_func("BiocManager")
 
-##################################### BiocManager #####################################
-check_and_install_bioc <- function(package_name) {
+# 尝试安装 pak 包
+if (!requireNamespace("pak", quietly = TRUE)) {
+  suppressMessages(install.packages("pak", quiet = TRUE))
+  if (!requireNamespace("pak", quietly = TRUE)) {
+    suppressMessages(remotes::install_github("r-lib/pak"))
+    if (!requireNamespace("pak", quietly = TRUE)) {
+      stop("Failed to install pak from both CRAN and GitHub. Terminating the program.")
+    }
+  }
+}
 
-  # 如果包没有安装，尝试用BiocManager来安装 If the package is not installed, try to install it using BiocManager
-  if (requireNamespace(package_name, quietly = TRUE)) {
-    installed_packages <<- c(installed_packages, package_name)
-  } else {
-    # 如果包未安装，尝试安装 If the package is not installed, try to install
+################################ install function #################################
+install_package_func <- function(package_name) {
+  # 提取包名：如果包名包含 '/', 提取斜线后的部分
+  package_name_to_check <- ifelse(grepl("/", package_name), sub(".*/", "", package_name), package_name)
+
+  # 检查包是否已经安装
+  if (requireNamespace(package_name_to_check, quietly = TRUE)) {
+    return(TRUE)
+  }
+
+  # 定义一个列表，包含尝试安装包的不同函数
+  install_functions <- list(
+    bio_install      = function() suppressMessages(BiocManager::install(package_name, ask = FALSE)),
+    devtools_install = function() suppressMessages(devtools::install_github(package_name, quiet = TRUE)),
+    remotes_install  = function() suppressMessages(remotes::install_github(package_name, quiet = TRUE)),
+    normal_install   = function() suppressMessages(install.packages(package_name, repos = "https://cran.r-project.org", dependencies = TRUE, type = "source", quiet = TRUE)),
+    pak_install      = function() suppressMessages(pak::pak(package_name))
+  )
+
+  # 遍历安装函数，尝试安装包
+  for (install_func in install_functions) {
     tryCatch({
-      # 使用BiocManager来安装包 Use BiocManager to install the package
-      suppressMessages(BiocManager::install(package_name, ask = FALSE))
+      install_func()
 
-      # 检查是否安装成功 Check if installation was successful
+      # 检查是否安装成功
       if (requireNamespace(package_name, quietly = TRUE)) {
-        installed_packages <<- c(installed_packages, package_name)
-      } else {
-        failed_packages <<- c(failed_packages, package_name)
-        message(paste("Installation of", package_name, "from", repo, "failed."))
+        return(TRUE) # 成功安装，返回 TRUE
       }
-    },
-    error = function(e) {
-      failed_packages <<- c(failed_packages, package_name)
-      message(paste("Installation of", package_name, "from", repo, "failed."))
-    })
+    }, error = function(e) {})
   }
+  # 所有方法尝试完毕，安装失败
+  return(FALSE)
 }
 
+################################   installation    ################################
+# bio
+packages_bio <- c("rtracklayer", "DESeq2", "WGCNA", "GEOqueary", "limma", "edgeR",
+                  "GSEABase", "clusterProfiler", "ConsensusClusterPlus", "GSVA",
+                  "pheatmap", "scFeatureFilter", "AUCell", "ComplexHeatmap")
 
-repos <- c("rtracklayer")
-
-for (repo in repos) {
-  check_and_install_bioc(repo)
-}
-
-#####################################   Github    #####################################
-
-# 创建一个函数来检查和安装包 Create a function to check and install packages
-check_and_install <- function(repo, ...) {
-  package_name <- unlist(strsplit(repo, "/"))[2]
-
-  # 如果包已经安装，直接添加到installed_packages If the package is already installed, add it to installed_packages
-  if (requireNamespace(package_name, quietly = TRUE)) {
-    installed_packages <<- c(installed_packages, package_name)
-  } else {
-    # 如果包未安装，尝试安装 If the package is not installed, try to install
-    tryCatch({
-      suppressMessages(remotes::install_github(repo, ...))
-
-      # 检查是否安装成功 Check if installation was successful
-      if (requireNamespace(package_name, quietly = TRUE)) {
-        installed_packages <<- c(installed_packages, package_name)
-      } else {
-        failed_packages <<- c(failed_packages, package_name)
-        message(paste("Installation of", package_name, "from", repo, "failed."))
-      }
-    },
-    error = function(e) {
-      failed_packages <<- c(failed_packages, package_name)
-      message(paste("Installation of", package_name, "from", repo, "failed."))
-    })
-  }
-}
-
-repos <- c("daattali/shinydisconnect",
-           "RinteRface/fullPage",
-           "dreamRs/shinybusy",
-           "merlinoa/shinyFeedback",
-           "daattali/shinycssloaders",
-           "dreamRs/shinyWidgets")
-
-for (repo in repos) {
-  if (repo == "merlinoa/shinyFeedback") {
-    check_and_install(repo, build_vignettes = TRUE)
-  } else {
-    check_and_install(repo)
-  }
-}
-
-################################   install.packages    ################################
-# Used packages
-packages <- c(
+# normal packages
+packages_normal <- c(
+  "future",
+  "qs",
+  "ddpcr",
+  "rlang",
+  "pander",
+  "pacman",
+  "pagoda2",
+  "eulerr",
+  "Hmisc",
+  "pryr",
+  "plotly",
+  "enrichplot",
+  "RcppRoll",
+  "msigdbr",
+  "xlsxjars",
+  "shiny",
+  "svglite",
+  "pak",
+  "devtools",
+  "av",
+  "magick",
+  "systemfonts",
+  "textshaping",
+  "rsvg",
+  "gapminder",
+  "qpdf",
+  "tesseract",
+  "pdftools",
+  "ragg",
+  "stringr",
+  "usethis",
+  "httpuv",
+  "Seurat",
   "bslib",                # Bootstrap themes and styles
   "data.table",           # efficient handling of large datasets
   "DT",                   # interactive data tables
@@ -120,6 +128,7 @@ packages <- c(
   "rintrojs",             # interactive tour integration
   "rjson",                # Converts R object into JSON objects and vice-versa
   "shiny",                # creation of interactive web applications
+  "rJava",
   "shinyBS",              # Bootstrap styling
   "shinybusy",            # Automated (or not) busy indicator for Shiny apps & other progress / notifications tools
   "shinydashboard",       # creation of dashboard-style Shiny apps
@@ -137,36 +146,65 @@ packages <- c(
   "xfun",                 # Xie Yihui's functions
   "zip"                   # creation and extraction of ZIP files
 )
+# pak packages
+pak_packages <- c("r-lib/ragg", "r-lib/usethis", "r-lib/rlang")
+# github
+packages_github <- c(
+           "daattali/shinydisconnect",
+           "RinteRface/fullPage",
+           "dreamRs/shinybusy",
+           "merlinoa/shinyFeedback",
+           "daattali/shinycssloaders",
+           "dreamRs/shinyWidgets",
+           "r-lib/textshaping",
+           "r-lib/systemfonts",
+           "jhrcook/ggasym",
+           "rpremrajGit/mailR",
+           "r-lib/textshaping",
+           "rstudio/httpuv",
+           "r-rust/gifski",
+           "jhrcook/ggasym",
+           "satijalab/seurat-data",
+           "satijalab/azimuth",
+           "satijalab/seurat-wrappers",
+           "stuart-lab/signac",
+           "satijalab/seurat",
+           "jhrcook/ggasym",
+           "kharchenkolab/pagoda2",
+           "NMikolajewicz/scMiko")
 
+installed_packages <- character(0)
+failed_packages    <- character(0)
+
+packages <- c(packages_bio, packages_github, pak_packages, packages_normal)
 
 for (package in packages) {
-  if (suppressMessages(require(package, character.only = TRUE))) {
-    installed_packages <- c(installed_packages, package)
+  flag <- install_package_func (package)
+  if (flag) {
+      installed_packages <- c(installed_packages, package)
   } else {
-    tryCatch(
-      {
-        # 使用suppressMessages来禁止install.packages的消息
-        suppressMessages(install.packages(package, repos = "https://cran.r-project.org", dependencies = TRUE, type = "source"))
-
-        if (suppressMessages(require(package, character.only = TRUE))) {
-          installed_packages <- c(installed_packages, package)
-        } else {
-          failed_packages <- c(failed_packages, package)
-          # 这里的消息仍然会显示
-          message(paste("Installation of", package, "failed."))
-        }
-      },
-      error = function(e) {
-        failed_packages <- c(failed_packages, package)
-        # 这里的消息仍然会显示
-        message(paste("Installation of", package, "failed."))
-      }
-    )
+      failed_packages <- c(failed_packages, package)
   }
 }
 
+for (package in packages) {
+  flag <- install_package_func (package)
+  if (flag) {
+      installed_packages <- c(installed_packages, package)
+  } else {
+      failed_packages <- c(failed_packages, package)
+  }
+}
 
-############################## Installation summary ############################
+for (package in packages) {
+  flag <- install_package_func (package)
+  if (flag) {
+      installed_packages <- c(installed_packages, package)
+  } else {
+      failed_packages <- c(failed_packages, package)
+  }
+}
+##############################       summary         ############################
 # Print installed packages
 cat("The installed packages are as follows:\n")
 print(sort(installed_packages))
