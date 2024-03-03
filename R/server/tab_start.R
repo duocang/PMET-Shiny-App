@@ -186,25 +186,25 @@ observeEvent(input$run_pmet_btn, {
     ####################### 1. Download button for ngxin file ########################
     # shinyjs::show("pmet_result_download_btn") # hide download button
     shinyjs::show("pmet_result_download_btn_temp") # hide download button
-    # output$pmet_result_download_ui <- renderUI({
-    #   actionButton(
-    #     "pmet_result_download_btn",
-    #     "Result",
-    #     icon = icon("download"),
-    #     class = "btn-success",
-    #     onclick = paste0("location.href='", result_link, "'"),
-    #     style = "width: 130px;margin-left: 30px;"
-    #   )
-    # }) # end of rednderUI
+    output$pmet_result_download_ui <- renderUI({
+      actionButton(
+        "pmet_result_download_btn",
+        "Result",
+        icon = icon("download"),
+        class = "btn-success",
+        onclick = paste0("location.href='", result_link, "'"),
+        style = "width: 130px;margin-left: 30px;"
+      )
+    }) # end of rednderUI
     # automatically scroll to the spot of download button
     runjs('document.getElementById("run_pmet_div").scrollIntoView();')
 
-    # dynamically create a button after PMET done to download PMET result
-    output$pmet_result_download_ui_temp <- renderUI({
-      downloadButton("pmet_result_download_btn_temp",
-        "PMET result",
-        style = "width: 135px"
-      )
+    # # dynamically create a button after PMET done to download PMET result
+    # output$pmet_result_download_ui_temp <- renderUI({
+    #   downloadButton("pmet_result_download_btn_temp",
+    #     "PMET result",
+    #     style = "width: 135px"
+    #   )
     })
 
     ################################ 2. Notitication ##################################
