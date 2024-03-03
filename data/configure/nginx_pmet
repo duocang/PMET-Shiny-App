@@ -1,0 +1,9 @@
+# /etc/nginx/sites-available/pmet_result
+server {
+    listen 127.0.0.1:84;
+    server_name 127.0.0.1;
+    access_log  /var/log/nginx/localhost.access.log;
+    location /result {
+            alias /home/shiny/pmet/result;
+    }
+}
