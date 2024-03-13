@@ -329,6 +329,20 @@
             "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
         }
     },
+    "Vicia_faba": {
+        "genome_name"      : "Vfaba.Tiffany.v1.fa",
+        "annotation_name"  : "Vfaba.Tiffany.v1.gff3",
+        "genome_link": "https://projects.au.dk/fileadmin/projects/fabagenome/Vfaba.Tiffany.v1.fa.gz",
+        "annotation_link": "https://projects.au.dk/fileadmin/ingen_mappe_valgt/Vfaba.Tiffany.v1.gff3.gz",
+        "description": "The Faba Bean Genome Project is a global partnership that leverages collaborative expertise and funding with the aim to assemble the first faba bean genome with an emphasis on applied breeding. The partnership has generated a high-quality faba bean genome assembly and annotated gene models based on electronic prediction and experimental transcriptome data for a cv. Hedin /2.",
+        "motif_db": {
+            "PlantTFDB"                       : "http://planttfdb.gao-lab.org/download.php",
+            "Plant_Cistrome_DB"               : "http://neomorph.salk.edu/dap_web/pages/index.php",
+            "Jaspar_plants_non_redundant_2018": "https://jaspar2018.genereg.net/download/data/2018/CORE/JASPAR2018_CORE_plants_non-redundant_pfms_meme.zip",
+            "Jaspar_plants_non_redundant_2022": "https://jaspar.genereg.net/download/data/2022/CORE/JASPAR2022_CORE_plants_non-redundant_pfms_meme.zip",
+            "Franco-Zorrilla_et_al_2014"      : "https://pubmed.ncbi.nlm.nih.gov/24477691/"
+        }
+    },
     "Zea_mays": {
         "genome_name"      : "Zea_mays.Zm-B73-REFERENCE-NAM-5.0.dna.toplevel.fa",
         "annotation_name"  : "Zea_mays.Zm-B73-REFERENCE-NAM-5.0.57.gff3",
