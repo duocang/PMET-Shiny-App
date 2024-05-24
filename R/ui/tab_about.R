@@ -1,4 +1,5 @@
   tabPanel(
-    "About", 
+    class = "tabPanel_shiny",
+    "About",
     hr()
   )

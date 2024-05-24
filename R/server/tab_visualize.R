@@ -13,8 +13,25 @@ output$demo_pmet_result_download <- downloadHandler(
 # feedback for file uploaded
 showFeedbackDanger(inputId = "pmet_result_file", text = "No PMET result found")
 file.status <- reactiveVal("NO")
+file_status <- reactiveVal("No file selected")
 observeEvent(input$pmet_result_file, {
+  if (is.null(input$pmet_result_file)) {
+      # No file selected
+      file_status("No file selected")
+    } else {
+      # File selected
+      file_status("File selected, starting upload...")
+
+      # Simulate file processing (e.g., read the file)
+      # Here we use a small delay to simulate processing
+      Sys.sleep(2)
+
+      # After processing
+      file_status("File uploaded successfully")
+  }
+
   req(input$pmet_result_file)
+
   # remove all UI when loading new data
   removeUI(selector = "#heatmap_module_content")
   removeUI(selector = "#heatmaply.ui")
@@ -64,17 +81,18 @@ observe({
   } else {
     hideFeedback("p_adj")
   }
+
   req(input$topn_pair, input$p_adj)
 
-  validate(need(!is.na(input$p_adj) & !is.null(input$p_adj), "Please enter a positive integer."))
-  # validate(need(!is.na(input$p_adj), "Please enter a positive number."))
-  validate(need(input$p_adj >= 0, "Please enter a positive integer."))
-  validate(need(is.integer(as.integer(input$p_adj)), "Please enter a positive integer."))
+  # validate(need(!is.na(input$p_adj) & !is.null(input$p_adj), "Please enter a positive integer."))
+  # # validate(need(!is.na(input$p_adj), "Please enter a positive number."))
+  # validate(need(input$p_adj >= 0, "Please enter a positive integer."))
+  # validate(need(is.integer(as.integer(input$p_adj)), "Please enter a positive integer."))
 
-  validate(need(!is.na(input$topn_pair) & !is.null(input$topn_pair), "Please enter a positive integer."))
-  # validate(need(!is.na(input$topn_pair), "Please enter a positive integer."))
-  validate(need(input$topn_pair >= 0, "Please enter a positive integer."))
-  validate(need(is.integer(as.integer(input$topn_pair)), "Please enter a positive integer."))
+  # validate(need(!is.na(input$topn_pair) & !is.null(input$topn_pair), "Please enter a positive integer."))
+  # # validate(need(!is.na(input$topn_pair), "Please enter a positive integer."))
+  # validate(need(input$topn_pair >= 0, "Please enter a positive integer."))
+  # validate(need(is.integer(as.integer(input$topn_pair)), "Please enter a positive integer."))
 })
 
 
@@ -266,7 +284,7 @@ observeEvent(input$plot.button, {
   )
 
   # json data for D3
-  json_pmet <- pretty_json(jsonify::to_json(dat))
+  json_pmet <- jsonify::pretty_json(jsonify::to_json(dat))
 
   # send json from the session to javascript
   session$sendCustomMessage(type = "jsondata", json_pmet)
@@ -352,10 +370,8 @@ output$download.button <- downloadHandler(
 
 # Data table -----------------------------------------------------------------
 output$datatable_tabs <- renderUI({
-  tagList(
-    # downloadButton("download_result", "Download", class = "btn-success"),
-    tabsetPanel(ui_data("info1", "Info1"))
-  )
+  tabsetPanel(
+    ui_data("pmet_talble_tab", "pmet_talble_tab_tittle"))
 })
 
 
@@ -363,6 +379,5 @@ observeEvent(pmet.result.processed(), {
   result <- lapply(pmet.result.processed()$pmet_result, function(res) {
     res[, c("cluster", "motif1", "motif2", "gene_num", "p_adj")]
   })
-  server_data("info1", result)
+  server_data("pmet_talble_tab", result)
 })
-

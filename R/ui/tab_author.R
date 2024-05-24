@@ -1,4 +1,5 @@
 tabPanel(
+  class = "tabPanel_shiny",
   "Contributors",
   div(style = "padding:20px;",
       shiny::p(
