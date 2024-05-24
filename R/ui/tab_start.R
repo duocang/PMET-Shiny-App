@@ -1,10 +1,11 @@
 tabPanel(
+  class = "tabPanel_shiny",
   introjsUI(),
   useShinyFeedback(),
   title = "Run job",
   value = "pmet_tabpanel",
   pageWithSidebar(
-    dashboardHeader(disable = TRUE),
+    shinydashboard::dashboardHeader(disable = TRUE),
     sidebarPanel(
       width = 4,
       # promoters

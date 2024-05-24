@@ -1,12 +1,20 @@
-
+/*
 .tab-content {
   padding-top: 70px;
-  margin-top: -20px;
+  margin-top: 0px;
+  margin-left: -8px;
+} */
+
+.tabPanel_shiny {
+  padding-top: 70px;
+  margin-top: 0px;
+  margin-left: -8px;
 }
 
+/* heatmap visualization  */
 #d3Temp {
-  margin-top: -30px;
-  margin-left: -20px
+  margin-top: 20px;
+  margin-left: 50px
 }
 
 body {
@@ -329,4 +337,18 @@ text.text-hover {
 
 .radioButtons_div .shiny-input-radiogroup .shiny-options-group .radio-inline {
   min-width: 60px; /* 你可以根据需要调整这个值 */
+}
+
+
+#dimension_display {
+  margin-top: 20px;
+}
+
+/* move Data viewer up
+#tabbable {
+  margin-top: -70px;
+} */
+
+.tab-pane {
+  margin-top: 5px;
 }

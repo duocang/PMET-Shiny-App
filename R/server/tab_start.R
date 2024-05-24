@@ -54,7 +54,7 @@ observeEvent(input$email, {
 })
 
 
-# show Run button () -----------------------------------------------------------
+# show Run button and hide download button ------------------------------------
 # when the following requirements are met:
 # 1. all input is required
 # 2. gene file is a file with 2 columns
@@ -67,7 +67,7 @@ observe({
   hide_spinner()
   shinyjs::hide("toast-container")
   shinyjs::hide("run_pmet_btn_div")
-  # shinyjs::hide("pmet_result_download_btn")
+  shinyjs::hide("pmet_result_download_btn")
   shinyjs::hide("pmet_result_download_btn_temp")
 
   # check file input and gene file
@@ -141,7 +141,7 @@ observeEvent(input$run_pmet_btn, {
     button = "OK"
   )
 
-  # shinyjs::hide("pmet_result_download_btn")
+  shinyjs::hide("pmet_result_download_btn")
   shinyjs::hide("pmet_result_download_btn_temp")
   shinyjs::disable("run_pmet_btn")
 
@@ -184,7 +184,7 @@ observeEvent(input$run_pmet_btn, {
                 mode)
   }) %...>% (function(result_link) {
     ####################### 1. Download button for ngxin file ########################
-    # shinyjs::show("pmet_result_download_btn") # hide download button
+    shinyjs::show("pmet_result_download_btn") # hide download button
     shinyjs::show("pmet_result_download_btn_temp") # hide download button
     output$pmet_result_download_ui <- renderUI({
       actionButton(
@@ -205,7 +205,7 @@ observeEvent(input$run_pmet_btn, {
     #     "PMET result",
     #     style = "width: 135px"
     #   )
-    })
+    # }) # end of %...>% (function(result_link)
 
     ################################ 2. Notitication ##################################
     # Download reminder (automatically disappears after 120 seconds)
@@ -237,8 +237,7 @@ observeEvent(input$run_pmet_btn, {
     shinyjs::hide("run_pmet_btn_div")
 
     # reset all and parameters and input files
-    for (i in c("fasta", "gff3", "meme", "genes",
-                # "species", "premade",
+    for (i in c("fasta", "gff3", "meme", "genes", # "species", "premade",
                 "promoter_length", "max_match", "promoter_num", "ic_threshold",
                 "fimo_threshold", "utr5", "promoters_overlap")) {
       shinyjs::reset(paste0(input$mode, "-", i))
@@ -261,7 +260,6 @@ observeEvent(input$run_pmet_btn, {
     # file.remove(input$`promoters_pre-genes`$datapath)
   }) # end of future
 })
-
 
 ################################# info of species #######################################
 observeEvent(input$`promoters_pre-species`, {

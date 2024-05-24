@@ -1,31 +1,5 @@
-# tabPanel(
-#   title = "Test",
-#   value = "Test_tabpanel",
-#   tags$head(
-#     tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.1.2/fullpage.min.css"),
-#     tags$script(src = "https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.1.2/fullpage.min.js")
-#   ),
-#   tags$script("
-#     $(document).ready(function() {
-#       new fullpage('#my-fullpage', {
-#         // fullPage.js options
-#       });
-#     });
-#   "),
-#   div(id = "my-fullpage",
-#     div(class = "section",
-#       actionButton("a", "a"),
-#       h1("Section 1")
-#     ),
-#     div(class = "section",
-#       h1("Section 2")
-#     ),
-#     div(class = "section",
-#       h1("Section 3")
-#     )
-#   )
-# )
 tabPanel(
+  class = "tabPanel_shiny",
   "My Tab",
   tags$head(
     tags$style(HTML("

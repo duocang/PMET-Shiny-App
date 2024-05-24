@@ -1,4 +1,5 @@
 tabPanel(
+  class = "tabPanel_shiny",
   title = "Visualize results",
   value = "heatmap_tabpanel",
   id    = "heatmap_tabpanel",
@@ -73,7 +74,8 @@ tabPanel(
       # Input: Select a file ----
       div(id = "pmet_result_file_div",
         fileInput("pmet_result_file", "Choose a PMET result", multiple = FALSE, accept = ".txt"),
-        downloadLink("demo_pmet_result_download", "Example file")
+        downloadLink("demo_pmet_result_download", "Example file"),
+        textOutput("file_status")
       ),
       div(id = "motif_pair_unique_div",
         selectInput("motif_pair_unique", "Motif-pair UNIQUE in each cluster:",
@@ -103,6 +105,7 @@ tabPanel(
       )
     ),
     mainPanel(
+      width = 8,
       add_busy_spinner(spin = "fading-circle", position = "bottom-left"),
       tabsetPanel(
         type = "tabs",

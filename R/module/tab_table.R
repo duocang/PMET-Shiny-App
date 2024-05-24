@@ -13,7 +13,7 @@ server_data <- function(id, input_data) {
       all_cyl <- names(input_data) %>% sort()
 
       tabs <- lapply(all_cyl, function(cyl) {
-        tabPanel(cyl, shinydashboard::box(dataTableOutput(ns(cyl))))
+        tabPanel(cyl, dataTableOutput(ns(cyl)))
       }) # tabs
       do.call(tabsetPanel, tabs)
     }) # end of renderUI
