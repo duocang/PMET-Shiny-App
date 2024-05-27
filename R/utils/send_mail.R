@@ -38,7 +38,6 @@
 # result_link <- args[2]
 
 # SendResultMail(recipient = recipient, result_link = result_link)
-library(emayili)
 
 SendResultMail <- function(recipient = NULL, result_link = NULL) {
 

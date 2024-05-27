@@ -8,7 +8,11 @@ This is a Shiny app developed for PMET.
 
 ```shell
 .
+├── conf                    * # configure for shiny server and nginx
+├── data
+├── dockerfiles
 ├── PMETdev
+├── indexing
 ├── R
 │   ├── app.R
 │   ├── global.R
@@ -16,22 +20,30 @@ This is a Shiny app developed for PMET.
 │   ├── server
 │   ├── ui
 │   └── utils
-├── data
-│   ├── indexing
-├── deploy_one_bash.sh    *    # ONLY to run this bash to deploy
 ├── result
 ├── www
+├── 01_deploy_via_bash.sh
+├── 01_deploy_via_Docker.sh  * # Recommended installation method
+├── app.R                    * # Shiny app
+├── docker-compose.yml
 ├── PMET-Shiny-App.Rproj
-├── app.R
 └── readme.md
 ```
 
 ## 2. Quick deployment
+### 2.1 (option one) Install on Docker (Recommended)
+
+```bash
+bash 01_deploy_via_Docker.sh
+```
+
+### 2.2 (option two) Bash install on current Debian-like OS
 
 1. Install `Shiny Server` and `Nginx` [[details](#setup-shiny-server-and-nginx)]
-2. `git clone` or `git pull` in the folder of Shiny Server (default: `/srv/shiny-server`)![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
+2. `git clone` in the folder of Shiny Server (default: `/srv/shiny-server`) or git clone anywhere and then create a link under `/srv/shiny-server` as shown below:
+![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
 
-3. Run `deploy_one_bash.sh`
+1. Run `01_deploy_via_bash.sh`
 
    - 1. set email and CPU
    - 2. assign execute permissions
@@ -41,9 +53,19 @@ This is a Shiny app developed for PMET.
    - 6. install python packages
    - 7. Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
    ```bash
-    bash deploy_one_bash.sh
+    bash 01_deploy_via_bash.sh
    ```
    ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202310190148145.png)
+
+
+
+
+---
+
+**If not necessary, there is no need to read the following content.**
+
+---
+
 
 ## <span id="index-data">3. Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
 
@@ -54,9 +76,6 @@ The data can be accessed by running the script `deploy_one_bash.sh` from [Homoty
 ```bash
 bash deploy_one_bash.sh
 
-# ...
-# 3. Would you like to download data of homotypic motif hits? [y/N]: Y
-```
 
 ```shell
 # file tree
@@ -108,7 +127,7 @@ bash binary_compile.sh
 
 After compilation, the executable will be saved in the `PMETdev/scripts` directory for the Shiny app to call.
 
-## <span id="setup-shiny-server-and-nginx">Setup 5. Shiny server and nginx</span>
+## <span id="setup-shiny-server-and-nginx">5. Shiny server and nginx</span>
 
 **5.1 Shiny-server and nginx install**
 
@@ -143,94 +162,8 @@ server {
 }
 ```
 
-<!-- **Download function based on nginx**
 
-After PMET calculation is completed, Shiny will generate a download button that is specifically for the PMET result archive. This functionality can be found in `utils/command_call_pmet.R` line 12.
-
-```R
-result_link <- paste0("http://127.0.0.1:84/result/", paste0(pmetPair_path_name, ".zip"))
-``` -->
-
-## <span id="tools">6. Tools needed</span>
-
-**6.1 Install GNU Parallel**
-
-GNU Parallel helps PMET index (FIMO and PMET index) to run in parallel mode.
-
-```bash
-sudo apt-get install parallel
-
-# Put GNU Parallel silent
-parallel --citation
-```
-
-**6.2 Install The MEME Suite (FIMO and fasta-get-markov)**
-
-```bash
-# cd a folder you want to put the software
-mkdir -p ./tools
-
-cd ./tools
-wget https://meme-suite.org/meme/meme-software/5.5.2/meme-5.5.2.tar.gz
-tar zxf meme-5.5.2.tar.gz
-
-cd meme-5.5.2
-./configure --prefix=$(pwd) --enable-build-libxml2 --enable-build-libxslt
-make
-make install
-
-echo "export PATH=$(pwd)/bin:\$PATH" >> ~/.bashrc
-source ~/.bashrc
-cd ..
-rm meme-5.5.2.tar.gz
-```
-
-
-**6.3 Install samtools**
-Install from conda or mamba:
-
-```bash
-conda install -c bioconda samtools
-```
-
-Install from source:
-
-```bash
-mkdir -p ./tools
-
-cd ./tools
-wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
-tar -xjf samtools-1.17.tar.bz2
-
-cd samtools-1.17
-./configure --prefix=$(pwd)
-make
-make install
-# Add following into bash profile file or .zshrc (if zsh used).
-echo "export PATH=$(pwd)/bin:\$PATH" >> ~/.bashrc
-source ~/.bashrc
-
-cd ..
-rm samtools-1.17.tar.bz2
-```
-
-**6. 4 Install bedtools**
-```bash
-# Debian/Ubuntu
-apt-get install bedtools
-# Fedora/Centos
-yum install BEDTools
-```
-
-or
-
-```bash
-wget https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
-tar -zxvf bedtools-2.29.1.tar.gz
-cd bedtools2
-make
-```
-
+## PMET workflow
 ![](www/figures/pmet_workflow_with_interval_option.png)
 
 [GitHub Ribbons](https://github.blog/2008-12-19-github-ribbons/)

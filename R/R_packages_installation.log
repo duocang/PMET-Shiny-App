@@ -1,0 +1,46 @@
+[1] TRUE
+[1] TRUE
+[1] TRUE
+character(0)
+
+The installed packages are as follows:
+ [1] "av"                       "bslib"                   
+ [3] "daattali/shinycssloaders" "daattali/shinydisconnect"
+ [5] "data.table"               "datawookie/emayili"      
+ [7] "devtools"                 "dplyr"                   
+ [9] "dreamRs/shinybusy"        "dreamRs/shinyWidgets"    
+[11] "DT"                       "emayili"                 
+[13] "enrichplot"               "future"                  
+[15] "gapminder"                "ggasym"                  
+[17] "ggplot2"                  "ggpubr"                  
+[19] "glue"                     "Hmisc"                   
+[21] "httpuv"                   "jhrcook/ggasym"          
+[23] "kableExtra"               "magick"                  
+[25] "merlinoa/shinyFeedback"   "msigdbr"                 
+[27] "openxlsx"                 "pak"                     
+[29] "pdftools"                 "plotly"                  
+[31] "promises"                 "pryr"                    
+[33] "qpdf"                     "r-lib/ragg"              
+[35] "r-lib/rlang"              "r-lib/systemfonts"       
+[37] "r-lib/textshaping"        "r-lib/usethis"           
+[39] "r-rust/gifski"            "ragg"                    
+[41] "RcppRoll"                 "reshape2"                
+[43] "RinteRface/fullPage"      "rintrojs"                
+[45] "rJava"                    "rlang"                   
+[47] "rstudio/httpuv"           "rsvg"                    
+[49] "rtracklayer"              "scales"                  
+[51] "seqinr"                   "shiny"                   
+[53] "shinyBS"                  "shinybusy"               
+[55] "shinycssloaders"          "shinydashboard"          
+[57] "shinydisconnect"          "shinyFeedback"           
+[59] "shinyjs"                  "shinythemes"             
+[61] "shinyvalidate"            "shinyWidgets"            
+[63] "stringr"                  "svglite"                 
+[65] "systemfonts"              "tesseract"               
+[67] "textshaping"              "tibble"                  
+[69] "tictoc"                   "tidyverse"               
+[71] "usethis"                  "xfun"                    
+[73] "xlsxjars"                 "zip"                     
+
+The following packages could not be installed:
+[1] "pander"
