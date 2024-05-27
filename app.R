@@ -1,3 +1,6 @@
+Sys.setenv(R_LIBS_USER = "/usr/local/lib/R/library")
+.libPaths(new = "/usr/local/lib/R/library")
+
 source("R/app.R")
 
 shinyApp(ui = ui, server = server)

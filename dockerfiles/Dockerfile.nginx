@@ -1,0 +1,14 @@
+# Use the official Nginx image as the base image
+FROM nginx:latest
+
+# 创建结果目录
+RUN mkdir -p /usr/share/nginx/pmet && \
+    chmod -R 777 /usr/share/nginx/pmet
+
+COPY ./conf/nginx.conf /etc/nginx/conf.d/pmet.conf
+
+# Expose Nginx's default port
+EXPOSE 84
+
+# Start Nginx service
+CMD ["nginx", "-g", "daemon off;"]
