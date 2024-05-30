@@ -59,7 +59,7 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
     sep = "\n\n"
   )
 
-  smtp <- server(
+  smtp <- emayili::server(
     host = EMAIL_SERVER,
     port = EMAIL_PORT,
     username = EMAIL_USERNAME,
@@ -67,8 +67,8 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
     use_ssl = TRUE
   )
 
-  email <- envelope()
-  email <- email %>% from(sender) %>% to(recipient) %>% subject(subject) %>% text(body)
+  email <- emayili::envelope()
+  email <- email %>% emayili::from(sender) %>% emayili::to(recipient) %>% emayili::subject(subject) %>% emayili::text(body)
 
   smtp(email, verbose = TRUE)
 }

@@ -42,7 +42,7 @@ promoters_ui <- function(id, height = 800, width = 850) {
     div(id = "genes_div", style = "margin-bottom: 10px;",
       shinyjs::disabled(
         div(id= ns("gene_fileinput"),
-          fileInput(ns("genes"), "Clusters and intervals", multiple = FALSE, accept = ".txt")
+          fileInput(ns("genes"), "Clusters and genes", multiple = FALSE, accept = ".txt")
         )
       ),
       # example gene list
