@@ -1,3 +1,6 @@
+# Ignore changes in execution permissions
+* -text
+
 # ignore contents of fimo but keep fimo folder
 **/fimo/**
 !**/fimo/.gitkeep

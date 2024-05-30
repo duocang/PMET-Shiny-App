@@ -60,73 +60,82 @@ observeEvent(input$email, {
 # 2. gene file is a file with 2 columns
 # 3. valid email is provided
 observe({
+  # # monitor email input changed
   req(input$email)
-  # when input changed
-  # hide spinner (indicator for job running)
-  # hide run and download buttions
-  hide_spinner()
-  shinyjs::hide("toast-container")
-  shinyjs::hide("run_pmet_btn_div")
-  shinyjs::hide("pmet_result_download_btn")
-  shinyjs::hide("pmet_result_download_btn_temp")
+  # 首先验证邮箱是否已输入且有效
+  emailValid <- !is.null(input$email) && ValidEmail(input$email)
 
-  # check file input and gene file
-  files_ready <- switch(input$mode,
-    "promoters_pre" = {
-      req(input$`promoters_pre-genes`)
-      req(input$`promoters_pre-genes` != "")
 
-      # Because after the previous round of PMET job, the value of `promoters_pre-genes`
-      # did not change. This means that even if no new gene file is uploaded,
-      # `promoters_pre-genes` can still go through req.
-      # So we determine whether the user has actually uploaded the file for a new PMET job
-      # by checking if the gene file exists.
-      # Because after each completion of a PMET job, we manually delete the gene file.
-      req(file.exists(input$`promoters_pre-genes`$datapath))
-      req(input$`promoters_pre-premade`)
+  if (emailValid) {
+    # 当邮箱有效时，隐藏spinner和按钮
+    # hide spinner (indicator for job running)
+    # hide run and download buttions
+    hide_spinner()
+    shinyjs::hide("toast-container")
+    shinyjs::hide("run_pmet_btn_div")
+    shinyjs::hide("pmet_result_download_btn")
+    shinyjs::hide("pmet_result_download_btn_temp")
 
-      gene_file_status <-  CheckGeneFile( input$`promoters_pre-genes`$datapath,
-                                          "promoters_pre",
-                                          premade = input$`promoters_pre-premade`)
+    # check file input and gene file
+    files_ready <- switch(input$mode,
+      "promoters_pre" = {
+        req(input$`promoters_pre-genes`)
+        req(input$`promoters_pre-genes` != "")
 
-      # all(gene_file_status == "OK") | (length(gene_file_status) == 3)
-      !identical(gene_file_status, "no_valid_genes")
-    },
-    "promoters" = {
-      req(input$`promoters-genes`)
-      inputs <- list(
-        input$`promoters-fasta`,
-        input$`promoters-gff3`,
-        input$`promoters-meme` ,
-        input$`promoters-genes`)
-      # check if all files uploaded and not null
-      files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
-      # check if genes exist in the gene list
-      gene_file_status    <- CheckGeneFile(input$`promoters-genes`$datapath, "promoters", input$`intervals-fasta`$datapath)
+        # Because after the previous round of PMET job, the value of `promoters_pre-genes`
+        # did not change. This means that even if no new gene file is uploaded,
+        # `promoters_pre-genes` can still go through req.
+        # So we determine whether the user has actually uploaded the file for a new PMET job
+        # by checking if the gene file exists.
+        # Because after each completion of a PMET job, we manually delete the gene file.
+        req(file.exists(input$`promoters_pre-genes`$datapath))
+        req(input$`promoters_pre-premade`)
 
-      # file all uploaded, all genes exist or some genes exist
-      files_upload_status &&  !identical(gene_file_status, "no_valid_genes")
-    },
-    "intervals" = {
-      req(input$`intervals-genes`)
-      inputs              <- list(input$`intervals-fasta`,
-                                  input$`intervals-meme`,
-                                  input$`intervals-genes`)
-      # check if all files uploaded and not null
-      files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
-      gene_file_status    <- CheckGeneFile(input$`intervals-genes`$datapath, "intervals", input$`intervals-fasta`$datapath)
+        gene_file_status <-  CheckGeneFile( input$`promoters_pre-genes`$datapath,
+                                            "promoters_pre",
+                                            premade = input$`promoters_pre-premade`)
 
-      # file all uploaded, all peaks exist or some peaks exist
-      files_upload_status &&  !identical(gene_file_status, "no_valid_genes")
-    }
-  )
-  # show run buttion if all files uploaded and email valid
-  if (files_ready && ValidEmail(input$email)) {
-    shinyjs::show("run_pmet_btn_div")
+        # all(gene_file_status == "OK") | (length(gene_file_status) == 3)
+        !identical(gene_file_status, "no_valid_genes")
+      },
+      "promoters" = {
+        req(input$`promoters-genes`)
+        inputs <- list(
+          input$`promoters-fasta`,
+          input$`promoters-gff3`,
+          input$`promoters-meme` ,
+          input$`promoters-genes`)
+        # check if all files uploaded and not null
+        files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
+        # check if genes exist in the gene list
+        gene_file_status    <- CheckGeneFile(input$`promoters-genes`$datapath, "promoters", input$`promoters-gff3`$datapath)
+
+        # file all uploaded, all genes exist or some genes exist
+        files_upload_status &&  !identical(gene_file_status, "no_valid_genes")
+      },
+      "intervals" = {
+        req(input$`intervals-genes`)
+        inputs              <- list(input$`intervals-fasta`,
+                                    input$`intervals-meme`,
+                                    input$`intervals-genes`)
+        # check if all files uploaded and not null
+        files_upload_status <- (!is.null(inputs) && all(!is.null(inputs)))
+        gene_file_status    <- CheckGeneFile(input$`intervals-genes`$datapath, "intervals", input$`intervals-fasta`$datapath)
+
+        # file all uploaded, all peaks exist or some peaks exist
+        files_upload_status &&  !identical(gene_file_status, "no_valid_genes")
+      }
+    ) # end of switch
+
+    # show run buttion if all files uploaded and email valid
+    if (files_ready)
+      shinyjs::show("run_pmet_btn_div")
+
   } else {
     shinyjs::hide("run_pmet_btn_div")
   }
 })
+
 
 
 ##################################### Run PMET #########################################
