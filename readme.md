@@ -8,7 +8,7 @@ This is a Shiny app developed for PMET.
 
 ```shell
 .
-├── conf                    * # configure for shiny server and nginx
+├── conf                        * # configure for shiny server and nginx
 ├── data
 ├── dockerfiles
 ├── PMETdev
@@ -22,50 +22,63 @@ This is a Shiny app developed for PMET.
 │   └── utils
 ├── result
 ├── www
-├── 01_deploy_via_bash.sh
-├── 01_deploy_via_Docker.sh  * # Recommended installation method
-├── app.R                    * # Shiny app
+├── 01_deploy_via_Docker.sh
+├── 01_deploy_via_singularity.sh  * # Recommended installation method
+├── app.R                         * # Shiny app
 ├── docker-compose.yml
 ├── PMET-Shiny-App.Rproj
 └── readme.md
 ```
 
 ## 2. Quick deployment
+
 ### 2.1 (option one) Install on Docker (Recommended)
+
+```bash
+bash 01_deploy_via_singularity.sh
+```
+
+### 2.2 (option two) Bash install on current Debian-like OS
 
 ```bash
 bash 01_deploy_via_Docker.sh
 ```
 
-### 2.2 (option two) Bash install on current Debian-like OS
+### 2.3 (discarded) Bash install on current Debian-like OS
 
 1. Install `Shiny Server` and `Nginx` [[details](#setup-shiny-server-and-nginx)]
-2. `git clone` in the folder of Shiny Server (default: `/srv/shiny-server`) or git clone anywhere and then create a link under `/srv/shiny-server` as shown below:
-![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
 
-1. Run `01_deploy_via_bash.sh`
+2. `git clone` in the folder of Shiny Server (default: `/srv/shiny-server`) or git clone anywhere and then create a link under `/srv/shiny-server` as shown below:
+   ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202309191728114.png)
+
+3. Run `01_deploy_via_bash.sh`
+
+        ```
+        bash archive/01_deploy_via_bash.sh
+        ```
 
    - 1. set email and CPU
+
    - 2. assign execute permissions
+
    - 3. download data of homotypic motif hits of 21 speices [[details](#index-data)]
+
    - 4. compile binaries needed by Shiny app [[details](#compile)]
+
    - 5. install R packages
+
    - 6. install python packages
+
    - 7. Install tools (`GNU Parallel`, `bedtools`, `samtools`, `MEME`...)[[details](#tools)]
-   ```bash
-    bash 01_deploy_via_bash.sh
-   ```
-   ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202310190148145.png)
 
 
-
+    ![](https://raw.githubusercontent.com/duocang/images/master/PicGo/202310190148145.png)
 
 ---
 
 **If not necessary, there is no need to read the following content.**
 
 ---
-
 
 ## <span id="index-data">3. Pre-computed homotypic motif hits of plant species (PMET indexing data)</span>
 
@@ -162,8 +175,8 @@ server {
 }
 ```
 
-
 ## PMET workflow
+
 ![](www/figures/pmet_workflow_with_interval_option.png)
 
 [GitHub Ribbons](https://github.blog/2008-12-19-github-ribbons/)
