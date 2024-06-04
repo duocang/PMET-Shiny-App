@@ -32,6 +32,8 @@ This is a Shiny app developed for PMET.
 
 ## 2. Quick deployment
 
+Before officially deploying the PMET-Shiny-app, as a deployment personnel, you need to prepare an SMTP server to send emails to users containing links where they can download the results. When running the deployment script, you will need to provide the relevant information according to the script requirements.
+
 ### 2.1 (option one) Install on Docker (Recommended)
 
 ```bash
