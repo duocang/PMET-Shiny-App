@@ -1,0 +1,13 @@
+Bootstrap: docker
+# From:nginx:latest
+From:nginxinc/nginx-unprivileged
+
+%files
+    ./conf/nginx.conf /etc/nginx/conf.d/default.conf
+    ./result /etc/nginx/html
+
+%post
+    mkdir -p /etc/nginx/html
+
+%runscript
+    exec nginx -g 'daemon off;'

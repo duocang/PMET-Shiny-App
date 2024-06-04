@@ -1,0 +1,62 @@
+Bootstrap: docker
+From: rocker/shiny
+
+%labels
+maintainer wangxuesong29@gmail.com
+
+%files
+    ./scripts/install_apt_tools.sh     /opt/pmet/scripts/install_apt_tools.sh
+    ./scripts/install_python_libs.sh   /opt/pmet/scripts/install_python_libs.sh
+    ./R/utils/install_packages.R       /opt/pmet/R/utils/install_packages.R
+
+%environment
+    export PATH=$PATH:/opt/pmet/
+
+
+%post
+    ############################## 2. install linux libs ###############################
+    /opt/pmet/scripts/install_apt_tools.sh
+
+    # ############################## 4. install R libs ###############################
+    # # Configure Java using R CMD javareconf
+    R CMD javareconf
+
+    # # renv for package management
+    # Rscript -e "install.packages(c('remotes', 'littler', 'docopt', 'renv', 'jsonlite'))"
+    # Rscript -e "setwd('/opt/pmet');renv::restore()"
+    Rscript /opt/pmet/R/utils/install_packages.R
+
+    # R -e "install.packages(c('dplyr', 'ggplot2', 'gapminder'))"
+
+
+    ############################## 5. install python libs ###############################
+    apt-get update && \
+        apt -y install python3-pip
+    /opt/pmet/scripts/install_python_libs.sh
+
+
+    ########################## 6. install bedtool and samtools ###########################
+    apt update && apt upgrade -y
+    apt -y install bedtools
+
+    # Samtools 1.3.1 #
+    wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2 && \
+        tar -xjf samtools-1.17.tar.bz2 && \
+        cd samtools-1.17 && \
+        ./configure --disable-lzma --prefix=/opt/samtools && \
+        make && \
+        make install && \
+        cd / && \
+        rm -rf /tmp/samtools-1.17 /tmp/samtools-1.17.tar.bz2
+
+    echo "export PATH=/opt/samtools/bin:$PATH" >> /root/.bashrc
+    echo "export PATH=/opt/samtools/bin:$PATH" >> /home/shiny/.bashrc
+
+    # Clean apt cache to reduce image size
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+    mkdir -p /var/log/shiny-server
+    chown shiny.shiny /var/log/shiny-server
+
+%runscript
+    exec shiny-server 2>&1
