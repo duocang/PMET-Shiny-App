@@ -1,11 +1,17 @@
 FROM rocker/shiny:4.3.3
 
 ############################## 1. shiny setting ###############################
+# 添加 shiny 用户到 sudo 组
+RUN usermod -aG sudo shiny
+
 COPY ./conf/shiny-server.conf /etc/shiny-server/shiny-server.conf
 
 ENV work_dir="/home/shiny/PMET_docker"
+WORKDIR $work_dir
 COPY . $work_dir
 
+RUN chown -R shiny:shiny $work_dir  && \
+    chmod -R 777         $work_dir
 RUN ln -sf $work_dir /srv/shiny-server/pmet
 
 # Use the find command to find all .sh, .r, .py, .pl files and grant them 755 permissions
@@ -17,28 +23,31 @@ RUN $work_dir/scripts/install_apt_tools.sh
 
 
 # ############################## 3. R libs settings ###############################
-ENV R_LIBS_USER=/usr/local/lib/R/library
-# Set the directory owner and permissions
-RUN mkdir -p     $R_LIBS_USER      && \
-    chmod -R 777 $R_LIBS_USER
-# Set environment variables in respective user profiles
-RUN echo "export R_LIBS_USER='$R_LIBS_USER'" >> /root/.bashrc         && \
-    echo "export R_LIBS_USER='$R_LIBS_USER'" >> /home/shiny/.bashrc   && \
-    echo "R_LIBS_USER='$R_LIBS_USER'"        >> /root/.Renviron       && \
-    echo "R_LIBS_USER='$R_LIBS_USER'"        >> /home/shiny/.Renviron
+# ENV R_LIBS_USER=/usr/local/lib/R/library
+
+# RUN chown -R shiny:shiny $R_LIBS_USER && \
+#     chmod -R 755 $R_LIBS_USER
+# # # Set the directory owner and permissions
+# # RUN mkdir -p     $R_LIBS_USER      && \
+# #     chmod -R 777 $R_LIBS_USER
+# # # Set environment variables in respective user profiles
+# # RUN echo "export R_LIBS_USER='$R_LIBS_USER'" >> /root/.bashrc         && \
+# #     echo "export R_LIBS_USER='$R_LIBS_USER'" >> /home/shiny/.bashrc   && \
+# #     echo "R_LIBS_USER='$R_LIBS_USER'"        >> /root/.Renviron       && \
+# #     echo "R_LIBS_USER='$R_LIBS_USER'"        >> /home/shiny/.Renviron
 
 
 ############################## 4. install R libs ###############################
-# # Configure Java using R CMD javareconf
+# Configure Java using R CMD javareconf
 RUN sudo R CMD javareconf
 
 # # renv for package management
 # RUN Rscript -e "install.packages(c('remotes', 'littler', 'docopt', 'renv', 'jsonlite'))"
-# RUN Rscript -e "renv::restore()"
+# RUN Rscript -e "Sys.setenv(R_INSTALL_STAGED = FALSE);renv::restore();renv::install('jsonlite')"
 RUN Rscript  $work_dir/R/utils/install_packages.R
 
-RUN rsync -av --ignore-existing /usr/local/lib/R/library/ /usr/local/lib/R/site-library/ && \
-    rsync -av --ignore-existing /usr/local/lib/R/site-library/ /usr/local/lib/R/library/
+# RUN rsync -av --ignore-existing /usr/local/lib/R/library/ /usr/local/lib/R/site-library/ && \
+#     rsync -av --ignore-existing /usr/local/lib/R/site-library/ /usr/local/lib/R/library/
 
 
 ############################## 5. install python libs ###############################
@@ -51,18 +60,18 @@ RUN $work_dir/scripts/install_python_libs.sh
 RUN apt -y install bedtools
 
 # Samtools 1.3.1 #
-ENV SAMTOOLS_INSTALL_DIR=/opt/samtools
-ENV HTSLIB_INSTALL_DIR=/opt/htslib
-
 WORKDIR /tmp
 RUN wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2 && \
     tar -xjf samtools-1.17.tar.bz2 && \
     cd samtools-1.17 && \
-    ./configure --disable-lzma --prefix=$SAMTOOLS_INSTALL_DIR && \
+    ./configure --disable-lzma --prefix=/opt/samtools && \
     make && \
     make install && \
     cd / && \
     rm -rf /tmp/samtools-1.17 /tmp/samtools-1.17.tar.bz2
+
+RUN echo "export PATH=/opt/samtools/bin:$PATH" >> /root/.bashrc        && \
+    echo "export PATH=/opt/samtools/bin:$PATH" >> /home/shiny/.bashrc
 # Set the working directory back to the root directory
 WORKDIR $work_dir
 
@@ -104,6 +113,11 @@ RUN cd $work_dir/PMETdev/src/pmet \
 ############################# 8. download homotypic data ##############################
 RUN $work_dir/scripts/download_pmet_indexing.sh
 
+# RUN chmod -R 777  $work_dir/data $work_dir/result
 
-EXPOSE 3838
+
+# Clean apt cache to reduce image size
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 4615
 CMD ["/usr/bin/shiny-server"]

@@ -39,6 +39,9 @@
 
 # SendResultMail(recipient = recipient, result_link = result_link)
 
+library(dplyr)
+library(emayili)
+
 SendResultMail <- function(recipient = NULL, result_link = NULL) {
 
   email_credential <- readLines("data/email_credential.txt")

@@ -2,13 +2,13 @@
 FROM nginx:latest
 
 # 创建结果目录
-RUN mkdir -p /usr/share/nginx/pmet && \
-    chmod -R 777 /usr/share/nginx/pmet
+RUN mkdir -p /etc/nginx/html && \
+    chmod -R 777 /etc/nginx/html
 
 COPY ./conf/nginx.conf /etc/nginx/conf.d/pmet.conf
 
 # Expose Nginx's default port
-EXPOSE 84
+EXPOSE 19258
 
 # Start Nginx service
 CMD ["nginx", "-g", "daemon off;"]
