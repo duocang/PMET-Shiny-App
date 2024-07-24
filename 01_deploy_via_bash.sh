@@ -653,7 +653,7 @@ fi
 ############################# 7. copy pmet folder to /home/shiny ########################################
 if [ true ]; then
     source_dir="$(dirname "$(realpath "$0")")"
-    target_dir="/home/shiny/pmet22"
+    target_dir="/home/shiny/pmet"
 
     print_green_no_br "\n7. Moving "
     print_fluorescent_yellow_no_br "$source_dir"
