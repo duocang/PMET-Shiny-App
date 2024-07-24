@@ -6,19 +6,16 @@ if [ true ]; then
         NC='\033[0m' # No Color
         printf "${RED}$1${NC}\n"
     }
-
     print_green(){
         GREEN='\033[0;32m'
         NC='\033[0m' # No Color
         printf "${GREEN}$1${NC}\n"
     }
-
     print_green_no_br(){
         GREEN='\033[0;32m'
         NC='\033[0m' # No Color
         printf "${GREEN}$1${NC}"
     }
-
     print_orange(){
         ORANGE='\033[0;33m'
         NC='\033[0m' # No Color
@@ -29,7 +26,6 @@ if [ true ]; then
         NC='\033[0m' # No Color
         printf "${ORANGE}$1${NC}"
     }
-
     print_fluorescent_yellow(){
         FLUORESCENT_YELLOW='\033[1;33m'
         NC='\033[0m' # No Color
@@ -40,13 +36,11 @@ if [ true ]; then
         NC='\033[0m' # No Color
         printf "${FLUORESCENT_YELLOW}$1${NC}"
     }
-
     print_white(){
         WHITE='\033[1;37m'
         NC='\033[0m' # No Color
         printf "${WHITE}$1${NC}"
     }
-
     print_middle(){
         FLUORESCENT_YELLOW='\033[1;33m'
         NC='\033[0m' # No Color
@@ -269,6 +263,7 @@ if [ true ]; then
         print_orange "  Check your nginx link in $nginx_link"
         print_fluorescent_yellow_no_br "    Nginx link: "
         cat "$nginx_link"
+        echo
         while true; do
             print_orange_no_br "  Do you have a new nginx link for result? [y/N]: "
             read debug_mode
@@ -421,7 +416,7 @@ if [ true ]; then
     fi
 
     #################### 2.3 CPU
-    print_green "\n2.2. Configurations of CPU number"
+    print_green "\n2.3. Configurations of CPU number"
     # Function to get user input for CPU number
     get_cpu_number() {
         while true; do
@@ -483,18 +478,15 @@ if [ true ]; then
         # 遍历 PMETdev/scripts 目录及其所有子目录中的 .sh 和 .pl 文件
         find . -type f \( -name "*.sh" -o -name "*.pl" \) -exec chmod a+x {} \;
     else
-        print_orange "No assignment"
+        print_orange "  No assignment"
     fi
-    print_orange "    Assigning writing permissions to result/ and result/indexing directory..."
-    sudo chmod 777 result
-    sudo chmod 777 result/indexing
 fi
 
 ############################# 4. compile binary (pmet) ##################################################
 if [ true ]; then
-    print_green "4. Compile binaries of PMET and PMETindex..."
+    print_green "\n4. Compile binaries of PMET and PMETindex..."
 
-    if [ -f "scripts/pmetindex" ]; then
+    if [ -f "PMETdev/scripts/pmetindex" ]; then
         chmod a+x PMETdev/scripts/pmetindex
         chmod a+x PMETdev/scripts/pmetParallel_linux
         chmod a+x PMETdev/scripts/pmet
@@ -511,15 +503,16 @@ if [ true ]; then
             fi
         done
     else
-        print_orange "  PMETindex and PMET not found. Compiling PMETindex..."
+        print_red "  PMETindex and PMET not found. Compiling PMETindex..."
         recompile=y
     fi
 
-    print_orange_no_br "  Do you want to stop PMET and PMETindex compile? [y/N]: "
-    read -p "" recompile_stop
-    recompile_stop=${recompile_stop:-Y}
+    # print_orange_no_br "  Do you want to stop PMET and PMETindex compile? [y/N]: "
+    # read -p "" recompile_stop
+    # recompile_stop=${recompile_stop:-Y}
 
-    if [[ "$recompile" =~ ^[Yy]$ && ! "$recompile_stop" =~ ^[Nn]$ ]]; then
+    # if [[ "$recompile" =~ ^[Yy]$ && ! "$recompile_stop" =~ ^[Nn]$ ]]; then
+    if [[ "$recompile" =~ ^[Yy]$ ]]; then
         print_fluorescent_yellow "  Compiling... It takes minutes."
 
         cd PMETdev
@@ -597,7 +590,7 @@ if [ true ]; then
             print_red "     Compilation Failure:$not_exists"
         fi
     else
-        print_orange "  No tools compiled"
+        echo "  No tools compiled"
     fi
     ############# 4.5 Give execute permission to all users for the file. ##################
     chmod a+x PMETdev/scripts/pmetindex
@@ -633,7 +626,7 @@ if [ true ]; then
         Rscript R/utils/install_packages.R 2>&1 | tee ./R/R_packages_installation.log | grep -E "\* DONE \("
         awk '/The installed packages are as follows:/{flag=1} flag' ./R/R_packages_installation.log
     else
-        print_orange "    No R packages installed"
+        echo "  No R packages installed"
     fi
 fi
 
@@ -653,21 +646,26 @@ if [ true ]; then
         pip install bio           > /dev/null 2>&1 || print_red "    Failed to install bio"
         pip install biopython     > /dev/null 2>&1 || print_red "    Failed to install biopython"
     else
-        print_orange "No python packages installed"
+        echo "  No python packages installed"
     fi
 fi
 
 ############################# 7. copy pmet folder to /home/shiny ########################################
 if [ true ]; then
-    print_green "\n11. Moving directory from $source_dir to $target_dir for User shiny access..."
-    print_green_no_br "5. Do you want to proceed with this operation? [y/N]: "
+    source_dir="$(dirname "$(realpath "$0")")"
+    target_dir="/home/shiny/pmet22"
+
+    print_green_no_br "\n7. Moving "
+    print_fluorescent_yellow_no_br "$source_dir"
+    print_green_no_br " to "
+    print_fluorescent_yellow_no_br "$target_dir"
+    print_green " for User shiny access..."
+
+    # print_green "\n7. Moving directory from $source_dir to $target_dir for User shiny access..."
+    print_orange_no_br "  Do you want to proceed with this operation? [y/N]: "
     read -p "" answer
     answer=${answer:-N}
     if [[ "$answer" =~ ^[Yy]$ ]]; then
-        # 获取当前脚本所在目录的绝对路径
-        source_dir="$(dirname "$(realpath "$0")")"
-        target_dir="/home/shiny/pmet"
-
         sudo cp -R "$source_dir" "$target_dir"
     fi
 fi
@@ -680,14 +678,14 @@ if [ true ]; then
     # # # sudo tee /etc/sudoers.d/wang_nopasswd 以超级用户权限执行 tee 命令，将上述规则写入 /etc/sudoers.d/wang_nopasswd 文件。使用 /etc/sudoers.d/ 目录是一种更好的做法，因为这允许您管理单独的 sudo 规则文件，而不是修改主 /etc/sudoers 文件。
     # # # > /dev/null 部分将 tee 命令的标准输出重定向到 /dev/null，这样就不会在终端中显示被添加的规则。
 
-    print_green "\n8. Preparing to grant the 'shiny' user administrative privileges by adding it to the sudo group."
-    print_orange "  Do you want to proceed with this operation? [Y/n]: "
+    print_green "\n8. Adding user 'shiny' to the sudo group."
+    print_orange_no_br "  Do you want to proceed with this operation? [Y/n]: "
     read -p " " user_confirm
     user_confirm=${user_confirm:-Y}  # 默认值为 'Y'
 
     if [[ "$user_confirm" =~ ^[Yy]$ ]]; then
         sudo usermod -aG sudo shiny
-        print_fluorescent_yellow "    The 'shiny' user has been successfully added to the sudo group."
+        print_fluorescent_yellow "  User 'shiny' has been added to the sudo group."
     fi
 fi
 
@@ -705,10 +703,10 @@ if [ true ]; then
             # print_orange "  Setting password for the 'shiny' user. Please follow the prompts..."
             sudo chsh -s /bin/bash shiny  # 更改默认 shell 为 bash
             sudo passwd shiny  # 设置密码
-            print_fluorescent_yellow "    A password has been successfully set for the 'shiny' user."
+            print_fluorescent_yellow "  A password has been set for the user 'shiny'."
         fi
     else
-        print_fluorescent_yellow "    The 'shiny' user already has a password set. No further action is needed."
+        echo "  User 'shiny' has a password set. No action required."
     fi
 fi
 
@@ -718,7 +716,7 @@ if [ true ]; then
 
     # 检查组是否存在
     if getent group shiny-apps >/dev/null; then
-        print_fluorescent_yellow "    The 'shiny-apps' group already exists. No further action is needed."
+        echo "  Group 'shiny-apps' exists. No action required."
     else
         print_orange "  Would you like to create the 'shiny-apps' group? [Y/n]: "
         read -p " " user_confirm
@@ -737,7 +735,7 @@ if [ true ]; then
 
     # 检查用户是否已经是该组的成员
     if groups shiny | grep -qw shiny-apps; then
-        print_fluorescent_yellow "    User 'shiny' is already a member of 'shiny-apps'. No action is required."
+        echo "  User 'shiny' has been a member of 'shiny-apps'. No action required."
     else
         print_orange "  Would you like to add 'shiny' to the 'shiny-apps' group? [Y/n]: "
         read -p " " user_confirm
@@ -745,21 +743,24 @@ if [ true ]; then
 
         if [[ "$user_confirm" =~ ^[Yy]$ ]]; then
             sudo usermod -aG shiny-apps shiny
-            print_fluorescent_yellow "    User 'shiny' has been successfully added to the 'shiny-apps' group."
+            print_fluorescent_yellow "  User 'shiny' has been successfully added to the 'shiny-apps' group."
         fi
     fi
-
-
-
-
-
-
+fi
 
 
 ############################ 12. shiny's ownership of /homne/shiny/pmet and /srv/shiny-server ###########
 if [ true ]; then
-    print_green "\n12. Preparing to adjust ownership and permissions for '/home/shiny/pmet' and '/srv/shiny-server' to ensure proper access for the 'shiny' user and the 'shiny-apps' group."
-    read -p "  Do you want to proceed with this operation? [Y/n]: " user_confirm
+    print_green_no_br "\n12. Adjust ownership and permissions of "
+    print_fluorescent_yellow_no_br "'/home/shiny/pmet'"
+    print_green_no_br " and "
+    print_fluorescent_yellow "'/srv/shiny-server'"
+
+    echo "    to ensure proper access for the 'shiny' user and the 'shiny-apps' group."
+
+
+    print_orange_no_br "  Do you want to proceed with this operation? [Y/n]: "
+    read -p " " user_confirm
     user_confirm=${user_confirm:-Y}  # 默认值为 'Y'
 
     if [[ "$user_confirm" =~ ^[Yy]$ ]]; then
@@ -783,7 +784,8 @@ if [ true ]; then
 
     # 确保获取到的 nginx 用户不为空
     if [[ -n "$nginx_user" ]]; then
-        print_green "\n13. Granting the Nginx user '$nginx_user' access to the 'shiny-apps' group for accessing the results."
+        print_green_no_br "\n13. Granting Nginx user '$nginx_user' access to the 'shiny-apps' group for accessing "
+        print_fluorescent_yellow "/home/shiny/pmet/result"
         # 向用户询问是否执行
         print_orange_no_br "  Do you want to proceed with this operation? [y/N]: "
         read -p " " user_confirmation
@@ -799,10 +801,21 @@ if [ true ]; then
         print_orange "    Check /home/shiny/pmet/result folder permissions and ownership manually."
     fi
 
+    if [ true ]; then
+        # print_orange "  Assigning writing permissions to result/ and result/indexing directory..."
+        print_green_no_br "\n  Assigning writing permissions to "
+        print_fluorescent_yellow_no_br "/home/shiny/pmet/result"
+        print_green_no_br " and "
+        print_fluorescent_yellow "/home/shiny/pmet/result/indexing"
+
+        sudo chmod 777 /home/shiny/pmet/result
+        sudo chmod 777 /home/shiny/pmet/result/indexing
+    fi
 fi
 
+
 ############################ 14. create folder link ######################################################
-print_green "\n14. Creating a symlink for /home/shiny/pmet in the Shiny server directory (/srv/shiny-server) for server access..."
+print_green "\n14. Creating a symlink for /home/shiny/pmet in /srv/shiny-server"
 print_orange_no_br "  Do you want to proceed with this operation? [y/N]: "
 read -p " " user_confirmation
 user_confirmation=${user_confirmation:-N} # 默认为 'N' 如果没有提供输入
@@ -837,7 +850,7 @@ if [ true ]; then
     if $all_tools_found; then
         print_orange "    All tools were found!"
     else
-        print_fluorescent_yellow_no_br "Would you like to install missing tools? [Y/n]: "
+        print_orange_no_br "  Would you like to install missing tools? [Y/n]: "
         read -p " " answer
         answer=${answer:-Y} # Default to 'N' if no input provided
 
@@ -938,7 +951,7 @@ fi
 
 ############################ 16. static folder for nginx ################################################
 if [ true ]; then
-    print_green "\n 16. Setting static folder for nginx..."
+    print_green "\n 16. Exposing static folder /home/shiny/pmet/result via nginx..."
 
     if [ -f /etc/nginx/sites-available/pmet_result ]; then
         cat /etc/nginx/sites-available/pmet_result
@@ -953,8 +966,8 @@ if [ true ]; then
                 alias /home/shiny/pmet/result;\n\
             }\n\
         }"
-        cp data/nginx_pmet /etc/nginx/sites-available/pmet_result
-        sudo ln -s /etc/nginx/sites-available/pmet_result /etc/nginx/sites-enabled/pmet_result
+        cp data/configure/nginx_pmet /etc/nginx/sites-available/pmet_result
+        # sudo ln -s /etc/nginx/sites-available/pmet_result /etc/nginx/sites-enabled/pmet_result
     fi
 fi
 
