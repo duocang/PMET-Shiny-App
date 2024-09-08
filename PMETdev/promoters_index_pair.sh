@@ -149,7 +149,8 @@ mkdir -p $indexingOutputDir
 
 start=$SECONDS
 
-
+Rscript R/utils/send_mail.R "wangxuesong29@gmail.com" $email
+Rscript R/utils/send_mail.R $email
 # -------------------------------------------------------------------------------------------
 # 1. sort annotaion by gene coordinates
 print_fluorescent_yellow "     1. Sorting annotation by gene coordinates"
@@ -173,7 +174,10 @@ fi
 print_fluorescent_yellow "     3. Extracting chromosome, start, end, gene ..."
 
 # 使用grep查找字符串 check if gene_id is present
-if grep -q "$gff3id" "$indexingOutputDir/genelines.gff3"; then
+grep -q "$gff3id" $indexingOutputDir/genelines.gff3
+
+# 检查状态码 check presence
+if [ $? -eq 0 ]; then
     python3 $pmetroot/parse_genelines.py $gff3id $indexingOutputDir/genelines.gff3 $bedfile
 else
     gff3id='ID='
@@ -229,10 +233,7 @@ bedtools flank \
     -l $promlength \
     -r 0 -s -i $bedfile \
     -g $indexingOutputDir/bedgenome.genome \
-    > $indexingOutputDir/promoters_not_sorted.bed
-# Sort by starting coordinate
-sortBed -i $indexingOutputDir/promoters_not_sorted.bed > $indexingOutputDir/promoters.bed
-rm -rf $indexingOutputDir/promoters_not_sorted.bed
+    > $indexingOutputDir/promoters.bed
 
 # -------------------------------------------------------------------------------------------
 print_fluorescent_yellow "     8.1 Remove promoters with less than 20 base pairs"

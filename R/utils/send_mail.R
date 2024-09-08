@@ -1,44 +1,3 @@
-# library(mailR)
-
-# # Define a function to send an email
-# # Arguments:
-# #   recipient: The recipient of the email
-# #   result_link: The result link of the email
-# SendResultMail <- function(recipient = NULL, result_link = NULL) {
-#   sender <- "result@pmet.simpleconstellation.com"
-
-#   subject <- "PMET result is ready!"
-#   body <- paste("Dear PMET user,\n\n\n",
-#                 result_link,
-#                 "The result will be kept in the server for a week, please download it as soon as possible.\n\n\n Thank you!", sep = "\n\n")
-
-#   send.mail(
-#     from = sender,
-#     to = recipient,
-#     subject = subject,
-#     body = body,
-#     smtp = list(
-#       host.name = "v095996.kasserver.com",
-#       port = 587,
-#       user.name = "",
-#       passwd = "",
-#       ssl = TRUE
-#     ),
-#     authenticate = TRUE,
-#     send = TRUE,
-#     # attach.files = emailFile,
-#     encoding = "utf-8"
-#   )
-# }
-
-
-# args <- commandArgs(trailingOnly = TRUE)
-
-# recipient <- args[1]
-# result_link <- args[2]
-
-# SendResultMail(recipient = recipient, result_link = result_link)
-
 library(dplyr)
 library(emayili)
 
@@ -53,14 +12,69 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
 
   sender <- EMAIL_ADDRESS
 
-  subject <- "PMET result is ready!"
-  body <- paste(
-    "\n\n\nDear PMET user,\n\n\n",
-    "Please copy and paste the link into a browser if cliking failed\n\n",
-    result_link,
-    "\nThe result will be kept in the server for a week, please download it as soon as possible.\n\n\n Thank you!",
-    sep = "\n\n"
+  if (is.null(result_link)) {
+    subject <- "PMET is running, please be patient!"
+
+    body <- paste(
+      '<!DOCTYPE html>',
+      '<html>',
+      '<head>',
+      '<meta charset="UTF-8">',
+      '<style>',
+      '  body { font-family: Arial, sans-serif; line-height: 1.8; background-color: #f4f4f4; margin: 0; padding: 0; }',
+      '  .container { max-width: 600px; margin: 40px auto; padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }',
+      '  h2 { color: #333333; margin-bottom: 20px; }',
+      '  p { font-size: 15px; color: #555555; margin: 10px 0; }',
+      '  .note { font-size: 13px; color: #999999; margin-top: 20px; }',
+      '  .footer { font-size: 13px; color: #888888; margin-top: 40px; text-align: center; }',
+      '</style>',
+      '</head>',
+      '<body>',
+      '<div class="container">',
+      '<h2>Dear PMET User,</h2>',
+      '<p>Your request is currently being processed. The results will be sent to your mailbox once PMET has completed its analysis.</p>',
+      '<p class="note">If you do not receive the results within two days, please reply to this email for further assistance.</p>',
+      '<p>Thank you for your patience!</p>',
+      '<div class="footer">Best regards,<br/>The PMET Team</div>',
+      '</div>',
+      '</body>',
+      '</html>',
+      sep = ""
+    )
+  } else {
+    subject <- "PMET result is ready!"
+    body <- paste(
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head>',
+    '<meta charset="UTF-8">',
+    '<style>',
+    '  body { font-family: Arial, sans-serif; line-height: 1.8; background-color: #f4f4f4; margin: 0; padding: 0; }',
+    '  .container { max-width: 600px; margin: 40px auto; padding: 20px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }',
+    '  h2 { color: #333333; margin-bottom: 20px; }',
+    '  p { font-size: 15px; color: #555555; margin: 10px 0; }',
+    '  .link { font-size: 16px; color: #1a73e8; text-decoration: none; word-wrap: break-word; }',
+    '  .link:hover { text-decoration: underline; }',
+    '  .note { font-size: 13px; color: #999999; margin-top: 20px; }',
+    '  .footer { font-size: 13px; color: #888888; margin-top: 40px; text-align: center; }',
+    '</style>',
+    '</head>',
+    '<body>',
+    '<div class="container">',
+    '<h2>Dear PMET User,</h2>',
+    '<p>We are pleased to inform you that your results are ready. Please click the link below to access your results. If the link does not work, you can copy and paste it into your browser’s address bar.</p>',
+    '<p><a href="', result_link, '" class="link">', result_link, '</a></p>',
+    '<p class="note">Please note: The results will be available on the server for one week. We recommend downloading your results at your earliest convenience.</p>',
+    '<p>If you have any questions or need further assistance, feel free to reply to this email.</p>',
+    '<p>Thank you for using our services!</p>',
+    '<div class="footer">Best regards,<br/>The PMET Team</div>',
+    '</div>',
+    '</body>',
+    '</html>',
+    sep = ""
   )
+
+  }
 
   smtp <- emayili::server(
     host = EMAIL_SERVER,
@@ -79,6 +93,6 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
 args <- commandArgs(trailingOnly = TRUE)
 
 recipient <- args[1]
-result_link <- args[2]
+result_link <- if (length(args) >= 2) args[2] else NULL
 
 SendResultMail(recipient = recipient, result_link = result_link)

@@ -88,6 +88,9 @@ while getopts ":d:g:i:t:o:e:l:" options; do
     esac
 done
 
+Rscript R/utils/send_mail.R "wangxuesong29@gmail.com" $email
+Rscript R/utils/send_mail.R $email
+
 # ------------------------------------ Run pmet ----------------------------------
 
 mkdir -p $outputdir

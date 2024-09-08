@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 set -e
 
 # disable warnings
@@ -143,6 +143,11 @@ memefile=$2
 [ ! -d $indexingOutputDir ] && mkdir $indexingOutputDir
 # cd $indexingOutputDir
 
+
+Rscript R/utils/send_mail.R "wangxuesong29@gmail.com" $email
+
+Rscript R/utils/send_mail.R $email
+
 print_green "Preparing sequences...";
 
 # final pmet binary requires the universe file. Need to create this if validation scrip didnt.
@@ -167,7 +172,6 @@ if [[ ! -f "$universefile" || ! -f "$indexingOutputDir/promoter_lengths.txt" ]];
 
     cut -f 1  $indexingOutputDir/promoter_lengths.txt > $universefile
 fi
-
 # now we can actually FIMO our way to victory
 fasta-get-markov $genomefile > $indexingOutputDir/genome.bg
 # FIMO barfs ALL the output. that's not good. time for individual FIMOs
