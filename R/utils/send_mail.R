@@ -85,7 +85,7 @@ SendResultMail <- function(recipient = NULL, result_link = NULL) {
   )
 
   email <- emayili::envelope()
-  email <- email %>% emayili::from(sender) %>% emayili::to(recipient) %>% emayili::subject(subject) %>% emayili::text(body)
+  email <- email %>% emayili::from(sender) %>% emayili::to(recipient) %>% emayili::subject(subject) %>% emayili::html(body)
 
   smtp(email, verbose = TRUE)
 }
